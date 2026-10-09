@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="channel_reminders">Reminders</string>
+    <string name="channel_reminders_description">Wind-down, melatonin window, caffeine, morning light and energy check-ins</string>
+    <string name="channel_confirmation">Sleep confirmation</string>
+    <string name="channel_confirmation_description">Asks you to confirm the sleep Drift detected</string>
+    <string name="channel_sync">Background sync</string>
+    <string name="sync_running">Updating your sleep and energy</string>
+
+    <string name="reminder_wind_down_title">Time to wind down</string>
+    <string name="reminder_wind_down_body">Dim the lights and ease off screens so your body clock can get ready for sleep.</string>
+    <string name="reminder_melatonin_title">Your melatonin window is opening</string>
+    <string name="reminder_melatonin_body">Keep lights low. This is a good time to head to bed.</string>
+    <string name="reminder_caffeine_title">Caffeine cutoff</string>
+    <string name="reminder_caffeine_body">Skip caffeine from here on to protect tonight\'s sleep.</string>
+    <string name="reminder_light_title">Get some daylight</string>
+    <string name="reminder_light_body">Morning light helps anchor your body clock.</string>
+    <string name="reminder_checkin_title">How is your energy?</string>
+    <string name="reminder_checkin_body">A quick check-in helps tune your energy curve.</string>
+
+    <string name="confirm_title">Confirm your sleep</string>
+    <string name="confirm_body">Looks like you slept %1$s to %2$s</string>
+    <string name="confirm_generic_body">Open Drift to confirm last night\'s sleep.</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="action_adjust">Adjust</string>
+
+    <string name="widget_label">Drift energy</string>
+    <string name="widget_description">Today\'s energy curve with the next phase</string>
+    <string name="widget_empty">Open Drift to build your energy curve</string>
+    <string name="widget_stale">Out of date. Open Drift to refresh.</string>
+    <string name="widget_next">Next: %1$s at %2$s</string>
+    <string name="widget_now">Now: %1$s</string>
+    <string name="widget_curve_description">Today\'s energy curve</string>
+
+    <string name="phase_groggy">Waking up</string>
+    <string name="phase_morning_peak">Morning peak</string>
+    <string name="phase_afternoon_dip">Afternoon dip</string>
+    <string name="phase_evening_peak">Evening peak</string>
+    <string name="phase_wind_down">Wind-down</string>
+    <string name="phase_melatonin">Melatonin window</string>
+    <string name="phase_sleep">Sleep</string>
+</resources>

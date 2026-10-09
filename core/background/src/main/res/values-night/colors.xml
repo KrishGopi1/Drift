@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_curve">#8DB0FF</color>
+    <color name="widget_fill">#308DB0FF</color>
+    <color name="widget_marker">#FF9770</color>
+    <color name="widget_baseline">#33FFFFFF</color>
+    <color name="widget_bg">#1B1E27</color>
+    <color name="widget_text">#EEF0F6</color>
+    <color name="widget_text_secondary">#A9AEBF</color>
+</resources>
