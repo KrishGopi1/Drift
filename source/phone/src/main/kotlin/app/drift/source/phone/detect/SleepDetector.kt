@@ -17,7 +17,7 @@ internal object SleepDetector {
     val SLEEP_LATENCY: Duration = Duration.ofMinutes(10)
     private val REFINE_WINDOW: Duration = Duration.ofMinutes(20)
 
-    private const val TAIL_BINS = 3
+    private const val TAIL_BINS = 6
     private const val CORROB_TIME = 1
     private const val CORROB_API = 2
     private const val CORROB_CHARGING = 4
