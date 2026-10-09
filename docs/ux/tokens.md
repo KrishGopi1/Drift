@@ -1,22 +1,24 @@
 # Drift design tokens
 
 Source of truth in code: `core/designsystem` (`DriftTheme.colors / typography / spacing / radii / elevation / strokes / motion`).
-Palette and copy are original. Studied for behaviour and mood only (calm, dark-first, night sky); no RISE assets used.
+Palette and copy are original. Studied for behaviour and mood only (calm, near-black, dark-first); no RISE assets used.
+The October 2026 visual refresh is described in visual-refresh.md.
 
 ## Colour roles
 Dark is the primary design. Light is a full equal.
 
 | Role | Dark | Light | Use |
 |---|---|---|---|
-| background | #0B1020 | #F5F6FB | Screen |
-| surface | #131A30 | #FFFFFF | Cards, nav bar |
-| surfaceRaised | #1B2440 | #EEF0F8 | Sheets, segmented track, nested panels |
-| outline | #6A78A8 | #7A84A3 | Controls and zero lines (3:1 non-text) |
-| outlineSubtle | #2A3558 | #D5DAEA | Card borders, gridlines, dividers |
-| onSurface | #E9EDF8 | #12182B | Primary text |
-| onSurfaceMuted | #A9B4D0 | #4B5472 | Secondary text |
-| primary / onPrimary | #9BAEFF / #0B1230 | #3547C9 / #FFFFFF | Buttons, links, selection, regularity line |
-| primaryContainer / on | #26325E / #DDE3FF | #E0E5FF / #1A2680 | Selected segment/tab, accent card |
+| background | #06070C | #F6F5FB | Screen |
+| surface | #15161F | #FFFFFF | Cards, nav bar |
+| surfaceRaised | #20212C | #EFEDF7 | Sheets, segmented track, nested panels |
+| outline | #6E7187 | #7A84A3 | Controls and zero lines (3:1 non-text) |
+| outlineSubtle | #2A2B38 | #DDDAEA | Card borders, gridlines, dividers |
+| onSurface | #F2F3F8 | #12182B | Primary text |
+| onSurfaceMuted | #A4A7BC | #4B5472 | Secondary text |
+| primary / onPrimary | #B09BFF / #140A33 | #5B3FD6 / #FFFFFF | Buttons, links, selection, regularity line |
+| primaryContainer / on | #5B3FD6 / #FFFFFF | #E6E0FF / #24137A | Selected segment/tab, Peak/Dip flags |
+| accentSurface | #251C4A | #EFEBFF | Accent cards |
 | energy (warm accent) | #FFB84D | #9A5200 | Energy line, peaks, now dot (text-safe) |
 | energyFill | #FFB84D | #F5A524 | Chart fills and bands (not text) |
 | melatonin (cool accent) | #55D1DE | #006C7A | Melatonin window text |
@@ -29,24 +31,9 @@ Dark is the primary design. Light is a full equal.
 Rules: warm = energy, cool teal = melatonin, violet = wind-down/estimated. Never use colour alone: every colour-coded thing also has a
 text label, a glyph, or a position (provenance chips have a glyph, stage rows are labelled, charts have legends).
 
-### Contrast (WCAG 2.x, measured)
-| Pair | Dark | Light |
-|---|---|---|
-| onSurface on background | 16.2:1 | 16.3:1 |
-| onSurface on surface | 14.7:1 | 17.6:1 |
-| onSurfaceMuted on background | 9.1:1 | 6.9:1 |
-| onSurfaceMuted on surface | 8.3:1 | 7.5:1 |
-| onSurfaceMuted on surfaceRaised | 7.4:1 | 6.6:1 |
-| primary on surface | 8.1:1 | 7.3:1 |
-| onPrimary on primary | 8.7:1 | 7.3:1 |
-| onPrimaryContainer on primaryContainer | 9.7:1 | 10.3:1 |
-| energy on surface | 10.0:1 | 5.9:1 |
-| melatonin on surface | 9.5:1 | 6.1:1 |
-| windDown on surface | 8.4:1 | 6.7:1 |
-| success on surface | 9.9:1 | 5.4:1 |
-| error on surface | 7.6:1 | 6.5:1 |
-| outline on surface (non-text, needs 3:1) | 4.0:1 | 3.7:1 |
-| outline on background | 4.4:1 | 3.4:1 |
+### Contrast
+Measured ratios for the current palette are enforced by `DesignSystemTest.textColoursMeetWcagAa` (every text colour on background,
+surface, surfaceRaised and accentSurface at least 4.5:1; outline at least 3:1). Dark lowest: onSurfaceMuted on accentSurface 6.6:1.
 
 All text pairs are at least 4.5:1 (enforced by `DesignSystemTest.textColoursMeetWcagAa`). Fill-only colours (energyFill, melatoninFill,
 stage colours) are used for graphics, never for text.

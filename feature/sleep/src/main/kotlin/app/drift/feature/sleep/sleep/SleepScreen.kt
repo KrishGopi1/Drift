@@ -26,6 +26,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import app.drift.charts.DebtBarsChart
+import app.drift.charts.DebtGauge
 import app.drift.charts.RegularityTrendChart
 import app.drift.designsystem.ButtonStyle
 import app.drift.designsystem.CardTone
@@ -106,6 +107,13 @@ private fun SleepContent(model: SleepUiModel, actions: SleepActions) {
     val use24h = rememberUse24h(model.use24hSetting)
     Column(verticalArrangement = Arrangement.spacedBy(DriftTheme.spacing.sectionGap)) {
         DebtCard(model.debt, actions, Modifier.entrance(0))
+        val lastNight = model.contributions.firstOrNull()
+        if (model.debt is DebtSection.Available && lastNight != null) {
+            DriftCard(modifier = Modifier.entrance(1)) {
+                CardTitle(stringResource(R.string.sleep_last_night_title))
+                ContributionRowView(lastNight, model, actions)
+            }
+        }
         if (model.debt !is DebtSection.TooFewNights) {
             ContributionCard(model, actions, Modifier.entrance(1))
         }
@@ -144,18 +152,22 @@ private fun DebtCard(section: DebtSection, actions: SleepActions, modifier: Modi
                 provenance,
                 band?.let { bandWord(it) }.orEmpty(),
             )
-            DriftCard(
-                modifier = modifier,
-                onClick = { actions.onExplain(MetricKey.SLEEP_DEBT) },
-                onClickLabel = stringResource(R.string.sleep_why_debt),
-                contentDescription = description,
-            ) {
-                DurationHero(
-                    duration = debt.value,
+            Column(modifier, verticalArrangement = Arrangement.spacedBy(DriftTheme.spacing.md)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(DriftTheme.spacing.sm), verticalAlignment = Alignment.CenterVertically) {
+                    if (band != null) BandPill(band)
+                    ProvenanceChip(debt.provenance)
+                }
+                DebtGauge(
+                    debt = debt.value,
                     label = stringResource(R.string.sleep_debt_label),
-                    provenance = debt.provenance,
+                    unit = stringResource(R.string.sleep_debt_unit_hours),
+                    contentDescription = description,
+                    modifier = Modifier.clickable(
+                        onClickLabel = stringResource(R.string.sleep_why_debt),
+                        role = Role.Button,
+                        onClick = { actions.onExplain(MetricKey.SLEEP_DEBT) },
+                    ),
                 )
-                if (band != null) BandPill(band)
                 DurationConfidenceBand(debt)
                 Caption(
                     stringResource(

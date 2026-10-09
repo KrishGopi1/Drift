@@ -92,3 +92,20 @@ class StageChartAxisGallery : GalleryCase("chart_stages_axis") {
         StageChart(Fx.stages(), zone = z, height = 90.dp)
     }
 }
+
+class EnergyTimelineGallery : GalleryCase("chart_energy_timeline") {
+    @Composable override fun Content() = EnergyTimelineChart(
+        Fx.energyCurve(), now = Fx.at(Fx.today, 14, 20), zone = z,
+        markers = listOf(
+            TimelineMarker(Fx.at(Fx.today, 13, 0), "13:00", "Last caffeine"),
+            TimelineMarker(Fx.at(Fx.today, 17, 30), "17:30 to 19:00", "Exercise"),
+        ),
+    )
+}
+
+class DebtGaugeGallery : GalleryCase("chart_debt_gauge") {
+    @Composable override fun Content() = Stack {
+        DebtGauge(Duration.ofMinutes(378), label = "Sleep debt", contentDescription = "Sleep debt 6 hours 18 minutes")
+        DebtGauge(Duration.ZERO, label = "Sleep debt", contentDescription = "No sleep debt")
+    }
+}

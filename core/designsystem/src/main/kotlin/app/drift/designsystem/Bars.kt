@@ -91,7 +91,7 @@ fun DriftBottomNavBar(
     modifier: Modifier = Modifier,
 ) {
     val c = DriftTheme.colors
-    Column(modifier.fillMaxWidth().background(c.surface).navigationBarsPadding()) {
+    Column(modifier.fillMaxWidth().background(c.background).navigationBarsPadding()) {
         DriftDivider()
         Row(
             modifier = Modifier.fillMaxWidth().selectableGroup().padding(horizontal = DriftTheme.spacing.xs, vertical = DriftTheme.spacing.sm),

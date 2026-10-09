@@ -7,7 +7,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
 /**
- * Colour roles for both themes. Palette is original: deep indigo "night sky" surfaces, a periwinkle primary,
+ * Colour roles for both themes. Palette is original: near-black surfaces, a violet primary,
  * one warm amber accent for energy peaks and one cool teal for the melatonin window.
  * Contrast ratios are listed in docs/ux/tokens.md and enforced by ContrastTest.
  */
@@ -25,6 +25,8 @@ data class DriftColors(
     val onPrimary: Color,
     val primaryContainer: Color,
     val onPrimaryContainer: Color,
+    /** Container of accent cards: a deep violet tint that keeps every text colour readable. */
+    val accentSurface: Color,
     /** Warm accent, text-safe on [surface]. Energy peaks. */
     val energy: Color,
     /** Warm accent for chart fills (not text). */
@@ -58,17 +60,18 @@ data class DriftColors(
 
 val DriftDarkColors = DriftColors(
     isDark = true,
-    background = Color(0xFF0B1020),
-    surface = Color(0xFF131A30),
-    surfaceRaised = Color(0xFF1B2440),
-    outline = Color(0xFF6A78A8),
-    outlineSubtle = Color(0xFF2A3558),
-    onSurface = Color(0xFFE9EDF8),
-    onSurfaceMuted = Color(0xFFA9B4D0),
-    primary = Color(0xFF9BAEFF),
-    onPrimary = Color(0xFF0B1230),
-    primaryContainer = Color(0xFF26325E),
-    onPrimaryContainer = Color(0xFFDDE3FF),
+    background = Color(0xFF06070C),
+    surface = Color(0xFF15161F),
+    surfaceRaised = Color(0xFF20212C),
+    outline = Color(0xFF6E7187),
+    outlineSubtle = Color(0xFF2A2B38),
+    onSurface = Color(0xFFF2F3F8),
+    onSurfaceMuted = Color(0xFFA4A7BC),
+    primary = Color(0xFFB09BFF),
+    onPrimary = Color(0xFF140A33),
+    primaryContainer = Color(0xFF5B3FD6),
+    onPrimaryContainer = Color(0xFFFFFFFF),
+    accentSurface = Color(0xFF251C4A),
     energy = Color(0xFFFFB84D),
     energyFill = Color(0xFFFFB84D),
     melatonin = Color(0xFF55D1DE),
@@ -90,17 +93,18 @@ val DriftDarkColors = DriftColors(
 
 val DriftLightColors = DriftColors(
     isDark = false,
-    background = Color(0xFFF5F6FB),
+    background = Color(0xFFF6F5FB),
     surface = Color(0xFFFFFFFF),
-    surfaceRaised = Color(0xFFEEF0F8),
+    surfaceRaised = Color(0xFFEFEDF7),
     outline = Color(0xFF7A84A3),
-    outlineSubtle = Color(0xFFD5DAEA),
+    outlineSubtle = Color(0xFFDDDAEA),
     onSurface = Color(0xFF12182B),
     onSurfaceMuted = Color(0xFF4B5472),
-    primary = Color(0xFF3547C9),
+    primary = Color(0xFF5B3FD6),
     onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFFE0E5FF),
-    onPrimaryContainer = Color(0xFF1A2680),
+    primaryContainer = Color(0xFFE6E0FF),
+    onPrimaryContainer = Color(0xFF24137A),
+    accentSurface = Color(0xFFEFEBFF),
     energy = Color(0xFF9A5200),
     energyFill = Color(0xFFF5A524),
     melatonin = Color(0xFF006C7A),

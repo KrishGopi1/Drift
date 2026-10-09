@@ -2,6 +2,7 @@ package app.drift.feature.energy.ui
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -23,9 +24,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
-import app.drift.charts.EnergyCurveChart
+import app.drift.charts.EnergyTimelineChart
+import app.drift.charts.TimelineMarker
 import app.drift.designsystem.ButtonStyle
 import app.drift.designsystem.CardTone
 import app.drift.designsystem.DriftButton
@@ -92,7 +95,7 @@ internal fun HeadlineCard(
     }
     DriftCard(
         modifier = modifier.testTag("energy_headline"),
-        tone = if (isToday) CardTone.Accent else CardTone.Default,
+        tone = CardTone.Default,
         onClick = onExplain,
         onClickLabel = stringResource(R.string.energy_why_label),
         contentDescription = spokenNext,
@@ -104,7 +107,7 @@ internal fun HeadlineCard(
                 animationSpec = DriftTheme.motion.spec(DriftTheme.reducedMotion, DriftTheme.motion.short),
                 label = "phase",
             ) { text ->
-                Text(text, style = DriftTheme.typography.display, color = segment?.phase?.color() ?: DriftTheme.colors.onSurface)
+                Text(text, style = DriftTheme.typography.headline, color = segment?.phase?.color() ?: DriftTheme.colors.onSurface)
             }
             if (nextText != null) Text(nextText, style = DriftTheme.typography.body, color = DriftTheme.colors.onSurface)
         } else if (summary != null) {
@@ -179,10 +182,21 @@ internal fun CurveCard(
     onExplain: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    DriftCard(
-        modifier = modifier.testTag("energy_curve_card"),
-        onClick = onExplain,
-        onClickLabel = stringResource(R.string.energy_why_label),
+    val habits = if (isToday) model.recommendations.habits else emptyList()
+    val markers = habits.map { habit ->
+        val start = fmt.clock(habit.window.start)
+        val end = fmt.clock(habit.window.end)
+        TimelineMarker(
+            at = habit.window.start,
+            time = if (start == end) start else stringResource(R.string.energy_habit_window, start, end),
+            title = stringResource(habit.kind.titleRes()),
+        )
+    }
+    androidx.compose.foundation.layout.Column(
+        modifier
+            .testTag("energy_curve_card")
+            .clickable(onClickLabel = stringResource(R.string.energy_why_label), role = Role.Button, onClick = onExplain),
+        verticalArrangement = Arrangement.spacedBy(DriftTheme.spacing.sm),
     ) {
         if (model.shiftWorkMode) {
             Row(horizontalArrangement = Arrangement.spacedBy(DriftTheme.spacing.sm), verticalAlignment = Alignment.CenterVertically) {
@@ -194,12 +208,14 @@ internal fun CurveCard(
                 )
             }
         }
-        EnergyCurveChart(
+        EnergyTimelineChart(
             dayCurve = day,
             now = if (isToday) model.now else null,
             zone = fmt.zone,
             use24h = fmt.use24h,
-            showLegend = true,
+            markers = markers,
+            peakLabel = stringResource(R.string.energy_peak),
+            dipLabel = stringResource(R.string.energy_dip),
         )
     }
 }

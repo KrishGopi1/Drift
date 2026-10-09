@@ -45,17 +45,17 @@ fun DriftCard(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val colors = DriftTheme.colors
-    val shape = RoundedCornerShape(DriftTheme.radii.md)
+    val shape = RoundedCornerShape(DriftTheme.radii.lg)
     val container = when (tone) {
         CardTone.Default -> colors.surface
         CardTone.Raised -> colors.surfaceRaised
-        CardTone.Accent -> colors.primaryContainer
+        CardTone.Accent -> colors.accentSurface
     }
     val base = modifier
         .then(if (!colors.isDark) Modifier.shadow(DriftTheme.elevation.card, shape, clip = false) else Modifier)
         .clip(shape)
         .background(container)
-        .border(BorderStroke(DriftTheme.strokes.outline, colors.outlineSubtle), shape)
+        .then(if (!colors.isDark) Modifier.border(BorderStroke(DriftTheme.strokes.outline, colors.outlineSubtle), shape) else Modifier)
     val interactive = if (onClick != null) {
         base.clickable(onClickLabel = onClickLabel, role = Role.Button, onClick = onClick)
             .heightIn(min = DriftTheme.spacing.minTouch)
@@ -113,5 +113,5 @@ fun Modifier.staggeredEntrance(index: Int): Modifier {
 fun driftSurfaceColor(tone: CardTone = CardTone.Default): Color = when (tone) {
     CardTone.Default -> DriftTheme.colors.surface
     CardTone.Raised -> DriftTheme.colors.surfaceRaised
-    CardTone.Accent -> DriftTheme.colors.primaryContainer
+    CardTone.Accent -> DriftTheme.colors.accentSurface
 }

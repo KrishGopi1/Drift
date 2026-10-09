@@ -90,7 +90,7 @@ class DesignSystemTest {
 
     @Test fun textColoursMeetWcagAa() {
         for (c in listOf(DriftDarkColors, DriftLightColors)) {
-            for (bg in listOf(c.background, c.surface, c.surfaceRaised)) {
+            for (bg in listOf(c.background, c.surface, c.surfaceRaised, c.accentSurface)) {
                 for (fg in listOf(c.onSurface, c.onSurfaceMuted, c.primary, c.energy, c.melatonin, c.windDown, c.success, c.error)) {
                     assertThat(contrast(fg, bg)).isAtLeast(4.5)
                 }

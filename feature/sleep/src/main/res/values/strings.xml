@@ -5,6 +5,8 @@
     <string name="sleep_subtitle">Last 14 nights</string>
     <string name="sleep_open_history">History</string>
     <string name="sleep_debt_label">Sleep debt</string>
+    <string name="sleep_debt_unit_hours">h</string>
+    <string name="sleep_last_night_title">Last night</string>
     <string name="sleep_debt_description">Sleep debt: %1$s, %2$s. %3$s.</string>
     <string name="sleep_why_debt">Why your sleep debt changed</string>
     <string name="sleep_band_low">Low</string>
