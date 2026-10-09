@@ -34,7 +34,6 @@ import app.drift.designsystem.DriftSwitchRow
 import app.drift.designsystem.DriftTheme
 import app.drift.designsystem.DriftTopBar
 import app.drift.designsystem.DurationHero
-import app.drift.designsystem.ProvenanceChip
 import app.drift.designsystem.ScreenStateHost
 import app.drift.designsystem.labelRes
 import app.drift.feature.sleep.R
@@ -163,7 +162,6 @@ private fun SummaryCard(model: NightDetailUiModel, modifier: Modifier) {
                 verticalArrangement = Arrangement.spacedBy(DriftTheme.spacing.xs),
                 itemVerticalAlignment = Alignment.CenterVertically,
             ) {
-                ProvenanceChip(Provenance.USER_ENTERED)
                 Caption(stringResource(R.string.night_user_edited))
             }
         }
@@ -200,7 +198,6 @@ private fun TimeBlock(label: String, time: String, provenance: Provenance) {
     Column(Modifier.semantics(mergeDescendants = true) { contentDescription = spoken }, verticalArrangement = Arrangement.spacedBy(DriftTheme.spacing.xs)) {
         Caption(label)
         Text(time, style = DriftTheme.typography.display, color = DriftTheme.colors.onSurface)
-        ProvenanceChip(provenance)
     }
 }
 

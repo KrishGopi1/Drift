@@ -21,7 +21,6 @@ import app.drift.designsystem.DriftTheme
 import app.drift.designsystem.ErrorPanel
 import app.drift.designsystem.InsufficientDataPanel
 import app.drift.designsystem.PermissionPanel
-import app.drift.designsystem.ProvenanceChip
 import app.drift.designsystem.SourceProblemPanel
 import app.drift.designsystem.actionLabel
 import app.drift.model.Provenance
@@ -78,21 +77,16 @@ private fun WelcomeStep(titleModifier: Modifier) {
 @Composable
 private fun HowItWorksStep(titleModifier: Modifier) {
     StepIntro(DriftIcons.Info, stringResource(R.string.ob_how_title), stringResource(R.string.ob_how_body), titleModifier = titleModifier)
-    ExplainCard(R.string.ob_how_energy_title, R.string.ob_how_energy_body, Provenance.ESTIMATED)
-    ExplainCard(R.string.ob_how_debt_title, R.string.ob_how_debt_body, Provenance.DERIVED)
-    ExplainCard(R.string.ob_how_clock_title, R.string.ob_how_clock_body, Provenance.ESTIMATED)
-    DriftCard(tone = CardTone.Raised) {
-        ProvenanceChip(Provenance.MEASURED)
-        Text(stringResource(R.string.ob_how_measured), style = DriftTheme.typography.bodySmall, color = DriftTheme.colors.onSurfaceMuted)
-    }
+    ExplainCard(R.string.ob_how_energy_title, R.string.ob_how_energy_body)
+    ExplainCard(R.string.ob_how_debt_title, R.string.ob_how_debt_body)
+    ExplainCard(R.string.ob_how_clock_title, R.string.ob_how_clock_body)
 }
 
 @Composable
-private fun ExplainCard(title: Int, body: Int, provenance: Provenance) {
+private fun ExplainCard(title: Int, body: Int) {
     DriftCard {
         Text(stringResource(title), style = DriftTheme.typography.titleSmall, color = DriftTheme.colors.onSurface)
         Text(stringResource(body), style = DriftTheme.typography.bodySmall, color = DriftTheme.colors.onSurfaceMuted)
-        ProvenanceChip(provenance)
     }
 }
 
@@ -438,7 +432,6 @@ private fun RevealStep(model: OnboardingModel, actions: OnboardingActions, use24
             DriftCard {
                 if (day != null) {
                     EnergyCurveChart(dayCurve = day, now = r.now, zone = r.zone, use24h = use24h)
-                    ProvenanceChip(if (priorsOnly) Provenance.ESTIMATED else day.provenance)
                 } else {
                     Text(stringResource(R.string.ob_reveal_no_day), style = DriftTheme.typography.body, color = DriftTheme.colors.onSurfaceMuted)
                 }

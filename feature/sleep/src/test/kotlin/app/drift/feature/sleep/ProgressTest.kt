@@ -110,10 +110,10 @@ class ProgressScreenTest {
         assertThat(history).isEqualTo(1)
     }
 
-    @Test fun catchUpCardExplainsDebt() {
+    @Test fun catchUpCardShowsNightsToGreat() {
         show()
-        rule.onNodeWithTag("progress_catchup").performScrollTo().performClick()
-        assertThat(explained).containsExactly(MetricKey.SLEEP_DEBT)
+        rule.onNodeWithTag("progress_catchup").performScrollTo().assertExists()
+        assertThat(explained).isEmpty()
     }
 
     @Test fun switchingTabsShowsDebtThenQuality() {

@@ -14,7 +14,6 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import app.drift.designsystem.DriftTheme
-import app.drift.designsystem.ProvenanceChip
 import app.drift.designsystem.labelRes
 import app.drift.model.Provenance
 
@@ -31,7 +30,6 @@ fun StatRow(label: String, value: String, provenance: Provenance?, modifier: Mod
     ) {
         Text(label, style = DriftTheme.typography.body, color = DriftTheme.colors.onSurfaceMuted)
         Text(value, style = DriftTheme.typography.titleSmall, color = DriftTheme.colors.onSurface, modifier = Modifier.clearAndSetSemantics {})
-        if (provenance != null) ProvenanceChip(provenance, Modifier.clearAndSetSemantics {})
     }
 }
 

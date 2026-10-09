@@ -21,6 +21,7 @@ import app.drift.model.source.SourceAdapter
 import app.drift.model.source.SourceStatus
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Test
@@ -116,6 +117,31 @@ class SourceRepositoryTest {
         assertThat(info.fix).isEqualTo(SourceFix.GrantHealthConnectPermissions(setOf("android.permission.health.READ_SLEEP")))
         hc.status = SourceStatus.NotInstalled
         assertThat(h.sources.observeSources().first().single { it.id == SourceId.HEALTH_CONNECT }.fix).isEqualTo(SourceFix.InstallHealthConnect)
+    }
+
+    @Test fun recheckReEmitsWhenAPermissionIsGrantedOutsideTheDatabase() = runTest {
+        other.status = SourceStatus.NeedsPermission(setOf("android.permission.ACTIVITY_RECOGNITION"))
+        val seen = mutableListOf<SourceStatus>()
+        val job = backgroundScope.launch {
+            h.sources.observeSources().collect { list -> seen += list.single { it.id == SourceId.PHONE }.status }
+        }
+        kotlinx.coroutines.yield()
+        org.robolectric.shadows.ShadowLooper.idleMainLooper()
+        waitFor { seen.isNotEmpty() }
+        assertThat(seen.last()).isInstanceOf(SourceStatus.NeedsPermission::class.java)
+        // The user grants the permission in the system dialog: nothing in the database changes.
+        other.status = SourceStatus.Available
+        h.sources.recheckStatus()
+        waitFor { seen.last() == SourceStatus.Available }
+        assertThat(seen.last()).isEqualTo(SourceStatus.Available)
+        job.cancel()
+    }
+
+    private suspend fun waitFor(condition: () -> Boolean) {
+        repeat(200) {
+            if (condition()) return
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) { kotlinx.coroutines.delay(10) }
+        }
     }
 
     @Test fun disabledSourcesAreNotPulled() = runTest {

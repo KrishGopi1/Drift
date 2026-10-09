@@ -124,7 +124,6 @@ private fun HeroLayout(
             modifier = Modifier.clearAndSetSemantics {},
         ) {
             Text(label, style = DriftTheme.typography.label, color = DriftTheme.colors.onSurfaceMuted, modifier = Modifier.align(Alignment.CenterVertically))
-            if (provenance != null) ProvenanceChip(provenance)
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(DriftTheme.spacing.xs + 2.dp),

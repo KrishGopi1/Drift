@@ -72,6 +72,7 @@ class FakeSourceRepository : SourceRepository {
         return SyncReport(Instant.EPOCH, Instant.EPOCH, 0, 0, 0, emptyMap())
     }
     override suspend fun setEnabled(id: SourceId, enabled: Boolean) = Unit
+    override suspend fun recheckStatus() = Unit
     override suspend fun importSleepAsAndroidBackup(input: InputStream): ImportReport = error("unused")
 }
 

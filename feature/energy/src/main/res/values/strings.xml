@@ -54,6 +54,7 @@
     <string name="energy_headline_a11y_no_next">Right now: %1$s. %2$s, %3$s.</string>
     <string name="energy_headline_a11y_day">%1$s. %2$s. %3$s, %4$s.</string>
     <string name="energy_why_label">Why this curve</string>
+    <string name="energy_why_times">Why these times</string>
 
     <!-- Prior-only banner -->
     <string name="energy_priors_banner">Based on typical sleep for now</string>

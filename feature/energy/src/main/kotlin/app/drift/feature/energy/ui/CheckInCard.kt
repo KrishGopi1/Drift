@@ -33,7 +33,6 @@ import app.drift.designsystem.ButtonStyle
 import app.drift.designsystem.DriftButton
 import app.drift.designsystem.DriftCard
 import app.drift.designsystem.DriftTheme
-import app.drift.designsystem.ProvenanceChip
 import app.drift.feature.energy.R
 import app.drift.model.Provenance
 
@@ -66,7 +65,6 @@ internal fun CheckInCard(
                 color = DriftTheme.colors.onSurfaceMuted,
                 modifier = Modifier.weight(1f).testTag("energy_checkin_count"),
             )
-            if (calibrationCheckIns > 0) ProvenanceChip(Provenance.USER_ENTERED)
         }
         when {
             logged -> Text(stringResource(R.string.energy_checkin_thanks), style = DriftTheme.typography.titleSmall, color = DriftTheme.colors.success)

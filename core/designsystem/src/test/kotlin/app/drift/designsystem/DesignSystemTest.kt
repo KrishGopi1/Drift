@@ -129,14 +129,6 @@ class DesignSystemTest {
         assertThat(selected).isEqualTo(1)
     }
 
-    @Test fun provenanceChipHasDescription() {
-        rule.setContent { DriftTheme(ThemeMode.DARK, reducedMotion = true) { Column { Provenance.entries.forEach { ProvenanceChip(it) } } } }
-        rule.onNodeWithContentDescription("Estimated: a model estimate with a margin of error").assertExists()
-        rule.onNodeWithContentDescription("Measured: recorded directly by your phone or a connected app").assertExists()
-        rule.onNodeWithContentDescription("Derived: calculated from measured data using fixed rules").assertExists()
-        rule.onNodeWithContentDescription("User-entered: typed in or edited by you").assertExists()
-    }
-
     @Test fun bottomNavUsesTabRoleAndReportsSelection() {
         var sel = 0
         rule.setContent {

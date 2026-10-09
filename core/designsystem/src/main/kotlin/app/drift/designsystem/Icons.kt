@@ -4,8 +4,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.rounded.ShowChart
-import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Lightbulb
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.Bedtime
@@ -76,7 +76,7 @@ object DriftIcons {
     }
     val TabProgress: ImageVector get() = Icons.AutoMirrored.Rounded.ShowChart
     val TabLearn: ImageVector get() = Icons.Outlined.Lightbulb
-    val Profile: ImageVector get() = Icons.Outlined.AccountCircle
+    val Gear: ImageVector get() = Icons.Outlined.Settings
 
     /** Small "zz" mark used on sleep blocks. */
     val Zz: ImageVector by lazy { stroke("Zz", 2f, "M5 5 H11 L5 12 H11", "M13.5 12 H18.5 L13.5 18 H18.5") }

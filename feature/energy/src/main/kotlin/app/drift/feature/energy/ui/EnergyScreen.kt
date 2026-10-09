@@ -53,7 +53,7 @@ import app.drift.designsystem.DriftIcons
 import app.drift.designsystem.DriftScreenHeader
 import app.drift.designsystem.DriftTheme
 import app.drift.designsystem.HeaderSubtitle
-import app.drift.designsystem.ProfileButton
+import app.drift.designsystem.SettingsButton
 import app.drift.designsystem.ScreenStateHost
 import app.drift.designsystem.SectionHeader
 import app.drift.feature.energy.EnergyActionError
@@ -140,7 +140,7 @@ internal fun EnergyScreen(
         DriftScreenHeader(
             title = stringResource(R.string.energy_header_title),
             subtitle = { if (ready != null) PotentialLine(ready, actions) },
-            trailing = { ProfileButton(actions.onOpenSettings) },
+            trailing = { SettingsButton(actions.onOpenSettings) },
         )
         if (ready != null) {
             EnergyReady(ready, actions, sheetExpanded, Modifier.weight(1f))
@@ -189,18 +189,25 @@ private fun PotentialLine(model: EnergyUiModel, actions: EnergyActions) {
         R.string.energy_potential_a11y, label, pct, stringResource(potential.score.confidence!!.level.labelRes()),
     )
     Row(
-        Modifier
-            .clip(RoundedCornerShape(DriftTheme.radii.sm))
-            .clickable(onClickLabel = stringResource(R.string.energy_why_label), role = Role.Button) { actions.onExplain(MetricKey.ENERGY) }
-            .semantics(mergeDescendants = true) { contentDescription = spoken }
-            .testTag("energy_potential"),
+        Modifier.testTag("energy_potential"),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        HeaderSubtitle(label)
-        Icon(DriftIcons.Energy, null, tint = color, modifier = Modifier.size(20.dp))
-        Text("$pct%", style = DriftTheme.typography.screenSubtitle, color = color)
-        Icon(DriftIcons.Help, null, tint = color, modifier = Modifier.padding(start = 2.dp).size(18.dp))
+        Row(Modifier.semantics(mergeDescendants = true) { contentDescription = spoken }, verticalAlignment = Alignment.CenterVertically) {
+            HeaderSubtitle(label)
+            Icon(DriftIcons.Energy, null, tint = color, modifier = Modifier.padding(horizontal = 4.dp).size(20.dp))
+            Text("$pct%", style = DriftTheme.typography.screenSubtitle, color = color)
+        }
+        Box(
+            Modifier
+                .size(40.dp)
+                .clip(RoundedCornerShape(DriftTheme.radii.pill))
+                .clickable(onClickLabel = stringResource(R.string.energy_why_label), role = Role.Button) { actions.onExplain(MetricKey.ENERGY) }
+                .testTag("energy_potential_help"),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(DriftIcons.Help, stringResource(R.string.energy_why_label), tint = color, modifier = Modifier.size(20.dp))
+        }
         if (model.previewing) {
             Text(
                 stringResource(R.string.energy_previewing),
@@ -307,6 +314,7 @@ private fun Timeline(model: EnergyUiModel, fmt: TimeFormat, actions: EnergyActio
     )
     val markers = buildMarkers(model, fmt)
     val description = energyCurveDescription(model.dayAt(0) ?: model.days.first(), model.zone, fmt.use24h, model.now)
+    val phaseNames = app.drift.model.engine.EnergyPhase.entries.associateWith { stringResource(it.labelRes()) }
     val asleep = stringResource(R.string.energy_handle_start)
     val woke = stringResource(R.string.energy_handle_end)
     EnergyTimeline(
@@ -318,15 +326,14 @@ private fun Timeline(model: EnergyUiModel, fmt: TimeFormat, actions: EnergyActio
         modifier = modifier,
         blocks = blocks,
         markers = markers,
-        peakLabel = stringResource(R.string.energy_peak),
-        dipLabel = stringResource(R.string.energy_dip),
+        phaseLabel = { phaseNames.getValue(it) },
         handleLabel = { b, top -> String.format(if (top) asleep else woke, fmt.clock(if (top) b.start else b.end)) },
         earlierLabel = stringResource(R.string.energy_earlier),
         laterLabel = stringResource(R.string.energy_later),
         onBlockDrag = { key, s, e -> past.firstOrNull { it.id.value == key }?.let { actions.onDragSleep(it, s, e) } },
         onBlockDragEnd = { key, s, e -> past.firstOrNull { it.id.value == key }?.let { actions.onCommitSleep(it, s, e) } },
         onBlockClick = { key ->
-            if (key == "planned") actions.onExplain(MetricKey.RECOMMENDATION) else actions.onOpenNight(EpisodeId(key))
+            if (key != "planned") actions.onOpenNight(EpisodeId(key))
         },
     )
 }
@@ -369,7 +376,6 @@ private fun UpNextSheet(model: EnergyUiModel, fmt: TimeFormat, actions: EnergyAc
             append(stringResource(R.string.energy_next_short, stringResource(next.phase.labelRes()), fmt.short(next.displayAt)))
         }
     }
-    val explainEnergy = { actions.onExplain(MetricKey.ENERGY) }
     val explainRecommendation = { actions.onExplain(MetricKey.RECOMMENDATION) }
     Column(
         modifier
@@ -415,13 +421,13 @@ private fun UpNextSheet(model: EnergyUiModel, fmt: TimeFormat, actions: EnergyAc
                     .padding(bottom = DriftTheme.spacing.lg),
                 verticalArrangement = Arrangement.spacedBy(DriftTheme.spacing.md),
             ) {
-                if (today != null) NextUpCard(model, today, isToday = true, fmt = fmt, onExplain = explainEnergy)
+                if (today != null) NextUpCard(model, today, isToday = true, fmt = fmt)
                 BedtimeCard(model, fmt, explainRecommendation)
                 if (model.recommendations.habits.isNotEmpty()) {
                     SectionHeader(stringResource(R.string.energy_habits_title))
-                    HabitCards(model, fmt, explainRecommendation, cardModifier = { Modifier }, firstIndex = 0)
+                    HabitCards(model, fmt, cardModifier = { Modifier }, firstIndex = 0)
                 }
-                model.recommendations.nap?.let { NapCard(it, fmt, explainRecommendation) }
+                model.recommendations.nap?.let { NapCard(it, fmt) }
                 model.recommendations.tradeOff?.let { TradeOffCard(it, fmt) }
                 CheckInCard(model.calibrationCheckIns, model.checkInDue, actions.onCheckIn)
             }

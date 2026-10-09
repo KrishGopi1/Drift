@@ -63,4 +63,24 @@ class TimelineGeometryTest {
         assertThat(DebtGaugeMath.hoursText(Duration.ofMinutes(378), Locale.ENGLISH)).isEqualTo("6.3")
         assertThat(DebtGaugeMath.hoursText(Duration.ZERO, Locale.ENGLISH)).isEqualTo("0.0")
     }
+
+    @Test fun phasePanelsMergeSamePhaseAndAreCutBySleepBlocks() {
+        val curve = Fx.energyCurve()
+        val r = curve.points.first().at..curve.points.last().at
+        val plain = TimelineGeometry.phasePanels(listOf(curve), r, emptyList())
+        assertThat(plain.map { it.phase }).containsExactlyElementsIn(curve.segments.map { it.phase }).inOrder()
+        // A nap inside the dip splits the dip block in two.
+        val nap = Fx.at(Fx.today, 14, 0) to Fx.at(Fx.today, 14, 30)
+        val cut = TimelineGeometry.phasePanels(listOf(curve), r, listOf(nap))
+        assertThat(cut.count { it.phase == app.drift.model.engine.EnergyPhase.AFTERNOON_DIP }).isEqualTo(2)
+        assertThat(cut.none { it.start < nap.second && it.end > nap.first }).isTrue()
+    }
+
+    @Test fun smoothingKeepsLengthAndFlattensSpikes() {
+        val levels = listOf(10.0, 10.0, 10.0, 90.0, 10.0, 10.0, 10.0)
+        val sm = TimelineGeometry.smooth(levels, half = 1)
+        assertThat(sm).hasSize(levels.size)
+        assertThat(sm[3]).isLessThan(50.0)
+        assertThat(TimelineGeometry.smooth(listOf(5.0, 5.0, 5.0))).containsExactly(5.0, 5.0, 5.0)
+    }
 }

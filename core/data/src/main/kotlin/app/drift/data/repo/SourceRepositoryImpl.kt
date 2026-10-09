@@ -20,6 +20,8 @@ import app.drift.model.repository.SyncReason
 import app.drift.model.repository.SyncReport
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
@@ -41,8 +43,9 @@ class SourceRepositoryImpl @Inject constructor(
 ) : SourceRepository {
     private val progress = MutableStateFlow<Float?>(null)
     private val syncLock = Mutex()
+    private val statusChecks = MutableStateFlow(0)
 
-    override fun observeSources(): Flow<List<SourceInfo>> = db.sourceState().observeAll().map { states ->
+    override fun observeSources(): Flow<List<SourceInfo>> = combine(db.sourceState().observeAll(), statusChecks) { states, _ ->
         val byId = states.associateBy { it.sourceId }
         adapters.sortedBy { it.id }.map { adapter ->
             val state = byId[adapter.id.value]
@@ -60,6 +63,10 @@ class SourceRepositoryImpl @Inject constructor(
     }
 
     override fun observeSyncProgress(): Flow<Float?> = progress
+
+    override suspend fun recheckStatus() {
+        statusChecks.update { it + 1 }
+    }
 
     override suspend fun sync(reason: SyncReason): SyncReport = syncLock.withLock {
         val startedAt = clock.instant()

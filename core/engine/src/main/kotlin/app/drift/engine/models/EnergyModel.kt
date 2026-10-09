@@ -10,6 +10,7 @@ import app.drift.model.CheckIn
 import app.drift.model.ConfidenceLevel
 import app.drift.model.Interval
 import app.drift.model.Provenance
+import app.drift.model.Signal
 import app.drift.model.engine.DayCurve
 import app.drift.model.engine.EnergyCurve
 import app.drift.model.engine.EnergyPhase
@@ -72,6 +73,10 @@ internal class EnergyModel(private val p: ParameterSet) {
             if (pre.main(d) != null) continue
             val wake = d * DAY_MIN_L + habitual.wake.toLong()
             val onset = wake - dur.toLong()
+            // A night whose usual wake time has not come yet is not over. If the phone shows the person is up (screen
+            // use or steps in the last 45 min, after their usual bedtime), they are awake, not asleep: skip it and let
+            // tonight's recommended sleep (below) start from now.
+            if (wake > pre.nowLocal && awakeNow(input, maxOf(onset, pre.nowLocal - p.awakeEvidenceMin.i))) continue
             fill(onset, minOf(wake, pre.nowLocal))
         }
         val bedAbs = Math.floorDiv(plan.bed.epochSecond, 60L)
@@ -194,6 +199,20 @@ internal class EnergyModel(private val p: ParameterSet) {
             days += DayCurve(LocalDate.ofEpochDay(day), points, segments, flatCandidate, lvl, Provenance.ESTIMATED)
         }
         return EnergyCurve(days, fit?.used ?: 0)
+    }
+
+    /** True when the phone recorded screen use or steps between local minute [sinceLocal] and now. */
+    private fun awakeNow(input: EngineInput, sinceLocal: Long): Boolean {
+        val nowAbs = Math.floorDiv(input.now.epochSecond, 60L)
+        val since = sinceLocal - offsetMin(input.zone, nowAbs)
+        fun local(t: java.time.Instant) = Math.floorDiv(t.epochSecond, 60L)
+        return input.signals.signals.any { sig ->
+            when (sig) {
+                is Signal.ScreenEvent -> sig.interactive && local(sig.at) in since..nowAbs
+                is Signal.StepBucket -> sig.count > 0 && local(sig.interval.end) in since..nowAbs
+                else -> false
+            }
+        }
     }
 
     private fun lower(l: ConfidenceLevel): ConfidenceLevel = when (l) {

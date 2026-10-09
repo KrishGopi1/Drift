@@ -69,7 +69,7 @@ fun DriftTopBar(
 
 /**
  * Header of a main tab: bold [title] over a muted [subtitle] (for example a date range), with [trailing] content
- * (usually [ProfileButton]) on the right. Announced as a heading.
+ * (usually [SettingsButton]) on the right. Announced as a heading.
  */
 @Composable
 fun DriftScreenHeader(
@@ -99,13 +99,13 @@ fun HeaderSubtitle(text: String) {
     Text(text, style = DriftTheme.typography.screenSubtitle, color = DriftTheme.colors.onSurfaceMuted)
 }
 
-/** Round profile button that opens Settings, drawn in the accent colour. */
+/** Settings gear in the corner of every tab header, drawn in the accent colour. */
 @Composable
-fun ProfileButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun SettingsButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     androidx.compose.material3.IconButton(onClick = onClick, modifier = modifier.size(48.dp)) {
         Icon(
-            DriftIcons.Profile, contentDescription = stringResource(R.string.ds_profile),
-            tint = DriftTheme.colors.primary, modifier = Modifier.size(36.dp),
+            DriftIcons.Gear, contentDescription = stringResource(R.string.ds_open_settings),
+            tint = DriftTheme.colors.primary, modifier = Modifier.size(30.dp),
         )
     }
 }

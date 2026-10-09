@@ -24,10 +24,8 @@ import app.drift.designsystem.DriftButton
 import app.drift.designsystem.DriftFormat
 import app.drift.designsystem.DriftIcons
 import app.drift.designsystem.DriftTheme
-import app.drift.designsystem.DurationConfidenceBand
 import app.drift.designsystem.ErrorPanel
 import app.drift.designsystem.LoadingSkeleton
-import app.drift.designsystem.ProvenanceChip
 import app.drift.designsystem.SheetBody
 import app.drift.feature.sleep.R
 import app.drift.feature.sleep.common.Caption
@@ -111,9 +109,7 @@ private fun WhyReady(model: WhyUiModel, actions: WhyActions) {
             verticalArrangement = Arrangement.spacedBy(DriftTheme.spacing.sm),
             itemVerticalAlignment = Alignment.CenterVertically,
         ) {
-            model.provenance?.let { ProvenanceChip(it) }
         }
-        model.duration?.let { DurationConfidenceBand(it) }
         actions.onOpenMethodology?.let { open ->
             DriftButton(stringResource(R.string.why_methodology), { open(model.metric) }, style = ButtonStyle.Text)
         }

@@ -47,7 +47,7 @@ import app.drift.designsystem.DriftIcons
 import app.drift.designsystem.DriftScreenHeader
 import app.drift.designsystem.DriftTheme
 import app.drift.designsystem.HeaderSubtitle
-import app.drift.designsystem.ProfileButton
+import app.drift.designsystem.SettingsButton
 import app.drift.designsystem.ScreenStateHost
 import app.drift.designsystem.SegmentedControl
 import app.drift.feature.sleep.R
@@ -97,7 +97,7 @@ fun ProgressScreen(
         DriftScreenHeader(
             title = stringResource(R.string.progress_title),
             subtitle = { HeaderSubtitle(ready?.let { rangeLabel(it.windowStart, it.windowEnd) } ?: stringResource(R.string.progress_subtitle)) },
-            trailing = { ProfileButton(actions.onOpenSettings) },
+            trailing = { SettingsButton(actions.onOpenSettings) },
         )
         Column(Modifier.padding(horizontal = DriftTheme.spacing.gutter).padding(bottom = DriftTheme.spacing.xl)) {
             SegmentedControl(
@@ -216,8 +216,6 @@ private fun CatchUpCard(model: ProgressUiModel, actions: ProgressActions) {
     }
     DriftCard(
         modifier = Modifier.testTag("progress_catchup"),
-        onClick = { actions.onExplain(MetricKey.SLEEP_DEBT) },
-        onClickLabel = stringResource(R.string.progress_catchup_why),
         contentDescription = "${stringResource(R.string.progress_catchup_title)}. $pill",
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -233,7 +231,6 @@ private fun CatchUpCard(model: ProgressUiModel, actions: ProgressActions) {
                 Box(Modifier.size(10.dp).clip(CircleShape).background(if (nights == 0) DriftTheme.colors.success else DriftTheme.colors.primary))
                 Text(pill.uppercase(Locale.getDefault()), style = DriftTheme.typography.overline, color = DriftTheme.colors.onSurface)
             }
-            Icon(DriftIcons.ChevronRight, null, tint = DriftTheme.colors.onSurface, modifier = Modifier.padding(start = 4.dp))
         }
     }
 }

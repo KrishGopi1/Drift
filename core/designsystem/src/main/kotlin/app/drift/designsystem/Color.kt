@@ -48,6 +48,10 @@ data class DriftColors(
     val stageLight: Color,
     val stageDeep: Color,
     val scrim: Color,
+    /** Energy line gradient by level: low (violet) through mid (blue) to high (teal). Graphics only. */
+    val curveLow: Color = Color(0xFF7C5CFF),
+    val curveMid: Color = Color(0xFF3D8BFF),
+    val curveHigh: Color = Color(0xFF2EE6C5),
 ) {
     /** Colour used to tint a provenance chip. */
     fun provenance(p: app.drift.model.Provenance): Color = when (p) {
@@ -122,6 +126,9 @@ val DriftLightColors = DriftColors(
     stageLight = Color(0xFF6F8CF0),
     stageDeep = Color(0xFF2E3FA8),
     scrim = Color(0xFF000000),
+    curveLow = Color(0xFF6A3FE0),
+    curveMid = Color(0xFF2F6FE0),
+    curveHigh = Color(0xFF0E9E86),
 )
 
 internal fun DriftColors.toMaterial(): ColorScheme =

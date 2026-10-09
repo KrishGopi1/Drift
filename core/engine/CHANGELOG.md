@@ -3,6 +3,12 @@
 Every output-affecting change bumps `ENGINE_VERSION` and needs a line here plus regenerated golden files
 (`src/test/resources/golden/<version>.properties`).
 
+## 1.1.1
+- A night whose usual wake time has not arrived is no longer imputed as slept when the phone shows the person is up
+  (screen use or steps in the last 45 min, after their usual bedtime): they get an awake curve up to now and tonight's
+  recommended sleep starts from now. Without such evidence (e.g. a night-shift worker asleep at noon) it is still
+  imputed.
+
 ## 1.1.0
 - Energy potential (model 4.6b): 0-100 score from sleep debt, potential = 100 * exp(-debt / 24 h), with
   Super/Great/Good/Fair/Low labels and a per-night trend over the debt window (SAFTE-style reservoir, Hursh 2004).

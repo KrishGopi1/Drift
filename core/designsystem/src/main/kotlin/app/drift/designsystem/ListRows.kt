@@ -50,7 +50,6 @@ fun DriftListRow(
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(DriftTheme.spacing.xxs)) {
             Text(title, style = DriftTheme.typography.titleSmall, color = DriftTheme.colors.onSurface)
             if (subtitle != null) Text(subtitle, style = DriftTheme.typography.bodySmall, color = DriftTheme.colors.onSurfaceMuted)
-            if (provenance != null) ProvenanceChip(provenance, Modifier.padding(top = DriftTheme.spacing.xs))
         }
         when {
             trailing != null -> trailing()

@@ -100,6 +100,13 @@ interface SourceRepository {
     suspend fun sync(reason: SyncReason): SyncReport
     suspend fun setEnabled(id: SourceId, enabled: Boolean)
     suspend fun importSleepAsAndroidBackup(input: InputStream): ImportReport
+
+    /**
+     * Re-reads every source's status (permissions, installed apps) and re-emits [observeSources]. Call after a
+     * permission dialog or a system settings screen returns, and when the app comes back to the foreground: status
+     * lives outside the database, so nothing else tells observers it changed.
+     */
+    suspend fun recheckStatus()
 }
 
 interface ProfileRepository {

@@ -115,7 +115,7 @@ class Energy_flat_ist_Gallery : EnergyGalleryCase("energy_flat_ist") {
 class Energy_nap_ist_Gallery : EnergyGalleryCase("energy_nap_ist") {
     @Composable override fun Content() {
         val c = FixtureContext.IST
-        val m = model(SnapshotFixtures.withNap(c), c, ""); Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { NapCard(m.recommendations.nap!!, TimeFormat(m.zone, true), {}); BedtimeCard(m, TimeFormat(m.zone, true), {}) }
+        val m = model(SnapshotFixtures.withNap(c), c, ""); Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { NapCard(m.recommendations.nap!!, TimeFormat(m.zone, true)); BedtimeCard(m, TimeFormat(m.zone, true), {}) }
     }
 }
 
@@ -129,7 +129,7 @@ class Energy_tradeoff_ist_Gallery : EnergyGalleryCase("energy_tradeoff_ist") {
 class Energy_habits_ist_Gallery : EnergyGalleryCase("energy_habits_ist") {
     @Composable override fun Content() {
         val c = FixtureContext.IST
-        val m = model(SnapshotFixtures.full(c), c, ""); Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { HabitCards(m, TimeFormat(m.zone, true), {}, { Modifier }, 0) }
+        val m = model(SnapshotFixtures.full(c), c, ""); Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { HabitCards(m, TimeFormat(m.zone, true), { Modifier }, 0) }
     }
 }
 
@@ -192,7 +192,7 @@ class Energy_flat_us_Gallery : EnergyGalleryCase("energy_flat_us") {
 class Energy_nap_us_Gallery : EnergyGalleryCase("energy_nap_us") {
     @Composable override fun Content() {
         val c = FixtureContext.US_EASTERN
-        val m = model(SnapshotFixtures.withNap(c), c, ""); Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { NapCard(m.recommendations.nap!!, TimeFormat(m.zone, true), {}); BedtimeCard(m, TimeFormat(m.zone, true), {}) }
+        val m = model(SnapshotFixtures.withNap(c), c, ""); Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { NapCard(m.recommendations.nap!!, TimeFormat(m.zone, true)); BedtimeCard(m, TimeFormat(m.zone, true), {}) }
     }
 }
 
@@ -206,7 +206,7 @@ class Energy_tradeoff_us_Gallery : EnergyGalleryCase("energy_tradeoff_us") {
 class Energy_habits_us_Gallery : EnergyGalleryCase("energy_habits_us") {
     @Composable override fun Content() {
         val c = FixtureContext.US_EASTERN
-        val m = model(SnapshotFixtures.full(c), c, ""); Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { HabitCards(m, TimeFormat(m.zone, true), {}, { Modifier }, 0) }
+        val m = model(SnapshotFixtures.full(c), c, ""); Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { HabitCards(m, TimeFormat(m.zone, true), { Modifier }, 0) }
     }
 }
 

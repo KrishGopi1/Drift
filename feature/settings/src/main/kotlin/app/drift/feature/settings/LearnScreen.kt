@@ -31,7 +31,7 @@ import app.drift.designsystem.DriftScreenHeader
 import app.drift.designsystem.DriftTheme
 import app.drift.designsystem.DriftTopBar
 import app.drift.designsystem.HeaderSubtitle
-import app.drift.designsystem.ProfileButton
+import app.drift.designsystem.SettingsButton
 
 /** One Learn article: title, one-line summary and its paragraphs. */
 internal class Article(
@@ -68,7 +68,7 @@ fun LearnScreen(
         DriftScreenHeader(
             title = stringResource(R.string.learn_title),
             subtitle = { HeaderSubtitle(stringResource(R.string.learn_subtitle)) },
-            trailing = { ProfileButton(onOpenSettings) },
+            trailing = { SettingsButton(onOpenSettings) },
         )
         Column(
             Modifier.padding(horizontal = DriftTheme.spacing.gutter).padding(bottom = DriftTheme.spacing.xl),

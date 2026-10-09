@@ -22,7 +22,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.Dp
@@ -30,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import app.drift.designsystem.DriftTheme
 import java.time.Duration
 import java.util.Locale
-import kotlin.math.asin
 
 /** Pure helpers for [DebtGauge]. */
 object DebtGaugeMath {
@@ -69,28 +71,48 @@ fun DebtGauge(
         modifier.fillMaxWidth().height(height).clearAndSetSemantics { this.contentDescription = contentDescription },
         contentAlignment = Alignment.CenterEnd,
     ) {
+        val measurer = rememberTextMeasurer()
         Canvas(Modifier.fillMaxSize()) {
-            val panelRight = size.width * 0.72f
-            drawRoundRect(colors.surfaceRaised, Offset.Zero, Size(panelRight, size.height), CornerRadius(24.dp.toPx()))
-            val half = size.height / 2f
-            val reach = half - 20.dp.toPx()
-            // Arcs are wide bulges: each apex sits [sag] to the right of where it meets the top and bottom.
-            val sag = 56.dp.toPx()
-            val r = (reach * reach + sag * sag) / (2 * sag)
-            val theta = Math.toDegrees(asin((reach / r).toDouble())).toFloat()
-            val apex0 = size.width * 0.44f
-            fun arc(apex: Float) = Offset(apex - 2 * r, half - r)
-            val box = Size(2 * r, 2 * r)
-            listOf(0f, 40.dp.toPx(), 80.dp.toPx()).forEach { extra ->
-                drawArc(colors.outlineSubtle, -theta, 2 * theta, useCenter = false, topLeft = arc(apex0 + extra), size = box, style = Stroke(1.5.dp.toPx()))
+            val panelRight = size.width * 0.74f
+            val corner = CornerRadius(24.dp.toPx())
+            drawRoundRect(colors.surface, Offset.Zero, Size(panelRight, size.height), corner)
+            val top = 18.dp.toPx()
+            val bottom = size.height - 18.dp.toPx()
+            val baseX = 28.dp.toPx()
+            // Where the curved edge's middle sits for a given share of the 12 h scale: 0 h is a straight edge near the
+            // left, 12 h bulges most of the way across the panel.
+            fun apex(f: Float) = baseX + 16.dp.toPx() + f * (panelRight - baseX - 40.dp.toPx())
+            fun edge(f: Float) = Path().apply {
+                moveTo(baseX, top)
+                quadraticTo(2 * apex(f) - baseX, (top + bottom) / 2, baseX, bottom)
             }
-            val stroke = Stroke(8.dp.toPx(), cap = StrokeCap.Round)
-            if (share == 0f) {
-                drawArc(colors.success, theta, -6f, useCenter = false, topLeft = arc(apex0), size = box, style = stroke)
-            } else {
-                val brush = Brush.verticalGradient(listOf(colors.windDownFill, colors.energyFill), half - reach, half + reach)
-                drawArc(brush, theta, -2 * theta * share * progress, useCenter = false, topLeft = arc(apex0), size = box, style = stroke)
+            // Scale: faint edges at 5 h and 10 h, labelled.
+            listOf(5, 10).forEach { h ->
+                val f = h / 12f
+                drawPath(edge(f), colors.outlineSubtle, style = Stroke(1.5.dp.toPx()))
+                val text = "${h}h"
+                val m = measurer.measure(text, type.caption)
+                // Label near the top of the edge (clear of the number disc): the quadratic at t = 0.1.
+                val t = 0.1f
+                val lx = baseX * ((1 - t) * (1 - t) + t * t) + 2 * (1 - t) * t * (2 * apex(f) - baseX)
+                val ly = top + t * (bottom - top)
+                label(measurer, text, type.caption, colors.onSurfaceMuted, Offset(lx + 6.dp.toPx(), ly - m.size.height / 2f))
             }
+            // The debt itself: a filled shape whose edge bulges with the debt.
+            val f = share * progress
+            val fill = Path().apply {
+                moveTo(0f, top)
+                lineTo(baseX, top)
+                quadraticTo(2 * apex(f) - baseX, (top + bottom) / 2, baseX, bottom)
+                lineTo(0f, bottom)
+                close()
+            }
+            val panel = Path().apply {
+                addRoundRect(androidx.compose.ui.geometry.RoundRect(0f, 0f, panelRight, size.height, corner))
+            }
+            clipPath(panel) { drawPath(fill, colors.surfaceRaised) }
+            val brush = Brush.verticalGradient(listOf(colors.windDownFill, colors.energyFill), top, bottom)
+            drawPath(edge(f), if (share == 0f) Brush.verticalGradient(listOf(colors.success, colors.success)) else brush, style = Stroke(6.dp.toPx(), cap = StrokeCap.Round))
         }
         Column(
             Modifier.size(disc).background(colors.background, CircleShape),

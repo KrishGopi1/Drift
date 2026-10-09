@@ -3,6 +3,8 @@
     <!-- Sleep screen -->
     <string name="sleep_title">Sleep</string>
     <string name="sleep_home_title">My sleep</string>
+    <string name="sleep_ideal_title">Ideal sleep tonight</string>
+    <string name="sleep_ideal_in_bed">%1$s in bed, enough to meet your need and pay back some debt</string>
     <string name="sleep_label_super">Super</string>
     <string name="sleep_label_great">Great</string>
     <string name="sleep_label_good">Good</string>
@@ -224,7 +226,6 @@
         <item quantity="other">Great in %d days</item>
     </plurals>
     <string name="progress_catchup_long">Over two weeks</string>
-    <string name="progress_catchup_why">How sleep debt is paid back</string>
     <string name="progress_debt_pending">Sleep debt shows after five recorded nights.</string>
     <string name="progress_debt_point_a11y">%1$s: %2$s of sleep debt</string>
     <string name="progress_all_debt">All sleep debt</string>

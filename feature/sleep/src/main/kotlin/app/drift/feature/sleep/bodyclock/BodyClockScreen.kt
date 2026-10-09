@@ -28,7 +28,6 @@ import app.drift.designsystem.DriftTheme
 import app.drift.designsystem.DriftTopBar
 import app.drift.designsystem.DurationHero
 import app.drift.designsystem.InsufficientDataPanel
-import app.drift.designsystem.ProvenanceChip
 import app.drift.designsystem.ScreenStateHost
 import app.drift.designsystem.confidenceBandText
 import app.drift.designsystem.labelRes
@@ -145,7 +144,6 @@ private fun DialCard(model: BodyClockUiModel, use24h: Boolean, actions: BodyCloc
                 verticalArrangement = Arrangement.spacedBy(DriftTheme.spacing.xs),
                 itemVerticalAlignment = Alignment.CenterVertically,
             ) {
-                ProvenanceChip(dlmo.provenance)
                 dlmo.confidence?.let { Caption(stringResource(it.level.labelRes())) }
             }
         }

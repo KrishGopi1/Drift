@@ -72,7 +72,7 @@ internal object Cites {
  * public properties; [entries] lists them all for the methodology screen and for tests.
  */
 class ParameterSet private constructor(private val overrides: Map<String, Double>) {
-    val version: String = "1.1.0"
+    val version: String = "1.1.1"
     private val registry = LinkedHashMap<String, Param>()
 
     val entries: List<Param> get() = registry.values.toList()
@@ -239,6 +239,7 @@ class ParameterSet private constructor(private val overrides: Map<String, Double
     val levelLow = p("energy.levelLow", 0.12, "units", "Raw alertness mapped to level 0", Cites.PLAN)
     val levelHigh = p("energy.levelHigh", 0.59, "units", "Raw alertness mapped to level 100", Cites.PLAN)
     val simHistoryDays = p("energy.simHistoryDays", 14.0, "days", "Days of real sleep fed to the homeostat", Cites.PLAN)
+    val awakeEvidenceMin = p("energy.awakeEvidenceMin", 45.0, "min", "Screen use or steps this recent, during the usual night, means the person is still up", Cites.PLAN)
     val simStepMin = p("energy.stepMin", 5.0, "min", "Simulation resolution", Cites.PLAN)
     val simStartLevel = p("energy.startHomeostat", 0.75, "units", "Homeostat state at the start of the simulation window", Cites.PLAN)
     val dipProminence = p("energy.dipProminence", 5.0, "level pts", "Minimum prominence of an afternoon dip", Cites.PLAN)

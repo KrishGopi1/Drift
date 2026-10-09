@@ -41,10 +41,11 @@ fun DriftNavHost(
     onDeepLinkHandled: () -> Unit,
     onOnboardingFinished: () -> Unit,
     onResetComplete: () -> Unit,
+    onSourcesMayHaveChanged: () -> Unit = {},
     navController: NavHostController = rememberNavController(),
 ) {
     val onFix = rememberSourceFixHandler(
-        onResolved = {},
+        onResolved = onSourcesMayHaveChanged,
         onImportBackup = { navController.navigate(SETTINGS_ROUTE) { launchSingleTop = true } },
     )
     val backStack by navController.currentBackStackEntryAsState()

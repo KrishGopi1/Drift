@@ -89,16 +89,23 @@ class SleepScreenEffectsTest {
     private fun ready(snap: app.drift.model.engine.AnalysisSnapshot = SnapshotFixtures.full(ctx), lastNight: app.drift.model.SleepEpisode? = null) =
         ScreenState.Ready(snap.toSleepUiModel(ctx.zone, true, emptyMap(), lastNight))
 
-    @Test fun debtCardOpensWhySheetForDebt() {
+    @Test fun debtHelpIconOpensWhySheetForDebt() {
         show(ready())
-        rule.onNode(hasClickAction() and hasContentDescription("Sleep debt:", substring = true)).performScrollTo().performClick()
+        rule.onNodeWithContentDescription("Why your sleep debt changed").performScrollTo().performClick()
         assertThat(explained).containsExactly(MetricKey.SLEEP_DEBT)
     }
 
-    @Test fun needCardOpensWhySheetForNeed() {
+    @Test fun needHelpIconOpensWhySheetForNeed() {
         show(ready())
-        rule.onNode(hasClickAction() and hasContentDescription("Sleep need:", substring = true)).performScrollTo().performClick()
+        rule.onNodeWithContentDescription("Why your sleep need changed").performScrollTo().performClick()
         assertThat(explained).containsExactly(MetricKey.SLEEP_NEED)
+    }
+
+    @Test fun idealScheduleShowsTonightsTimesAndExplains() {
+        show(ready())
+        rule.onNodeWithText("IDEAL SLEEP TONIGHT").assertExists()
+        rule.onNodeWithContentDescription("Why these times").performScrollTo().performClick()
+        assertThat(explained).containsExactly(MetricKey.RECOMMENDATION)
     }
 
     @Test fun infoButtonsOpenRegularityAndRecommendation() {
@@ -110,7 +117,7 @@ class SleepScreenEffectsTest {
 
     @Test fun profileButtonOpensSettings() {
         show(ready())
-        rule.onNodeWithContentDescription("Profile and settings").performClick()
+        rule.onNodeWithContentDescription("Settings").performClick()
         assertThat(settingsOpened).isEqualTo(1)
     }
 
@@ -140,10 +147,10 @@ class SleepScreenEffectsTest {
         assertThat(opened).containsExactly(night.id)
     }
 
-    @Test fun changeTileExplainsDebt() {
+    @Test fun changeTileShowsTheChangeWithoutOpeningAnything() {
         show(ready())
-        rule.onNode(hasClickAction() and hasText("Since yesterday", substring = true)).performScrollTo().performClick()
-        assertThat(explained).containsExactly(MetricKey.SLEEP_DEBT)
+        rule.onNodeWithText("Since yesterday").performScrollTo().performClick()
+        assertThat(explained).isEmpty()
     }
 
     @Test fun errorRetryCallsBack() {

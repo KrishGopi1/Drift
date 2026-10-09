@@ -3,6 +3,7 @@ package app.drift.feature.energy.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -188,12 +189,13 @@ class EnergyInteractionTest {
         rule.onNodeWithTag("energy_bedtime_card").assertDoesNotExist()
     }
 
-    @Test fun potentialHeaderAndNextUpRowsExplainEnergy() {
+    @Test fun onlyTheHelpIconExplainsEnergyAndRowsStayQuiet() {
         showReady()
-        click("energy_potential")
         click("energy_next_peak")
         click("energy_next_dip")
-        assertThat(explained).containsExactly(MetricKey.ENERGY, MetricKey.ENERGY, MetricKey.ENERGY)
+        assertThat(explained).isEmpty()
+        click("energy_potential_help")
+        assertThat(explained).containsExactly(MetricKey.ENERGY)
     }
 
     @Test fun draggingLastNightPreviewsThenSavesTheEdit() {
@@ -227,19 +229,20 @@ class EnergyInteractionTest {
         assertThat(committed.single().first).isEqualTo(night.start.minus(Duration.ofMinutes(5)))
     }
 
-    @Test fun flatCurveRowExplainsEnergy() {
+    @Test fun flatCurveRowSaysSo() {
         showReady(SnapshotFixtures.flatCurve(ctx))
         rule.onNodeWithText("The curve is too flat to find a dip today").assertExists()
         click("energy_flat_dip")
-        assertThat(explained).containsExactly(MetricKey.ENERGY)
+        assertThat(explained).isEmpty()
     }
 
-    @Test fun bedtimeHabitAndNapCardsExplainTheRecommendation() {
+    @Test fun cardsDoNotOpenExplanationsButTheBedtimeHelpDoes() {
         showReady(SnapshotFixtures.withNap(ctx))
-        click("energy_bedtime_card")
         click("energy_nap_card")
         click("energy_habit_CAFFEINE_CUTOFF")
-        assertThat(explained).containsExactly(MetricKey.RECOMMENDATION, MetricKey.RECOMMENDATION, MetricKey.RECOMMENDATION)
+        assertThat(explained).isEmpty()
+        rule.onNodeWithContentDescription("Why these times").reveal().performClick()
+        assertThat(explained).containsExactly(MetricKey.RECOMMENDATION)
     }
 
     @Test fun showAllExpandsTheHabitList() {

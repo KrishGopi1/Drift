@@ -44,12 +44,10 @@ import app.drift.designsystem.DriftIconButton
 import app.drift.designsystem.DriftIcons
 import app.drift.designsystem.DriftScreenHeader
 import app.drift.designsystem.DriftTheme
-import app.drift.designsystem.DurationConfidenceBand
 import app.drift.designsystem.DurationHero
 import app.drift.designsystem.HeaderSubtitle
 import app.drift.designsystem.InsufficientDataPanel
-import app.drift.designsystem.ProfileButton
-import app.drift.designsystem.ProvenanceChip
+import app.drift.designsystem.SettingsButton
 import app.drift.designsystem.ScreenStateHost
 import app.drift.designsystem.labelRes
 import app.drift.feature.sleep.R
@@ -107,7 +105,7 @@ fun SleepScreen(
         DriftScreenHeader(
             title = stringResource(R.string.sleep_home_title),
             subtitle = { HeaderSubtitle(ready?.let { windowLabel(it) } ?: stringResource(R.string.sleep_subtitle)) },
-            trailing = { ProfileButton(actions.onOpenSettings) },
+            trailing = { SettingsButton(actions.onOpenSettings) },
         )
         Column(Modifier.padding(horizontal = DriftTheme.spacing.gutter).padding(bottom = DriftTheme.spacing.xl)) {
             ScreenStateHost(state, onRetry = actions.onRetry, onFix = actions.onFix) { model ->
@@ -136,11 +134,11 @@ private fun SleepContent(model: SleepUiModel, actions: SleepActions) {
         if (model.debt is DebtSection.Available) {
             TileRow(model, actions, Modifier.entrance(1))
         }
+        IdealScheduleCard(model, use24h, actions, Modifier.entrance(1))
         model.lastNight?.let { LastNightCard(model, use24h, actions, Modifier.entrance(2)) }
         model.todayCurve?.let { EnergyTodayCard(model, use24h, actions, Modifier.entrance(3)) }
         NeedCard(model.need, actions, Modifier.entrance(4))
         RegularityCard(model.regularity, actions, Modifier.entrance(5))
-        TonightCard(model, use24h, actions, Modifier.entrance(6))
     }
 }
 
@@ -190,11 +188,6 @@ private fun DebtCard(model: SleepUiModel, actions: SleepActions, modifier: Modif
                         label = stringResource(R.string.sleep_debt_label),
                         unit = stringResource(R.string.sleep_debt_unit_hours),
                         contentDescription = description,
-                        modifier = Modifier.clickable(
-                            onClickLabel = stringResource(R.string.sleep_why_debt),
-                            role = Role.Button,
-                            onClick = { actions.onExplain(MetricKey.SLEEP_DEBT) },
-                        ),
                     )
                     if (model.potential != null) {
                         val great = model.nightsWith(EnergyLabel.GREAT)
@@ -217,9 +210,9 @@ private fun DebtCard(model: SleepUiModel, actions: SleepActions, modifier: Modif
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(DriftTheme.spacing.sm), verticalAlignment = Alignment.CenterVertically) {
                     section.band?.let { BandPill(it) }
-                    ProvenanceChip(debt.provenance)
+                    Box(Modifier.weight(1f))
+                    DriftIconButton(DriftIcons.Help, stringResource(R.string.sleep_why_debt), { actions.onExplain(MetricKey.SLEEP_DEBT) })
                 }
-                DurationConfidenceBand(debt)
                 Caption(
                     stringResource(
                         R.string.sleep_band_basis,
@@ -274,7 +267,6 @@ private fun TileRow(model: SleepUiModel, actions: SleepActions, modifier: Modifi
                 .fillMaxHeight()
                 .clip(RoundedCornerShape(DriftTheme.radii.md))
                 .background(DriftTheme.colors.surface)
-                .clickable(onClickLabel = stringResource(R.string.sleep_why_debt), role = Role.Button) { actions.onExplain(MetricKey.SLEEP_DEBT) }
                 .padding(DriftTheme.spacing.md)
                 .testTag("sleep_change_tile"),
             verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -374,7 +366,6 @@ private fun LastNightCard(model: SleepUiModel, use24h: Boolean, actions: SleepAc
                     Icon(DriftIcons.Zz, null, tint = DriftTheme.colors.primary, modifier = Modifier.size(14.dp))
                 }
                 Text(sourceName(ep.origin.sourceId), style = DriftTheme.typography.bodySmall, color = DriftTheme.colors.onSurface, modifier = Modifier.weight(1f))
-                ProvenanceChip(provenanceOf(ep))
             }
         }
     }
@@ -414,8 +405,6 @@ private fun NeedCard(need: NeedSection, actions: SleepActions, modifier: Modifie
     }
     DriftCard(
         modifier = modifier,
-        onClick = { actions.onExplain(MetricKey.SLEEP_NEED) },
-        onClickLabel = stringResource(R.string.sleep_why_need),
         contentDescription = stringResource(
             R.string.sleep_need_description,
             DriftFormat.durationSpoken(need.need.value),
@@ -423,12 +412,16 @@ private fun NeedCard(need: NeedSection, actions: SleepActions, modifier: Modifie
             caption,
         ),
     ) {
-        DurationHero(
-            duration = need.need.value,
-            label = stringResource(R.string.sleep_need_label),
-            provenance = need.need.provenance,
-        )
-        DurationConfidenceBand(need.need)
+        Row(verticalAlignment = Alignment.Top) {
+            Box(Modifier.weight(1f)) {
+                DurationHero(
+                    duration = need.need.value,
+                    label = stringResource(R.string.sleep_need_label),
+                    provenance = need.need.provenance,
+                )
+            }
+            DriftIconButton(DriftIcons.Help, stringResource(R.string.sleep_why_need), { actions.onExplain(MetricKey.SLEEP_NEED) })
+        }
         Caption(caption)
     }
 }
@@ -438,7 +431,7 @@ private fun RegularityCard(section: RegularitySection, actions: SleepActions, mo
     DriftCard(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             CardTitle(stringResource(R.string.sleep_regularity_title), Modifier.weight(1f))
-            DriftIconButton(DriftIcons.Info, stringResource(R.string.sleep_why_regularity), { actions.onExplain(MetricKey.REGULARITY) })
+            DriftIconButton(DriftIcons.Help, stringResource(R.string.sleep_why_regularity), { actions.onExplain(MetricKey.REGULARITY) })
         }
         if (!section.available || section.sri7 == null) {
             InsufficientDataPanel(InsufficientReason.TOO_FEW_NIGHTS, section.nightsNeeded)
@@ -454,29 +447,30 @@ private fun RegularityCard(section: RegularitySection, actions: SleepActions, mo
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+/** Tonight's ideal bedtime and wake time, the first thing to act on, with the time in bed it gives. */
 @Composable
-private fun TonightCard(model: SleepUiModel, use24h: Boolean, actions: SleepActions, modifier: Modifier) {
+private fun IdealScheduleCard(model: SleepUiModel, use24h: Boolean, actions: SleepActions, modifier: Modifier) {
     val t = model.tonight
-    val bed = t.bedtime.value.clockIn(model.zone, use24h)
-    val wake = t.wake.value.clockIn(model.zone, use24h)
-    DriftCard(modifier = modifier) {
+    val bed = DriftFormat.shortClock(t.bedtime.value, model.zone, use24h)
+    val wake = DriftFormat.shortClock(t.wake.value, model.zone, use24h)
+    DriftCard(modifier = modifier.testTag("sleep_ideal_schedule")) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            CardTitle(stringResource(R.string.sleep_tonight_title), Modifier.weight(1f))
-            DriftIconButton(DriftIcons.Info, stringResource(R.string.sleep_why_recommendation), { actions.onExplain(MetricKey.RECOMMENDATION) })
+            Text(
+                stringResource(R.string.sleep_ideal_title).uppercase(Locale.getDefault()),
+                style = DriftTheme.typography.overline,
+                color = DriftTheme.colors.onSurfaceMuted,
+                modifier = Modifier.weight(1f),
+            )
+            DriftIconButton(DriftIcons.Help, stringResource(R.string.sleep_why_recommendation), { actions.onExplain(MetricKey.RECOMMENDATION) })
         }
-        FlowRow(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(DriftTheme.spacing.xl),
-            verticalArrangement = Arrangement.spacedBy(DriftTheme.spacing.md),
-        ) {
-            TimeColumn(stringResource(R.string.sleep_bedtime), bed, t.bedtime.provenance)
-            TimeColumn(stringResource(R.string.sleep_wake), wake, t.wake.provenance)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(DriftTheme.spacing.md)) {
+            TimeColumn(DriftIcons.Moon, stringResource(R.string.sleep_bedtime), bed, DriftTheme.colors.windDown, Modifier.weight(1f))
+            TimeColumn(DriftIcons.Sunrise, stringResource(R.string.sleep_wake), wake, DriftTheme.colors.energy, Modifier.weight(1f))
         }
-        StatRow(
-            stringResource(R.string.sleep_opportunity),
-            DriftFormat.duration(t.opportunity.value),
-            t.opportunity.provenance,
+        Text(
+            stringResource(R.string.sleep_ideal_in_bed, DriftFormat.hm(t.opportunity.value)),
+            style = DriftTheme.typography.bodySmall,
+            color = DriftTheme.colors.onSurfaceMuted,
         )
         t.tradeOff?.let { trade ->
             DriftCard(tone = CardTone.Accent, contentDescription = stringResource(R.string.sleep_tradeoff_description, trade.message)) {
@@ -492,14 +486,19 @@ private fun TonightCard(model: SleepUiModel, use24h: Boolean, actions: SleepActi
 }
 
 @Composable
-private fun TimeColumn(label: String, time: String, provenance: app.drift.model.Provenance) {
-    val spoken = stringResource(R.string.sleep_time_description, label, time, stringResource(provenance.labelRes()))
+private fun TimeColumn(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, time: String, tint: Color, modifier: Modifier) {
     Column(
-        Modifier.semantics(mergeDescendants = true) { contentDescription = spoken },
+        modifier
+            .clip(RoundedCornerShape(DriftTheme.radii.md))
+            .background(DriftTheme.colors.surfaceRaised)
+            .semantics(mergeDescendants = true) { contentDescription = "$label $time" }
+            .padding(DriftTheme.spacing.md),
         verticalArrangement = Arrangement.spacedBy(DriftTheme.spacing.xs),
     ) {
-        Caption(label)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Icon(icon, null, tint = tint, modifier = Modifier.size(18.dp))
+            Text(label, style = DriftTheme.typography.label, color = DriftTheme.colors.onSurfaceMuted)
+        }
         Text(time, style = DriftTheme.typography.display, color = DriftTheme.colors.onSurface)
-        ProvenanceChip(provenance)
     }
 }

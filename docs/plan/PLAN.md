@@ -35,8 +35,10 @@ stability on real data.
 
 ### Non-negotiables
 - No network permission in the manifest. No account, no analytics SDK, no crash reporter that phones home.
-- Every displayed number carries a provenance tag: **Measured**, **Derived** (deterministic from measured
-  data), **Estimated** (model output with a confidence band) or **User-entered**.
+- Every number carries a provenance in the data: **Measured**, **Derived** (deterministic from measured
+  data), **Estimated** (model output with a confidence band) or **User-entered**. Amended 9 Oct 2026 (owner
+  decision): screens no longer show provenance tags or confidence bands, as RISE does not; the provenance stays in
+  TalkBack descriptions and in the "how this is calculated" explanations, which open only from a "?" icon.
 - No placeholders, TODOs, mock data or dead buttons in the release build; enforced by CI (section 9).
 - The analysis engine is a pure, deterministic Kotlin library: same inputs + engine version = same
   outputs, and every change can be explained.

@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -131,6 +132,60 @@ object TimelineGeometry {
         }
     }
 
+    /**
+     * The waking part of one day's curve: from the end of the first Sleep segment to the start of the next one.
+     * Falls back to the whole curve when there is no sleep segment on either side.
+     */
+    fun wakingRange(curve: DayCurve): ClosedRange<Instant>? {
+        val full = EnergyGeometry.range(curve) ?: return null
+        val sleeps = curve.segments.filter { it.phase == EnergyPhase.SLEEP }
+        val start = sleeps.firstOrNull { it.interval.start <= full.start }?.interval?.end
+            ?.takeIf { it > full.start && it < full.endInclusive } ?: full.start
+        val end = sleeps.firstOrNull { it.interval.start > start }?.interval?.start
+            ?.takeIf { it <= full.endInclusive } ?: full.endInclusive
+        return if (end > start) start..end else full
+    }
+
+    /** One phase drawn as a block: consecutive segments of the same phase are merged; sleep blocks cut them. */
+    data class Panel(val phase: EnergyPhase, val start: Instant, val end: Instant)
+
+    fun phasePanels(days: List<DayCurve>, range: ClosedRange<Instant>, blocks: List<Pair<Instant, Instant>>): List<Panel> {
+        val merged = ArrayList<Panel>()
+        days.flatMap { it.segments }
+            .filter { it.phase != EnergyPhase.SLEEP }
+            .sortedBy { it.interval.start }
+            .forEach { seg ->
+                val a = maxOf(seg.interval.start, range.start)
+                val b = minOf(seg.interval.end, range.endInclusive)
+                if (b <= a) return@forEach
+                val last = merged.lastOrNull()
+                if (last != null && last.phase == seg.phase && !a.isAfter(last.end.plusSeconds(60))) {
+                    merged[merged.lastIndex] = last.copy(end = maxOf(last.end, b))
+                } else {
+                    merged += Panel(seg.phase, a, b)
+                }
+            }
+        // Cut out sleep blocks.
+        var out: List<Panel> = merged
+        for ((bs, be) in blocks) {
+            out = out.flatMap { p ->
+                if (be <= p.start || bs >= p.end) listOf(p)
+                else listOfNotNull(
+                    p.copy(end = bs).takeIf { bs > p.start },
+                    p.copy(start = be).takeIf { be < p.end },
+                )
+            }
+        }
+        return out.filter { Duration.between(it.start, it.end) >= Duration.ofMinutes(10) }
+    }
+
+    /** Light moving average (window [half] each side) so the 5-minute model steps draw as one smooth line. */
+    fun smooth(levels: List<Double>, half: Int = 3): List<Double> = levels.indices.map { i ->
+        val a = maxOf(0, i - half)
+        val b = minOf(levels.lastIndex, i + half)
+        levels.subList(a, b + 1).average()
+    }
+
     /** Awake points of [days] inside [range], split into runs wherever sleep (a segment or a block) interrupts them. */
     fun awakeRuns(days: List<DayCurve>, range: ClosedRange<Instant>, blocks: List<Pair<Instant, Instant>>): List<List<EnergyPoint>> {
         val sleep = days.flatMap { d -> d.segments.filter { it.phase == EnergyPhase.SLEEP }.map { it.interval.start to it.interval.end } } + blocks
@@ -149,14 +204,6 @@ object TimelineGeometry {
         if (cur.size >= 2) runs += cur
         return runs
     }
-}
-
-internal fun lineColor(phase: EnergyPhase, c: DriftColors): Color = when (phase) {
-    EnergyPhase.MORNING_PEAK, EnergyPhase.EVENING_PEAK -> c.energy
-    EnergyPhase.AFTERNOON_DIP -> c.primary
-    EnergyPhase.WIND_DOWN -> c.windDown
-    EnergyPhase.MELATONIN_WINDOW -> c.melatonin
-    EnergyPhase.GROGGINESS, EnergyPhase.SLEEP -> c.onSurfaceMuted
 }
 
 /**
@@ -178,8 +225,7 @@ fun EnergyTimeline(
     modifier: Modifier = Modifier,
     blocks: List<TimelineBlock> = emptyList(),
     markers: List<TimelineMarker> = emptyList(),
-    peakLabel: String = "Peak",
-    dipLabel: String = "Dip",
+    phaseLabel: (EnergyPhase) -> String = { it.displayName() },
     handleLabel: (block: TimelineBlock, topEdge: Boolean) -> String = { _, top -> if (top) "Fell asleep" else "Woke up" },
     earlierLabel: String = "5 minutes earlier",
     laterLabel: String = "5 minutes later",
@@ -238,34 +284,41 @@ fun EnergyTimeline(
                 fun y(t: Instant) = TimelineGeometry.y(t, range, pxPerHour, top)
                 fun x(level: Double) = TimelineGeometry.x(level, plotLeft, plotW)
                 drawHourAxis(range, zone, use24h, measurer, type.caption, colors, ::y, plotLeft)
+                val panelLeft = plotLeft - 4.dp.toPx()
+                val panelRight = size.width * 0.80f
 
-                // Sleep blocks first, so the line and labels sit on top.
-                shown.forEach { b -> drawBlock(b, ::y, plotLeft, measurer, colors, type.caption, type.title, zone, use24h, zz, sun) }
+                // Phase blocks, each named at its top; the one holding "now" is lighter.
+                val blockSpans = shown.map { it.start to it.end }
+                TimelineGeometry.phasePanels(days, range, blockSpans).forEach { panel ->
+                    drawPhasePanel(panel, ::y, panelLeft, panelRight, now, phaseLabel(panel.phase), zone, use24h, measurer, type, colors)
+                }
+                // Sleep blocks.
+                shown.forEach { b -> drawBlock(b, ::y, panelLeft, measurer, colors, type.caption, type.title, zone, use24h, zz, sun) }
 
-                // Lane, guides and the energy line.
-                val runs = TimelineGeometry.awakeRuns(days, range, shown.map { it.start to it.end })
+                // One smooth energy line, coloured by level.
+                val runs = TimelineGeometry.awakeRuns(days, range, blockSpans)
                 val visibleBottom = top + (size.height - 2 * top) * progress
-                val brush = phaseBrush(days, range, ::y, size.height, colors)
-                val laneW = 44.dp.toPx()
+                val brush = Brush.horizontalGradient(
+                    listOf(colors.curveLow, colors.curveMid, colors.curveHigh),
+                    startX = x(0.0), endX = x(100.0),
+                )
                 runs.forEach { run ->
-                    val pts = run.map { Offset(x(it.level), y(it.at)) }.filter { it.y <= visibleBottom }
+                    val levels = TimelineGeometry.smooth(run.map { it.level })
+                    val pts = run.indices.map { i -> Offset(x(levels[i]), y(run[i].at)) }.filter { it.y <= visibleBottom }
                     if (pts.size < 2) return@forEach
-                    val line = Path().apply { moveTo(pts[0].x, pts[0].y); pts.drop(1).forEach { lineTo(it.x, it.y) } }
-                    val lane = Path().apply {
-                        moveTo(pts[0].x, pts[0].y); pts.drop(1).forEach { lineTo(it.x, it.y) }
-                        pts.asReversed().forEach { lineTo(it.x - laneW, it.y) }
-                        close()
+                    val line = Path().apply {
+                        moveTo(pts[0].x, pts[0].y)
+                        for (i in 1 until pts.size) {
+                            val mid = Offset((pts[i - 1].x + pts[i].x) / 2, (pts[i - 1].y + pts[i].y) / 2)
+                            quadraticTo(pts[i - 1].x, pts[i - 1].y, mid.x, mid.y)
+                        }
+                        lineTo(pts.last().x, pts.last().y)
                     }
-                    drawPath(lane, colors.onSurface.copy(alpha = if (colors.isDark) 0.045f else 0.05f))
-                    val guide = Stroke(1.2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
-                    translate(left = -laneW) { drawPath(line, colors.outlineSubtle, style = guide) }
-                    translate(left = 28.dp.toPx()) { drawPath(line, colors.outlineSubtle, style = guide) }
-                    drawPath(line, brush, style = Stroke(3.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round))
+                    drawPath(line, brush, style = Stroke(3.5.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round))
                 }
 
                 if (progress >= 0.999f) {
-                    drawFlags(days, range, shown, ::x, ::y, plotLeft, peakLabel, dipLabel, measurer, type.caption, colors)
-                    drawMarkers(markers, days, range, shown, ::x, ::y, measurer, type.caption, colors, iconPainters)
+                    drawMarkers(markers, range, shown, ::y, measurer, type.caption, colors, iconPainters)
                 }
 
                 // Now line.
@@ -398,10 +451,44 @@ private fun DrawScope.drawHourAxis(
     }
 }
 
+private fun DrawScope.drawPhasePanel(
+    panel: TimelineGeometry.Panel,
+    y: (Instant) -> Float,
+    left: Float,
+    right: Float,
+    now: Instant,
+    name: String,
+    zone: ZoneId,
+    use24h: Boolean,
+    measurer: androidx.compose.ui.text.TextMeasurer,
+    type: app.drift.designsystem.DriftTypography,
+    colors: DriftColors,
+) {
+    val top = y(panel.start) + 1.5.dp.toPx()
+    val bottom = y(panel.end) - 1.5.dp.toPx()
+    if (bottom - top < 6.dp.toPx()) return
+    val current = now >= panel.start && now < panel.end
+    drawRoundRect(
+        if (current) colors.surfaceRaised else colors.surface,
+        Offset(left, top), Size(right - left, bottom - top), CornerRadius(14.dp.toPx()),
+    )
+    val pad = 12.dp.toPx()
+    val titleStyle = type.titleSmall
+    val m = measurer.measure(name, titleStyle)
+    if (bottom - top > m.size.height + pad) {
+        label(measurer, name, titleStyle, colors.onSurface, Offset(left + pad, top + pad * 0.7f))
+        val times = "${DriftFormat.shortClock(panel.start, zone, use24h)} – ${DriftFormat.shortClock(panel.end, zone, use24h)}"
+        val tm = measurer.measure(times, type.caption)
+        if (bottom - top > m.size.height + tm.size.height + pad * 1.6f) {
+            label(measurer, times, type.caption, colors.onSurfaceMuted, Offset(left + pad, top + pad * 0.7f + m.size.height))
+        }
+    }
+}
+
 private fun DrawScope.drawBlock(
     b: TimelineBlock,
     y: (Instant) -> Float,
-    plotLeft: Float,
+    left: Float,
     measurer: androidx.compose.ui.text.TextMeasurer,
     colors: DriftColors,
     caption: TextStyle,
@@ -413,19 +500,37 @@ private fun DrawScope.drawBlock(
 ) {
     val top = y(b.start)
     val bottom = y(b.end)
-    val left = plotLeft - 4.dp.toPx()
-    val right = size.width - 4.dp.toPx()
-    val r = CornerRadius(10.dp.toPx())
-    val fill = if (b.planned) colors.primaryContainer.copy(alpha = 0.16f) else colors.primaryContainer.copy(alpha = if (colors.isDark) 0.42f else 0.22f)
-    drawRoundRect(fill, Offset(left, top), Size(right - left, bottom - top), r)
-    drawRoundRect(
-        colors.primary.copy(alpha = 0.85f), Offset(left, top), Size(right - left, bottom - top), r,
+    val right = size.width - 6.dp.toPx()
+    val r = CornerRadius(14.dp.toPx())
+    val shape = Path().apply { addRoundRect(RoundRect(left, top, right, bottom, r)) }
+    drawPath(shape, if (b.planned) colors.surface else colors.accentSurface)
+    // Soft wave texture marks sleep.
+    clipPath(shape) {
+        val step = 16.dp.toPx()
+        val amp = 3.dp.toPx()
+        val wave = 28.dp.toPx()
+        var wy = top + step / 2
+        while (wy < bottom) {
+            val p = Path().apply {
+                moveTo(left, wy)
+                var wx = left
+                while (wx < right) {
+                    quadraticTo(wx + wave / 4, wy - amp, wx + wave / 2, wy)
+                    quadraticTo(wx + wave * 3 / 4, wy + amp, wx + wave, wy)
+                    wx += wave
+                }
+            }
+            drawPath(p, colors.primary.copy(alpha = if (b.planned) 0.10f else 0.16f), style = Stroke(1.dp.toPx()))
+            wy += step
+        }
+    }
+    drawPath(
+        shape, colors.primary.copy(alpha = if (b.planned) 0.6f else 0.9f),
         style = Stroke(1.dp.toPx(), pathEffect = if (b.planned) PathEffect.dashPathEffect(floatArrayOf(8.dp.toPx(), 6.dp.toPx())) else null),
     )
     val bold = caption.copy(fontWeight = FontWeight.Bold)
     val pad = 10.dp.toPx()
     val icon = 14.dp.toPx()
-    // Start time with the sleep mark at the top left, end time with the sun at the bottom right.
     if (bottom - top > 44.dp.toPx()) {
         val startText = DriftFormat.shortClock(b.start, zone, use24h)
         val sm = measurer.measure(startText, bold)
@@ -443,77 +548,17 @@ private fun DrawScope.drawBlock(
         val measured = lines.map { (t, s) -> Triple(t, s, measurer.measure(t, s)) }
         var cy = top - 10.dp.toPx() - measured.sumOf { it.third.size.height }
         measured.forEachIndexed { i, (t, s, m) ->
-            val c = when (i) { 0 -> colors.onSurface; else -> colors.onSurfaceMuted }
-            label(measurer, t, s, c, Offset(plotLeft, cy))
+            label(measurer, t, s, if (i == 0) colors.onSurface else colors.onSurfaceMuted, Offset(left + 4.dp.toPx(), cy))
             cy += m.size.height
         }
     }
 }
 
-/** Vertical gradient whose colour at each phase's middle is that phase's colour. */
-private fun phaseBrush(days: List<DayCurve>, range: ClosedRange<Instant>, y: (Instant) -> Float, height: Float, colors: DriftColors): Brush {
-    val stops = days.flatMap { it.segments }
-        .filter { it.phase != EnergyPhase.SLEEP && it.interval.end > range.start && it.interval.start < range.endInclusive }
-        .map { seg ->
-            val mid = seg.interval.start.plus(Duration.between(seg.interval.start, seg.interval.end).dividedBy(2))
-            (y(mid) / height).coerceIn(0f, 1f) to lineColor(seg.phase, colors)
-        }
-        .sortedBy { it.first }
-        .distinctBy { it.first }
-    return when {
-        stops.isEmpty() -> Brush.verticalGradient(listOf(colors.energy, colors.energy))
-        stops.size == 1 -> Brush.verticalGradient(listOf(stops[0].second, stops[0].second))
-        else -> Brush.verticalGradient(*stops.toTypedArray(), startY = 0f, endY = height)
-    }
-}
-
-private fun DrawScope.drawFlags(
-    days: List<DayCurve>,
-    range: ClosedRange<Instant>,
-    blocks: List<TimelineBlock>,
-    x: (Double) -> Float,
-    y: (Instant) -> Float,
-    plotLeft: Float,
-    peakLabel: String,
-    dipLabel: String,
-    measurer: androidx.compose.ui.text.TextMeasurer,
-    caption: TextStyle,
-    colors: DriftColors,
-) {
-    val style = caption.copy(fontWeight = FontWeight.SemiBold)
-    days.flatMap { d -> d.segments.map { d to it } }.forEach { (day, seg) ->
-        val at = seg.extremumAt ?: return@forEach
-        if (at < range.start || at > range.endInclusive || blocks.any { at >= it.start && at < it.end }) return@forEach
-        val text = when (seg.phase) {
-            EnergyPhase.MORNING_PEAK, EnergyPhase.EVENING_PEAK -> peakLabel
-            EnergyPhase.AFTERNOON_DIP -> dipLabel
-            else -> return@forEach
-        }
-        val lv = EnergyGeometry.levelAt(day, at) ?: return@forEach
-        val tip = Offset(x(lv) - 6.dp.toPx(), y(at))
-        val m = measurer.measure(text, style)
-        val h = m.size.height + 10.dp.toPx()
-        val w = m.size.width + 20.dp.toPx()
-        val point = 9.dp.toPx()
-        val left = (tip.x - point - w).clampSafe(plotLeft - 8.dp.toPx(), size.width)
-        val flag = Path().apply {
-            addRoundRect(RoundRect(left, tip.y - h / 2, left + w, tip.y + h / 2, CornerRadius(6.dp.toPx())))
-            moveTo(left + w - 1f, tip.y - h / 2 + 2.dp.toPx())
-            lineTo(left + w + point, tip.y)
-            lineTo(left + w - 1f, tip.y + h / 2 - 2.dp.toPx())
-            close()
-        }
-        drawPath(flag, colors.primaryContainer)
-        label(measurer, text, style, colors.onPrimaryContainer, Offset(left + 10.dp.toPx(), tip.y - m.size.height / 2f))
-    }
-}
-
+/** Habit and window markers as pills on the right edge: icon, title and time. Overlapping pills are skipped. */
 private fun DrawScope.drawMarkers(
     markers: List<TimelineMarker>,
-    days: List<DayCurve>,
     range: ClosedRange<Instant>,
     blocks: List<TimelineBlock>,
-    x: (Double) -> Float,
     y: (Instant) -> Float,
     measurer: androidx.compose.ui.text.TextMeasurer,
     caption: TextStyle,
@@ -524,26 +569,30 @@ private fun DrawScope.drawMarkers(
     var lastBottom = -Float.MAX_VALUE
     markers.sortedBy { it.at }.forEach { mk ->
         if (mk.at < range.start || mk.at > range.endInclusive || blocks.any { mk.at >= it.start && mk.at < it.end }) return@forEach
-        val day = days.firstOrNull { d -> d.points.isNotEmpty() && mk.at >= d.points.first().at && mk.at <= d.points.last().at } ?: return@forEach
-        val lv = EnergyGeometry.levelAt(day, mk.at) ?: return@forEach
-        val c = Offset(x(lv), y(mk.at))
-        val t1 = measurer.measure(mk.time, caption)
-        val t2 = measurer.measure(mk.title, titleStyle)
-        val blockH = (t1.size.height + t2.size.height).toFloat()
-        val blockW = maxOf(t1.size.width, t2.size.width).toFloat()
-        val topY = c.y - blockH / 2
-        if (topY < lastBottom + 6.dp.toPx()) return@forEach
-        val badge = 20.dp.toPx()
-        drawRoundRect(colors.primaryContainer, Offset(c.x - badge / 2, c.y - badge / 2), Size(badge, badge), CornerRadius(5.dp.toPx()))
-        val painter = mk.icon?.let { painters[it] }
-        if (painter != null) {
-            val ic = 14.dp.toPx()
-            translate(c.x - ic / 2, c.y - ic / 2) { with(painter) { draw(Size(ic, ic), colorFilter = ColorFilter.tint(colors.onPrimaryContainer)) } }
+        val t1 = measurer.measure(mk.title, titleStyle)
+        val t2 = measurer.measure(mk.time, caption)
+        val badge = 22.dp.toPx()
+        val pad = 6.dp.toPx()
+        val h = maxOf(badge, (t1.size.height + t2.size.height).toFloat()) + pad * 2
+        val w = pad + badge + 8.dp.toPx() + maxOf(t1.size.width, t2.size.width) + pad * 2
+        val cy = y(mk.at)
+        val top = cy - h / 2
+        if (top < lastBottom + 4.dp.toPx()) return@forEach
+        val right = size.width - 6.dp.toPx()
+        val left = right - w
+        drawRoundRect(colors.surfaceRaised, Offset(left, top), Size(w, h), CornerRadius(10.dp.toPx()))
+        drawRoundRect(colors.outlineSubtle, Offset(left, top), Size(w, h), CornerRadius(10.dp.toPx()), style = Stroke(1.dp.toPx()))
+        val bx = left + pad
+        val by = cy - badge / 2
+        drawRoundRect(colors.primaryContainer, Offset(bx, by), Size(badge, badge), CornerRadius(6.dp.toPx()))
+        mk.icon?.let { painters[it] }?.let { painter ->
+            val ic = 15.dp.toPx()
+            translate(bx + (badge - ic) / 2, by + (badge - ic) / 2) { with(painter) { draw(Size(ic, ic), colorFilter = ColorFilter.tint(colors.onPrimaryContainer)) } }
         }
-        val right = c.x + badge / 2 + 8.dp.toPx()
-        val lx = if (right + blockW <= size.width - 4.dp.toPx()) right else c.x - badge / 2 - 8.dp.toPx() - blockW
-        label(measurer, mk.time, caption, colors.onSurface, Offset(lx, topY))
-        label(measurer, mk.title, titleStyle, colors.onSurface, Offset(lx, topY + t1.size.height))
-        lastBottom = topY + blockH
+        val tx = bx + badge + 8.dp.toPx()
+        val textTop = cy - (t1.size.height + t2.size.height) / 2f
+        label(measurer, mk.title, titleStyle, colors.onSurface, Offset(tx, textTop))
+        label(measurer, mk.time, caption, colors.onSurfaceMuted, Offset(tx, textTop + t1.size.height))
+        lastBottom = top + h
     }
 }

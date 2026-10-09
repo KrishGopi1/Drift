@@ -36,10 +36,17 @@ class MainActivity : ComponentActivity() {
                         onDeepLinkHandled = { deepLink.value = null },
                         onOnboardingFinished = viewModel::onOnboardingFinished,
                         onResetComplete = viewModel::onResetComplete,
+                        onSourcesMayHaveChanged = viewModel::recheckSources,
                     )
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Permissions can be changed in system settings while Drift is in the background.
+        viewModel.recheckSources()
     }
 
     override fun onNewIntent(intent: Intent) {

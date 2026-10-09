@@ -36,7 +36,6 @@ import app.drift.designsystem.DriftFormat
 import app.drift.designsystem.DriftIcons
 import app.drift.designsystem.DriftListRow
 import app.drift.designsystem.DriftTheme
-import app.drift.designsystem.ProvenanceChip
 import app.drift.designsystem.labelRes
 import app.drift.feature.energy.EnergyUiModel
 import app.drift.feature.energy.Upcoming
@@ -71,7 +70,6 @@ internal fun PriorsBanner(onImprove: () -> Unit, modifier: Modifier = Modifier) 
                 color = DriftTheme.colors.onSurface,
                 modifier = Modifier.weight(1f),
             )
-            ProvenanceChip(Provenance.ESTIMATED)
         }
         DriftButton(stringResource(R.string.energy_priors_action), onImprove, style = ButtonStyle.Text)
     }
@@ -99,7 +97,6 @@ internal fun NextUpCard(
     day: DayCurve,
     isToday: Boolean,
     fmt: TimeFormat,
-    onExplain: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val highlights = dayHighlights(day)
@@ -109,9 +106,6 @@ internal fun NextUpCard(
         DriftListRow(
             title = stringResource(if (isToday) R.string.energy_next_peak else R.string.energy_peak),
             subtitle = peak?.let { upcomingTime(it, fmt) } ?: stringResource(R.string.energy_no_more_peaks),
-            provenance = day.provenance,
-            onClick = onExplain,
-            onClickLabel = stringResource(R.string.energy_why_label),
             modifier = Modifier.testTag("energy_next_peak"),
         )
         DriftDivider()
@@ -119,17 +113,12 @@ internal fun NextUpCard(
             DriftListRow(
                 title = stringResource(if (isToday) R.string.energy_flat_today else R.string.energy_flat_day),
                 subtitle = stringResource(R.string.energy_flat_sub),
-                onClick = onExplain,
-                onClickLabel = stringResource(R.string.energy_why_label),
                 modifier = Modifier.testTag("energy_flat_dip"),
             )
         } else {
             DriftListRow(
                 title = stringResource(if (isToday) R.string.energy_next_dip else R.string.energy_dip),
                 subtitle = dip?.let { upcomingTime(it, fmt) } ?: stringResource(R.string.energy_no_dip),
-                provenance = day.provenance,
-                onClick = onExplain,
-                onClickLabel = stringResource(R.string.energy_why_label),
                 modifier = Modifier.testTag("energy_next_dip"),
             )
         }
@@ -151,17 +140,20 @@ internal fun BedtimeCard(model: EnergyUiModel, fmt: TimeFormat, onExplain: () ->
     )
     DriftCard(
         modifier = modifier.testTag("energy_bedtime_card"),
-        onClick = onExplain,
-        onClickLabel = stringResource(R.string.energy_why_label),
         contentDescription = spoken,
     ) {
-        Text(stringResource(R.string.energy_tonight_title), style = DriftTheme.typography.title, color = DriftTheme.colors.onSurface)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                stringResource(R.string.energy_tonight_title), style = DriftTheme.typography.title, color = DriftTheme.colors.onSurface,
+                modifier = Modifier.weight(1f),
+            )
+            app.drift.designsystem.DriftIconButton(DriftIcons.Help, stringResource(R.string.energy_why_times), onExplain)
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(DriftTheme.spacing.xl)) {
             TimeColumn(stringResource(R.string.energy_bedtime), bed)
             TimeColumn(stringResource(R.string.energy_wake_time), wake)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(DriftTheme.spacing.sm), verticalAlignment = Alignment.CenterVertically) {
-            ProvenanceChip(rec.bedtime.provenance)
             Text(
                 stringResource(R.string.energy_sleep_opportunity, opportunity),
                 style = DriftTheme.typography.bodySmall,
@@ -184,7 +176,6 @@ private fun TimeColumn(label: String, time: String) {
 internal fun HabitCards(
     model: EnergyUiModel,
     fmt: TimeFormat,
-    onExplain: () -> Unit,
     cardModifier: @Composable (Int) -> Modifier,
     firstIndex: Int,
 ) {
@@ -192,7 +183,7 @@ internal fun HabitCards(
     var showAll by remember { mutableStateOf(false) }
     val visible = if (showAll) sorted else sorted.take(MAX_HABITS_COLLAPSED)
     visible.forEachIndexed { i, habit ->
-        HabitCardView(habit, isHabitPast(habit, model.now), fmt, onExplain, cardModifier(firstIndex + i))
+        HabitCardView(habit, isHabitPast(habit, model.now), fmt, cardModifier(firstIndex + i))
     }
     if (sorted.size > MAX_HABITS_COLLAPSED) {
         DriftButton(
@@ -204,15 +195,13 @@ internal fun HabitCards(
 }
 
 @Composable
-private fun HabitCardView(habit: HabitCard, past: Boolean, fmt: TimeFormat, onExplain: () -> Unit, modifier: Modifier) {
+private fun HabitCardView(habit: HabitCard, past: Boolean, fmt: TimeFormat, modifier: Modifier) {
     val title = stringResource(habit.kind.titleRes())
     val window = habitInstruction(habit, fmt)
     val basis = basisText(habit.basis)
     val muted = DriftTheme.colors.onSurfaceMuted
     DriftCard(
         modifier = modifier.testTag("energy_habit_${habit.kind.name}"),
-        onClick = onExplain,
-        onClickLabel = stringResource(R.string.energy_why_label),
         contentDescription = buildString {
             append(title).append(": ").append(window).append(". ").append(basis)
             if (past) append(". ").append(stringResource(R.string.energy_habit_passed))
@@ -245,14 +234,10 @@ private fun HabitIcon(kind: HabitKind, past: Boolean) {
 }
 
 @Composable
-internal fun NapCard(nap: NapAdvice, fmt: TimeFormat, onExplain: () -> Unit, modifier: Modifier = Modifier) {
+internal fun NapCard(nap: NapAdvice, fmt: TimeFormat, modifier: Modifier = Modifier) {
     val window = stringResource(R.string.energy_habit_window, fmt.clock(nap.window.start), fmt.clock(nap.window.end))
     val max = stringResource(R.string.energy_nap_max, DriftFormat.duration(nap.maxDuration))
-    DriftCard(
-        modifier = modifier.testTag("energy_nap_card"),
-        onClick = onExplain,
-        onClickLabel = stringResource(R.string.energy_why_label),
-    ) {
+    DriftCard(modifier = modifier.testTag("energy_nap_card")) {
         Text(stringResource(R.string.energy_nap_title), style = DriftTheme.typography.titleSmall, color = DriftTheme.colors.onSurface)
         Text(window, style = DriftTheme.typography.headline, color = DriftTheme.colors.onSurface)
         Text(max, style = DriftTheme.typography.body, color = DriftTheme.colors.onSurface)

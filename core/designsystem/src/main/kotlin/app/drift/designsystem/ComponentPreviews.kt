@@ -47,9 +47,6 @@ private fun CardsAndHeroes() {
         )
     }
     DriftCard { MetricHero(value = 7.8, unit = "h", label = "Average sleep", decimals = 1, provenance = Provenance.DERIVED) }
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Provenance.entries.forEach { ProvenanceChip(it) }
-    }
 }
 
 @Composable

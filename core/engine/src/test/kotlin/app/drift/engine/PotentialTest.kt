@@ -66,4 +66,28 @@ class PotentialTest {
         val (shortPeak, _) = peakAndDip(Synth.chronicShort())
         assertThat(shortPeak).isLessThan(steadyPeak)
     }
+
+    @Test fun `someone still up before their usual wake time is shown awake, not asleep`() {
+        val s = Synth.steady()
+        // 04:30 the next morning, before the usual 06:45 wake, with no sleep recorded yet tonight.
+        val now = s.nowLocal.toLocalDate().plusDays(1).atTime(4, 30)
+        val nowI = now.atZone(s.zone).toInstant()
+        val phone = app.drift.model.SourceRef(app.drift.model.SourceId.PHONE, "screen", app.drift.model.QualityTier.PHONE_INFERRED)
+        val base = s.input(nowOverride = now)
+        val input = base.copy(signals = app.drift.model.engine.SignalWindow(base.signals.window, listOf(app.drift.model.Signal.ScreenEvent(phone, nowI.minusSeconds(300), true))))
+        val snap = Kit.engine.analyze(input)
+        val at = now.minusHours(2).atZone(s.zone).toInstant()
+        val day = snap.energyCurve.days.first { d -> d.points.isNotEmpty() && at >= d.points.first().at && at <= d.points.last().at }
+        val seg = day.segments.first { at >= it.interval.start && at < it.interval.end }
+        assertThat(seg.phase).isNotEqualTo(EnergyPhase.SLEEP)
+    }
+
+    @Test fun `without signs of being up, an unfinished night is still assumed slept`() {
+        val s = Synth.steady()
+        val now = s.nowLocal.toLocalDate().plusDays(1).atTime(4, 30)
+        val snap = Kit.engine.analyze(s.input(nowOverride = now))
+        val at = now.minusHours(2).atZone(s.zone).toInstant()
+        val day = snap.energyCurve.days.first { d -> d.points.isNotEmpty() && at >= d.points.first().at && at <= d.points.last().at }
+        assertThat(day.segments.first { at >= it.interval.start && at < it.interval.end }.phase).isEqualTo(EnergyPhase.SLEEP)
+    }
 }

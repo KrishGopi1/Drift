@@ -4,10 +4,6 @@
     <string name="ds_provenance_derived">Derived</string>
     <string name="ds_provenance_estimated">Estimated</string>
     <string name="ds_provenance_user_entered">User-entered</string>
-    <string name="ds_provenance_measured_desc">Measured: recorded directly by your phone or a connected app</string>
-    <string name="ds_provenance_derived_desc">Derived: calculated from measured data using fixed rules</string>
-    <string name="ds_provenance_estimated_desc">Estimated: a model estimate with a margin of error</string>
-    <string name="ds_provenance_user_entered_desc">User-entered: typed in or edited by you</string>
 
     <string name="ds_confidence_low">Low confidence</string>
     <string name="ds_confidence_medium">Medium confidence</string>
@@ -17,7 +13,7 @@
     <string name="ds_nav_sleep">Sleep</string>
     <string name="ds_nav_progress">Progress</string>
     <string name="ds_nav_learn">Learn</string>
-    <string name="ds_profile">Profile and settings</string>
+    <string name="ds_open_settings">Settings</string>
 
     <string name="ds_back">Back</string>
     <string name="ds_close">Close</string>

@@ -23,7 +23,6 @@ import app.drift.designsystem.DriftFormat
 import app.drift.designsystem.DriftListRow
 import app.drift.designsystem.DriftTheme
 import app.drift.designsystem.DriftTopBar
-import app.drift.designsystem.ProvenanceChip
 import app.drift.designsystem.ScreenStateHost
 import app.drift.designsystem.SegmentedControl
 import app.drift.designsystem.SourceProblemPanel
@@ -136,7 +135,6 @@ private fun SummaryStat(label: String, value: String) {
     Column(Modifier.semantics(mergeDescendants = true) { contentDescription = spoken }, verticalArrangement = Arrangement.spacedBy(DriftTheme.spacing.xs)) {
         Caption(label)
         Text(value, style = DriftTheme.typography.title, color = DriftTheme.colors.onSurface)
-        ProvenanceChip(Provenance.DERIVED)
     }
 }
 

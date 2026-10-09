@@ -36,6 +36,11 @@ class FakeSourceRepository(
         return syncResult(reason)
     }
 
+    override suspend fun recheckStatus() {
+        record("recheckStatus")
+        sourcesFlow.value = sourcesFlow.value.toList()
+    }
+
     override suspend fun setEnabled(id: SourceId, enabled: Boolean) {
         record("setEnabled", id, enabled)
         sourcesFlow.update { l -> l.map { if (it.id == id) it.copy(enabled = enabled) else it } }

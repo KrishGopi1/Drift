@@ -54,13 +54,6 @@ class ConfidenceBandGallery : GalleryCase("confidence_band") {
     }
 }
 
-class ProvenanceChipGallery : GalleryCase("provenance_chip") {
-    @Composable override fun Content() = Stack {
-        Provenance.entries.forEach { ProvenanceChip(it) }
-        ProvenanceChip(Provenance.DERIVED, onClick = {})
-    }
-}
-
 class SegmentedControlGallery : GalleryCase("segmented_control") {
     @Composable override fun Content() = Stack {
         SegmentedControl(listOf("Week", "Month", "3 months"), 0, {})
@@ -82,7 +75,6 @@ class BottomSheetGallery : GalleryCase("bottom_sheet") {
         SheetHandle()
         SheetBody("Why this changed", onClose = {}) {
             Text("Your sleep debt rose by 45 min because Tuesday and Wednesday were both under 6 h.", style = DriftTheme.typography.body)
-            ProvenanceChip(Provenance.DERIVED)
         }
     }
 }

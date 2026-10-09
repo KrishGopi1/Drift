@@ -46,7 +46,8 @@ Code against these, not against another agent's implementation classes.
 
 ## Non-negotiables
 - No INTERNET permission, no network code, no analytics or crash reporting. (`checkNoInternetPermission`)
-- Every number shown to users carries a `Provenance`; ESTIMATED values carry a `Confidence`.
+- Every number carries a `Provenance` in the data; ESTIMATED values carry a `Confidence`. Screens do not show
+  provenance tags or confidence bands (owner decision, 9 Oct 2026); the words stay in TalkBack text and explanations.
 - No TODO/FIXME/"placeholder"/mock data/dead buttons in `src/main`. (`checkNoPlaceholders`)
   Fakes and fixtures belong in `testing/` or `src/test`.
 - `:core:engine` is pure and deterministic: no I/O, no `Instant.now()`, no `Random` without a fixed seed,
