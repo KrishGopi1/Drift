@@ -7,6 +7,8 @@ plugins {
 
 android {
     namespace = "app.drift.data"
+    // Exported Room schemas feed MigrationTestHelper in unit tests.
+    sourceSets.getByName("test").assets.srcDir("$projectDir/schemas")
 }
 
 dependencies {

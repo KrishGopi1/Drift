@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hc_rationale_title">How Drift uses your health data</string>
+    <string name="hc_rationale_body">Drift reads your sleep sessions and stages, heart rate, resting heart rate, heart rate variability, steps and exercise sessions from Health Connect. It uses them to estimate how much sleep you need, your sleep debt and your body clock, and to draw your daily energy curve.\n\nHistory access lets Drift read up to 90 days of past sleep the first time you connect. Background access lets it update overnight so your morning view is ready.\n\nEverything stays on this phone. Drift has no internet access, no account and no analytics, and it never writes to Health Connect. You can remove access at any time in Health Connect settings.</string>
+</resources>
