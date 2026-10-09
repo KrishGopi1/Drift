@@ -21,7 +21,16 @@ internal val PEAK_PHASES = setOf(EnergyPhase.MORNING_PEAK, EnergyPhase.EVENING_P
 internal val DIP_PHASES = setOf(EnergyPhase.AFTERNOON_DIP)
 
 /** An upcoming event. [laterDay] is true when it falls on a different local date than "now". */
-internal data class Upcoming(val at: Instant, val phase: EnergyPhase, val laterDay: Boolean)
+internal data class Upcoming(
+    val at: Instant,
+    val phase: EnergyPhase,
+    val laterDay: Boolean,
+    /** For peak and dip phases, the moment of the extremum itself; [at] is where the phase begins. */
+    val extremumAt: Instant? = null,
+) {
+    /** The time to show: the extremum for peaks and dips, else the phase start. */
+    val displayAt: Instant get() = extremumAt ?: at
+}
 
 /** The segment of [day] that contains [now], or null when [now] is outside every segment. */
 internal fun currentSegment(day: DayCurve?, now: Instant): EnergySegment? =
@@ -33,7 +42,14 @@ internal fun nextSegment(days: List<DayCurve>, now: Instant, zone: ZoneId): Upco
         .flatMap { it.segments }
         .filter { it.interval.start.isAfter(now) }
         .minByOrNull { it.interval.start }
-        ?.let { Upcoming(it.interval.start, it.phase, laterDay = it.interval.start.localDate(zone) != now.localDate(zone)) }
+        ?.let {
+            val shown = it.extremumAt?.takeIf { _ -> it.phase in PEAK_PHASES || it.phase in DIP_PHASES } ?: it.interval.start
+            Upcoming(
+                it.interval.start, it.phase,
+                laterDay = shown.localDate(zone) != now.localDate(zone),
+                extremumAt = shown.takeIf { _ -> it.extremumAt != null && (it.phase in PEAK_PHASES || it.phase in DIP_PHASES) },
+            )
+        }
 
 /** The next peak or dip (by its extremum time) after [now]. Days flagged too flat never offer a dip. */
 internal fun upcomingExtremum(days: List<DayCurve>, now: Instant, zone: ZoneId, phases: Set<EnergyPhase>): Upcoming? =

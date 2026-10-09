@@ -1,7 +1,9 @@
 package app.drift.feature.energy.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -32,7 +34,7 @@ import org.robolectric.annotation.GraphicsMode
 /** Renders [Content] light/dark at font scale 1x/2x into src/test/screenshots/<name>_<theme>_<scale>.png. */
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [35], qualifiers = "w360dp-h7000dp-xhdpi")
+@Config(sdk = [35], qualifiers = "w360dp-h1100dp-hdpi")
 abstract class EnergyGalleryCase(private val name: String) {
     @get:Rule val rule = createComposeRule()
 
@@ -103,14 +105,28 @@ class Energy_flat_ist_Gallery : EnergyGalleryCase("energy_flat_ist") {
 class Energy_nap_ist_Gallery : EnergyGalleryCase("energy_nap_ist") {
     @Composable override fun Content() {
         val c = FixtureContext.IST
-        Screen(ScreenState.Ready(model(SnapshotFixtures.withNap(c), c, "")))
+        val m = model(SnapshotFixtures.withNap(c), c, ""); Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { NapCard(m.recommendations.nap!!, TimeFormat(m.zone, true), {}); BedtimeCard(m, TimeFormat(m.zone, true), {}) }
     }
 }
 
 class Energy_tradeoff_ist_Gallery : EnergyGalleryCase("energy_tradeoff_ist") {
     @Composable override fun Content() {
         val c = FixtureContext.IST
-        Screen(ScreenState.Ready(model(SnapshotFixtures.withTradeOff(c), c, "")))
+        val m = model(SnapshotFixtures.withTradeOff(c), c, ""); Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { TradeOffCard(m.recommendations.tradeOff!!, TimeFormat(m.zone, true)) }
+    }
+}
+
+class Energy_habits_ist_Gallery : EnergyGalleryCase("energy_habits_ist") {
+    @Composable override fun Content() {
+        val c = FixtureContext.IST
+        val m = model(SnapshotFixtures.full(c), c, ""); Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { HabitCards(m, TimeFormat(m.zone, true), {}, { Modifier }, 0) }
+    }
+}
+
+class Energy_checkin_ist_Gallery : EnergyGalleryCase("energy_checkin_ist") {
+    @Composable override fun Content() {
+        val c = FixtureContext.IST
+        val m = model(SnapshotFixtures.richExplanation(c), c, ""); Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { CheckInCard(m.calibrationCheckIns, true, {}); CheckInCard(0, false, {}) }
     }
 }
 
@@ -166,14 +182,28 @@ class Energy_flat_us_Gallery : EnergyGalleryCase("energy_flat_us") {
 class Energy_nap_us_Gallery : EnergyGalleryCase("energy_nap_us") {
     @Composable override fun Content() {
         val c = FixtureContext.US_EASTERN
-        Screen(ScreenState.Ready(model(SnapshotFixtures.withNap(c), c, "")))
+        val m = model(SnapshotFixtures.withNap(c), c, ""); Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { NapCard(m.recommendations.nap!!, TimeFormat(m.zone, true), {}); BedtimeCard(m, TimeFormat(m.zone, true), {}) }
     }
 }
 
 class Energy_tradeoff_us_Gallery : EnergyGalleryCase("energy_tradeoff_us") {
     @Composable override fun Content() {
         val c = FixtureContext.US_EASTERN
-        Screen(ScreenState.Ready(model(SnapshotFixtures.withTradeOff(c), c, "")))
+        val m = model(SnapshotFixtures.withTradeOff(c), c, ""); Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { TradeOffCard(m.recommendations.tradeOff!!, TimeFormat(m.zone, true)) }
+    }
+}
+
+class Energy_habits_us_Gallery : EnergyGalleryCase("energy_habits_us") {
+    @Composable override fun Content() {
+        val c = FixtureContext.US_EASTERN
+        val m = model(SnapshotFixtures.full(c), c, ""); Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { HabitCards(m, TimeFormat(m.zone, true), {}, { Modifier }, 0) }
+    }
+}
+
+class Energy_checkin_us_Gallery : EnergyGalleryCase("energy_checkin_us") {
+    @Composable override fun Content() {
+        val c = FixtureContext.US_EASTERN
+        val m = model(SnapshotFixtures.richExplanation(c), c, ""); Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { CheckInCard(m.calibrationCheckIns, true, {}); CheckInCard(0, false, {}) }
     }
 }
 
