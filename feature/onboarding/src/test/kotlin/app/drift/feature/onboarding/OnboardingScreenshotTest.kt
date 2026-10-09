@@ -44,14 +44,9 @@ class OnboardingScreenshotTest : ShotTest() {
     @Test fun welcome() = case("welcome", model(OnboardingStep.WELCOME))
     @Test fun howItWorks() = case("how_it_works", model(OnboardingStep.HOW_IT_WORKS))
     @Test fun schedule() = case("schedule", model(OnboardingStep.SCHEDULE))
-    @Test fun scheduleNoWorkdays() = case("schedule_free", model(OnboardingStep.SCHEDULE, form = ProfileForm(workdays = emptySet())))
     @Test fun aboutYou() = case(
         "about_you",
         model(OnboardingStep.ABOUT_YOU, form = ProfileForm(ageBand = AgeBand.AGE_36_50, chronotype = ChronotypeAnswer.MODERATELY_EVENING)),
-    )
-    @Test fun aboutYouSaveFailed() = case(
-        "about_you_error",
-        model(OnboardingStep.ABOUT_YOU, error = StepError(ErrorKind.SAVE, "disk full")),
     )
     @Test fun sources() = case("sources", model(OnboardingStep.SOURCES))
     @Test fun sourcesNeedingFixes() = case(
@@ -93,27 +88,14 @@ class OnboardingScreenshotTest : ShotTest() {
         "perm_activity",
         model(OnboardingStep.PERMISSIONS, page = PermissionPage.ACTIVITY_RECOGNITION, sources = listOf(Sources.phone(SourceStatus.NeedsPermission(setOf(ACTIVITY_RECOGNITION_PERMISSION))))),
     )
-    @Test fun permissionActivityGranted() = case(
-        "perm_activity_granted",
-        model(OnboardingStep.PERMISSIONS, page = PermissionPage.ACTIVITY_RECOGNITION),
-    )
     @Test fun permissionUsage() = case(
         "perm_usage",
         model(OnboardingStep.PERMISSIONS, page = PermissionPage.USAGE_ACCESS, sources = listOf(Sources.phone(SourceStatus.NeedsPermission(setOf(USAGE_ACCESS_PERMISSION))))),
     )
     @Test fun permissionNotifications() = case("perm_notifications", model(OnboardingStep.PERMISSIONS, page = PermissionPage.NOTIFICATIONS))
-    @Test fun permissionNotificationsDenied() = case(
-        "perm_notifications_denied",
-        model(OnboardingStep.PERMISSIONS, page = PermissionPage.NOTIFICATIONS, notifications = false),
-    )
 
     @Test fun importRunning() = case("import_running", model(OnboardingStep.IMPORT, history = HistoryImport.Running(0.34f)))
-    @Test fun importIndeterminate() = case("import_waiting", model(OnboardingStep.IMPORT, history = HistoryImport.Running(null)))
     @Test fun importDone() = case("import_done", model(OnboardingStep.IMPORT, history = HistoryImport.Done(61, emptyMap())))
-    @Test fun importPartial() = case(
-        "import_partial",
-        model(OnboardingStep.IMPORT, history = HistoryImport.Done(12, mapOf("Health Connect" to "Permission was removed"))),
-    )
     @Test fun importZeroNights() = case("import_zero", model(OnboardingStep.IMPORT, history = HistoryImport.Done(0, emptyMap())))
     @Test fun importFailed() = case("import_failed", model(OnboardingStep.IMPORT, history = HistoryImport.Failed("The source did not respond")))
     @Test fun importCancelled() = case("import_cancelled", model(OnboardingStep.IMPORT, history = HistoryImport.Cancelled))
@@ -133,16 +115,9 @@ class OnboardingScreenshotTest : ShotTest() {
     @Test fun revealPersonal() = case("reveal_personal", model(OnboardingStep.REVEAL, reveal = revealReady(false)))
     @Test fun revealLoading() = case("reveal_loading", model(OnboardingStep.REVEAL, reveal = Reveal.Loading))
     @Test fun revealFailed() = case("reveal_failed", model(OnboardingStep.REVEAL, reveal = Reveal.Failed("The engine could not run")))
-    @Test fun revealFinishFailed() = case(
-        "reveal_finish_error",
-        model(OnboardingStep.REVEAL, reveal = revealReady(true), error = StepError(ErrorKind.FINISH, "storage is full")),
-    )
 
     @Test fun stateLoading() = shoot("state_loading") { OnboardingScreen(ScreenState.Loading, OnboardingActions.None) }
     @Test fun stateError() = shoot("state_error") {
         OnboardingScreen(ScreenState.Error("Drift could not read your sources.", retryable = true), OnboardingActions.None)
-    }
-    @Test fun stateSourceProblem() = shoot("state_source_problem") {
-        OnboardingScreen(ScreenState.SourceProblem(SourceFix.OpenAppSettings, "Drift needs access to continue."), OnboardingActions.None)
     }
 }

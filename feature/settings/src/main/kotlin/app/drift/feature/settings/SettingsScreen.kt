@@ -450,7 +450,7 @@ internal fun ConfirmCard(
 
 @Composable
 private fun ConfirmDialog(title: String, body: String, confirmLabel: String, onConfirm: () -> Unit, onDismiss: () -> Unit) {
-    Dialog(onDismissRequest = onDismiss) { ConfirmCard(title, body, confirmLabel, onConfirm, onDismiss) }
+    ScrollableDialog(onDismiss) { ConfirmCard(title, body, confirmLabel, onConfirm, onDismiss) }
 }
 
 /** What the user must type, and a "delete everything" button that stays disabled until it matches. */
@@ -500,5 +500,13 @@ internal fun ImportOutcomeCard(outcome: ImportOutcome, onClose: () -> Unit, onTr
 
 @Composable
 private fun ImportOutcomeDialog(outcome: ImportOutcome, onClose: () -> Unit, onTryAnotherFile: () -> Unit) {
-    Dialog(onDismissRequest = onClose) { ImportOutcomeCard(outcome, onClose, onTryAnotherFile) }
+    ScrollableDialog(onClose) { ImportOutcomeCard(outcome, onClose, onTryAnotherFile) }
+}
+
+/** Dialog whose content scrolls, so it stays usable at 200% font on small screens. */
+@Composable
+private fun ScrollableDialog(onDismiss: () -> Unit, content: @Composable () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Column(Modifier.verticalScroll(rememberScrollState())) { content() }
+    }
 }
