@@ -10,6 +10,7 @@ android {
 dependencies {
     implementation(project(":core:model"))
     implementation(libs.play.services.location)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.android)
     testImplementation(project(":testing"))
 }
