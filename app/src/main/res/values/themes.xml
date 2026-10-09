@@ -1,7 +1,15 @@
 <resources>
-    <style name="Theme.Drift" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@android:color/black</item>
+    <style name="Theme.Drift.Base" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/drift_window</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Theme.Drift.Main" parent="Theme.Drift.Base" />
+
+    <style name="Theme.Drift" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/drift_window</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.Drift.Main</item>
     </style>
 </resources>
