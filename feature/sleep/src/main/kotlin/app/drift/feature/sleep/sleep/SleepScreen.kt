@@ -55,6 +55,7 @@ import app.drift.feature.sleep.common.StatRow
 import app.drift.feature.sleep.common.clockIn
 import app.drift.feature.sleep.common.entrance
 import app.drift.feature.sleep.common.rememberUse24h
+import app.drift.feature.sleep.common.scaledChartHeight
 import app.drift.feature.sleep.common.shortLabel
 import app.drift.model.EpisodeId
 import app.drift.model.engine.DebtBand
@@ -195,7 +196,7 @@ private fun BandPill(band: DebtBand) {
 private fun ContributionCard(model: SleepUiModel, actions: SleepActions, modifier: Modifier) {
     DriftCard(modifier = modifier) {
         CardTitle(stringResource(R.string.sleep_nights_title))
-        DebtBarsChart(model.days, height = 180.dp, showLegend = true)
+        DebtBarsChart(model.days, height = scaledChartHeight(180.dp), showLegend = true)
         Caption(stringResource(R.string.sleep_bars_caption))
         DriftDivider()
         model.contributions.forEach { row -> ContributionRowView(row, model, actions) }

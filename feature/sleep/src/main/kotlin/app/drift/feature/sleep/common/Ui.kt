@@ -69,6 +69,11 @@ fun ScreenBody(
     }
 }
 
+/** [base] grown with the font scale, so chart axis labels keep room at large text sizes. */
+@Composable
+fun scaledChartHeight(base: androidx.compose.ui.unit.Dp): androidx.compose.ui.unit.Dp =
+    base * androidx.compose.ui.platform.LocalDensity.current.fontScale.coerceAtLeast(1f)
+
 /** Entrance animation index helper so cards stagger in order. */
 @Composable
 fun Modifier.entrance(index: Int): Modifier = this.staggeredEntrance(index)

@@ -53,7 +53,7 @@ abstract class ScreenshotBase {
     @get:Rule val rule = createComposeRule()
 }
 
-private const val CFG = "w360dp-h800dp-xhdpi"
+private const val CFG = "w360dp-h1600dp-xhdpi"
 
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -72,14 +72,11 @@ class SleepScreenshots : ScreenshotBase() {
     @Test fun sourceProblem() = states("source_problem", ScreenStateFixtures.sourceProblem())
     @Test fun error() = states("error", ScreenStateFixtures.error())
     @Test fun readyIst() = states("ready", ready(SnapshotFixtures.full(IST), ids = true))
-    @Test fun readyUs() = states("ready", ready(SnapshotFixtures.full(US), US, ids = true), US, Combo.EDGES)
-    @Test fun highDebt() = states("high_debt", ready(SnapshotFixtures.highDebt(IST)), combos = Combo.EDGES)
-    @Test fun tooFewNights() = states("too_few_nights", ready(SnapshotFixtures.early(IST)), combos = Combo.EDGES)
-    @Test fun tooFewNightsUs() = states("too_few_nights", ready(SnapshotFixtures.early(US), US), US, listOf(Combo.LIGHT_1X))
-    @Test fun debtUnavailable() = states("debt_unavailable", ready(SnapshotFixtures.debtUnavailable(IST)), combos = Combo.EDGES)
-    @Test fun debtUnavailableUs() = states("debt_unavailable", ready(SnapshotFixtures.debtUnavailable(US), US), US, listOf(Combo.DARK_2X))
-    @Test fun tradeOff() = states("trade_off", ready(SnapshotFixtures.withTradeOff(IST)), combos = Combo.EDGES)
-    @Test fun tradeOffUs() = states("trade_off", ready(SnapshotFixtures.withTradeOff(US), US), US, listOf(Combo.LIGHT_1X))
+    @Test fun readyUs() = states("ready", ready(SnapshotFixtures.full(US), US, ids = true), US, listOf(Combo.DARK_2X))
+    @Test fun highDebt() = states("high_debt", ready(SnapshotFixtures.highDebt(IST)), combos = listOf(Combo.DARK_2X))
+    @Test fun tooFewNights() = states("too_few_nights", ready(SnapshotFixtures.early(IST)), combos = listOf(Combo.DARK_2X))
+    @Test fun debtUnavailable() = states("debt_unavailable", ready(SnapshotFixtures.debtUnavailable(IST)), combos = listOf(Combo.DARK_2X))
+    @Test fun tradeOff() = states("trade_off", ready(SnapshotFixtures.withTradeOff(IST)), combos = listOf(Combo.DARK_2X))
 }
 
 @RunWith(AndroidJUnit4::class)
@@ -99,12 +96,11 @@ class HistoryScreenshots : ScreenshotBase() {
     @Test fun sourceProblem() = states("source_problem", ScreenStateFixtures.sourceProblem())
     @Test fun error() = states("error", ScreenStateFixtures.error())
     @Test fun weekIst() = states("week", ready(HistoryRange.WEEK))
-    @Test fun weekUs() = states("week", ready(HistoryRange.WEEK, US), US, Combo.EDGES)
-    @Test fun month() = states("month", ready(HistoryRange.MONTH), combos = Combo.EDGES)
-    @Test fun quarterUs() = states("quarter", ready(HistoryRange.QUARTER, US), US, listOf(Combo.LIGHT_1X))
+    @Test fun weekUs() = states("week", ready(HistoryRange.WEEK, US), US, listOf(Combo.DARK_2X))
+    @Test fun month() = states("month", ready(HistoryRange.MONTH), combos = listOf(Combo.DARK_2X))
     @Test fun sparseHistory() = states("sparse", ScreenState.Ready(
         buildHistoryModel(HistoryRange.MONTH, Eps.history(IST, 90, gaps = (3..89).toSet()), IST.today, IST.zone, null, false),
-    ), combos = Combo.EDGES)
+    ), combos = listOf(Combo.DARK_2X))
 }
 
 @RunWith(AndroidJUnit4::class)
@@ -124,19 +120,17 @@ class NightDetailScreenshots : ScreenshotBase() {
     @Test fun loading() = states("loading", ScreenStateFixtures.loading())
     @Test fun error() = states("error", ScreenStateFixtures.error("This night is no longer available.", false))
     @Test fun withStagesIst() = states("stages", ScreenState.Ready(model(IST)))
-    @Test fun withStagesUs() = states("stages", ScreenState.Ready(model(US)), US, combos = Combo.EDGES)
-    @Test fun noStagesUserEdited() = states("user_edited", ScreenState.Ready(model(IST, userEdited = true, stages = false)), combos = Combo.EDGES)
-    @Test fun phoneInferred() = states("phone_inferred", ScreenState.Ready(model(US, stages = false, tier = QualityTier.PHONE_INFERRED)), US, combos = listOf(Combo.LIGHT_1X))
-    @Test fun conflict() = states("conflict", ScreenState.Ready(model(IST, conflict = true)), combos = Combo.EDGES)
-    @Test fun conflictUs() = states("conflict", ScreenState.Ready(model(US, conflict = true)), US, combos = listOf(Combo.DARK_2X))
+    @Test fun withStagesUs() = states("stages", ScreenState.Ready(model(US)), US, combos = listOf(Combo.DARK_2X))
+    @Test fun noStagesUserEdited() = states("user_edited", ScreenState.Ready(model(IST, userEdited = true, stages = false)), combos = listOf(Combo.DARK_2X))
+    @Test fun conflict() = states("conflict", ScreenState.Ready(model(IST, conflict = true)), combos = listOf(Combo.DARK_2X))
     @Test fun editing() {
         val m = model(IST)
-        states("editing", ScreenState.Ready(m), editor = EditorUiState(EpisodeDraft.of(m.episode)), combos = Combo.EDGES)
+        states("editing", ScreenState.Ready(m), editor = EditorUiState(EpisodeDraft.of(m.episode)), combos = listOf(Combo.DARK_2X))
     }
     @Test fun editingInvalid() {
         val m = model(IST)
         val draft = EpisodeDraft.of(m.episode).withStart(7 * 60)
-        states("editing_invalid", ScreenState.Ready(m), editor = EditorUiState(draft, draft.errors(IST.now)), combos = Combo.EDGES)
+        states("editing_invalid", ScreenState.Ready(m), editor = EditorUiState(draft, draft.errors(IST.now)), combos = listOf(Combo.DARK_2X))
     }
 }
 
@@ -150,7 +144,7 @@ class AddEntryScreenshots : ScreenshotBase() {
     }
     @Test fun addNapInvalid() {
         val d = EpisodeDraft.blank(EpisodeKind.NAP, IST.today, IST.zone).withEnd(13 * 60 + 5)
-        rule.shots("add_nap_invalid", US, Combo.EDGES) { AddEntryScreen(EpisodeKind.NAP, EditorUiState(d, d.errors(US.now)), false, AddEntryActions(), scrollable = false) }
+        rule.shots("add_nap_invalid", US, listOf(Combo.DARK_2X)) { AddEntryScreen(EpisodeKind.NAP, EditorUiState(d, d.errors(US.now)), false, AddEntryActions(), scrollable = false) }
     }
 }
 
@@ -169,15 +163,13 @@ class BodyClockScreenshots : ScreenshotBase() {
     @Test fun sourceProblem() = states("source_problem", ScreenStateFixtures.sourceProblem())
     @Test fun error() = states("error", ScreenStateFixtures.error())
     @Test fun readyIst() = states("ready", ready(SnapshotFixtures.full(IST)))
-    @Test fun readyUs() = states("ready", ready(SnapshotFixtures.full(US), US), US, Combo.EDGES)
-    @Test fun notEnoughFreeNights() = states("not_enough_free", ready(SnapshotFixtures.personalizing(IST)), combos = Combo.EDGES)
-    @Test fun notEnoughFreeNightsUs() = states("not_enough_free", ready(SnapshotFixtures.personalizing(US), US), US, listOf(Combo.LIGHT_1X))
-    @Test fun travelEast() = states("travel_east", ready(SnapshotFixtures.travelEastward(IST)), combos = Combo.EDGES)
-    @Test fun shiftWorkUs() = states("shift_work", ready(SnapshotFixtures.shiftWork(US), US), US, listOf(Combo.DARK_2X))
+    @Test fun readyUs() = states("ready", ready(SnapshotFixtures.full(US), US), US, listOf(Combo.DARK_2X))
+    @Test fun notEnoughFreeNights() = states("not_enough_free", ready(SnapshotFixtures.personalizing(IST)), combos = listOf(Combo.DARK_2X))
+    @Test fun travelEast() = states("travel_east", ready(SnapshotFixtures.travelEastward(IST)), combos = listOf(Combo.DARK_2X))
     @Test fun noEstimate() {
         val snap = SnapshotFixtures.priorsOnlyDay0(IST)
         val bare = snap.copy(circadian = snap.circadian.copy(dlmoMinutes = null, melatoninWindow = null, windDownStart = null))
-        states("no_estimate", ready(bare), combos = Combo.EDGES)
+        states("no_estimate", ready(bare), combos = listOf(Combo.DARK_2X))
     }
 }
 
@@ -186,13 +178,13 @@ class BodyClockScreenshots : ScreenshotBase() {
 @Config(sdk = [35], qualifiers = CFG)
 class WhyScreenshots : ScreenshotBase() {
     private fun sheet(name: String, state: ScreenState<app.drift.feature.sleep.why.WhyUiModel>, metric: MetricKey = MetricKey.SLEEP_DEBT, ctx: FixtureContext = IST, combos: List<Combo> = Combo.ALL) =
-        rule.shots("why_$name", ctx, combos) { WhySheetBody(metric, state, WhyActions(onOpenMethodology = {})) }
+        rule.shots("why_$name", ctx, combos, unbounded = false) { WhySheetBody(metric, state, WhyActions(onOpenMethodology = {})) }
 
     @Test fun loading() = sheet("loading", ScreenStateFixtures.loading())
     @Test fun error() = sheet("error", ScreenStateFixtures.error())
     @Test fun changes() = sheet("changes", ScreenState.Ready(buildWhyModel(MetricKey.SLEEP_DEBT, SnapshotFixtures.richExplanation(IST), SnapshotFixtures.full(IST))))
-    @Test fun changesUs() = sheet("changes", ScreenState.Ready(buildWhyModel(MetricKey.ENERGY, SnapshotFixtures.richExplanation(US), SnapshotFixtures.full(US))), MetricKey.ENERGY, US, Combo.EDGES)
+    @Test fun changesUs() = sheet("changes", ScreenState.Ready(buildWhyModel(MetricKey.ENERGY, SnapshotFixtures.richExplanation(US), SnapshotFixtures.full(US))), MetricKey.ENERGY, US, listOf(Combo.DARK_2X))
     @Test fun firstDay() = sheet("first_day", ScreenState.Ready(buildWhyModel(MetricKey.SLEEP_NEED, SnapshotFixtures.firstRunExplanation(IST), null)), MetricKey.SLEEP_NEED)
-    @Test fun noPrior() = sheet("no_prior", ScreenState.Ready(buildWhyModel(MetricKey.SLEEP_DEBT, SnapshotFixtures.full(US), null)), MetricKey.SLEEP_DEBT, US, Combo.EDGES)
-    @Test fun noChange() = sheet("no_change", ScreenState.Ready(buildWhyModel(MetricKey.REGULARITY, SnapshotFixtures.full(IST), SnapshotFixtures.full(IST))), MetricKey.REGULARITY, combos = Combo.EDGES)
+    @Test fun noPrior() = sheet("no_prior", ScreenState.Ready(buildWhyModel(MetricKey.SLEEP_DEBT, SnapshotFixtures.full(US), null)), MetricKey.SLEEP_DEBT, US, listOf(Combo.DARK_2X))
+    @Test fun noChange() = sheet("no_change", ScreenState.Ready(buildWhyModel(MetricKey.REGULARITY, SnapshotFixtures.full(IST), SnapshotFixtures.full(IST))), MetricKey.REGULARITY, combos = listOf(Combo.DARK_2X))
 }

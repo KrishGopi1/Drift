@@ -31,7 +31,7 @@ fun RegularityBlock(section: RegularitySection, trendHeight: Dp, modifier: Modif
                 it.provenance,
             )
         }
-        if (section.showTrend) RegularityTrendChart(section.trend, height = trendHeight)
+        if (section.showTrend) RegularityTrendChart(section.trend, height = scaledChartHeight(trendHeight))
         section.onsetSpread?.let { StatRow(stringResource(R.string.sleep_spread_onset), DriftFormat.duration(it.value), it.provenance) }
         section.wakeSpread?.let { StatRow(stringResource(R.string.sleep_spread_wake), DriftFormat.duration(it.value), it.provenance) }
         section.midpointSpread?.let { StatRow(stringResource(R.string.sleep_spread_midpoint), DriftFormat.duration(it.value), it.provenance) }

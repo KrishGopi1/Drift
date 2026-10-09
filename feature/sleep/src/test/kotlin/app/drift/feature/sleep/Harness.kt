@@ -3,6 +3,7 @@ package app.drift.feature.sleep
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -38,6 +39,7 @@ fun ComposeContentTestRule.shots(
     name: String,
     ctx: FixtureContext,
     combos: List<Combo> = Combo.ALL,
+    unbounded: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     var current by mutableStateOf(combos.first())
@@ -45,7 +47,7 @@ fun ComposeContentTestRule.shots(
         val base = LocalDensity.current
         CompositionLocalProvider(LocalDensity provides Density(base.density, current.fontScale)) {
             DriftTheme(current.mode, reducedMotion = true) {
-                Box(Modifier.width(360.dp).background(DriftTheme.colors.background)) { content() }
+                Box(Modifier.width(360.dp).wrapContentHeight(align = androidx.compose.ui.Alignment.Top, unbounded = unbounded).background(DriftTheme.colors.background)) { content() }
             }
         }
     }

@@ -34,6 +34,8 @@ import app.drift.feature.sleep.common.CardTitle
 import app.drift.feature.sleep.common.ScreenBody
 import app.drift.feature.sleep.common.entrance
 import app.drift.feature.sleep.common.rememberUse24h
+import app.drift.feature.sleep.common.scaledChartHeight
+import androidx.compose.ui.unit.dp
 import app.drift.feature.sleep.common.shortLabel
 import app.drift.model.EpisodeId
 import app.drift.model.Provenance
@@ -96,11 +98,11 @@ private fun HistoryContent(model: HistoryUiModel, actions: HistoryActions) {
         SummaryCard(model, use24h, Modifier.entrance(0))
         DriftCard(Modifier.entrance(1)) {
             CardTitle(stringResource(R.string.history_duration_title))
-            SleepDurationChart(model.bars, model.range.timing, need = model.need, selectedDate = selected, onNightClick = onChartTap)
+            SleepDurationChart(model.bars, model.range.timing, height = scaledChartHeight(180.dp), need = model.need, selectedDate = selected, onNightClick = onChartTap)
         }
         DriftCard(Modifier.entrance(2)) {
             CardTitle(stringResource(R.string.history_timing_title))
-            SleepTimingChart(model.bars, model.range.timing, use24h = use24h, selectedDate = selected, onNightClick = onChartTap)
+            SleepTimingChart(model.bars, model.range.timing, height = scaledChartHeight(220.dp), use24h = use24h, selectedDate = selected, onNightClick = onChartTap)
         }
         DriftCard(Modifier.entrance(3)) {
             CardTitle(stringResource(R.string.history_nights_title))
