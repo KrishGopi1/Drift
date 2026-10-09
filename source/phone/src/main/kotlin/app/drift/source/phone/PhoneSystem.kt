@@ -43,7 +43,12 @@ internal class AndroidPhoneSystem(context: Context) : PhoneSystem {
 
     override fun hasUsageAccess(): Boolean {
         val ops = app.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-        val mode = ops.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), app.packageName)
+        val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ops.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), app.packageName)
+        } else {
+            @Suppress("DEPRECATION")
+            ops.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), app.packageName)
+        }
         return mode == AppOpsManager.MODE_ALLOWED
     }
 
