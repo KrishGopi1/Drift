@@ -85,3 +85,10 @@ class EnergyCurveFullDayGallery : GalleryCase("chart_energy_full_day") {
         EnergyCurveChart(full, now = null, zone = z, use24h = false, showLegend = false)
     }
 }
+
+class StageChartAxisGallery : GalleryCase("chart_stages_axis") {
+    @Composable override fun Content() = Stack {
+        StageChart(Fx.stages(), zone = z, use24h = false)
+        StageChart(Fx.stages(), zone = z, height = 90.dp)
+    }
+}

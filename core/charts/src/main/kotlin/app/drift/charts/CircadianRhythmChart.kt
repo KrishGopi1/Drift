@@ -75,6 +75,7 @@ fun CircadianRhythmChart(
                 val ringW = 18.dp.toPx()
                 val labelPad = 22.dp.toPx()
                 val diameter = size.minDimension - ringW - labelPad * 2
+                if (diameter <= 0f) return@Canvas
                 val topLeft = Offset((size.width - diameter) / 2, (size.height - diameter) / 2)
                 val arcSize = Size(diameter, diameter)
                 val centre = Offset(size.width / 2, size.height / 2)

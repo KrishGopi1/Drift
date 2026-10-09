@@ -53,6 +53,7 @@ fun DebtBarsChart(
             if (days.isEmpty()) return@Canvas
             val axisH = measurer.measure("M", type.caption).size.height + 6.dp.toPx()
             val plotH = size.height - axisH
+            if (plotH <= 0f) return@Canvas
             val maxUp = max(days.maxOf { it.contribution.seconds.coerceAtLeast(0) }.toFloat(), 1800f)
             val maxDown = max(days.maxOf { (-it.contribution.seconds).coerceAtLeast(0) }.toFloat(), 1800f)
             val zeroY = plotH * maxUp / (maxUp + maxDown)

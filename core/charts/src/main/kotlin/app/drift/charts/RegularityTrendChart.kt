@@ -57,6 +57,7 @@ fun RegularityTrendChart(
         val top = 8.dp.toPx()
         val plotW = size.width - gutter - 8.dp.toPx()
         val plotH = size.height - axisH - top
+        if (plotH <= 0f || plotW <= 0f) return@Canvas
         val first = sorted.first().first
         val spanDays = maxOf(ChronoUnit.DAYS.between(first, sorted.last().first).toFloat(), 1f)
         fun x(d: LocalDate) = gutter + ChronoUnit.DAYS.between(first, d) / spanDays * plotW
@@ -64,7 +65,7 @@ fun RegularityTrendChart(
         listOf(0, 50, 100).forEach { v ->
             drawLine(colors.outlineSubtle, Offset(gutter, y(v.toDouble())), Offset(gutter + plotW, y(v.toDouble())), 1.dp.toPx())
             val tm = measurer.measure(v.toString(), type.caption)
-            label(measurer, v.toString(), type.caption, colors.onSurfaceMuted, Offset(0f, (y(v.toDouble()) - tm.size.height / 2f).coerceIn(0f, size.height - axisH - tm.size.height)))
+            label(measurer, v.toString(), type.caption, colors.onSurfaceMuted, Offset(0f, (y(v.toDouble()) - tm.size.height / 2f).clampSafe(0f, size.height - axisH - tm.size.height)))
         }
         clipRect(right = gutter + plotW * progress + 8.dp.toPx()) {
             regularitySegments(sorted).forEach { seg ->
@@ -87,7 +88,7 @@ fun RegularityTrendChart(
         val text = lastPoint.second.roundToInt().toString()
         val tm = measurer.measure(text, type.caption)
         val ty = if (lc.y - tm.size.height - 10.dp.toPx() < 0f) lc.y + 10.dp.toPx() else lc.y - tm.size.height - 8.dp.toPx()
-        label(measurer, text, type.caption, colors.onSurface, Offset((lc.x - tm.size.width / 2f).coerceIn(gutter, size.width - tm.size.width), ty))
+        label(measurer, text, type.caption, colors.onSurface, Offset((lc.x - tm.size.width / 2f).clampSafe(gutter, size.width - tm.size.width), ty))
         // Date labels.
         val labelDates = listOf(sorted.first().first, sorted[sorted.size / 2].first, sorted.last().first).distinct()
         labelDates.forEachIndexed { i, d ->

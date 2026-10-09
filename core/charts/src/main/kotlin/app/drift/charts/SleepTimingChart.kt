@@ -127,6 +127,7 @@ fun SleepTimingChart(
             val axisH = measurer.measure("M", type.caption).size.height + 6.dp.toPx()
             val plotH = size.height - axisH
             val plotW = size.width - gutter
+            if (plotH <= 0f || plotW <= 0f) return@Canvas
             fun y(minutes: Int) = (minutes - lo).toFloat() / (hi - lo) * plotH
             // Grid every 2 h, labelled.
             var m = ceil(lo / 120.0).toInt() * 120
@@ -134,11 +135,12 @@ fun SleepTimingChart(
                 drawLine(colors.outlineSubtle, Offset(gutter, y(m)), Offset(size.width, y(m)), 1.dp.toPx())
                 val text = DriftFormat.clockMinutes(m, use24h)
                 val tm = measurer.measure(text, type.caption)
-                label(measurer, text, type.caption, colors.onSurfaceMuted, Offset(0f, (y(m) - tm.size.height / 2f).coerceIn(0f, plotH - tm.size.height)))
+                label(measurer, text, type.caption, colors.onSurfaceMuted, Offset(0f, (y(m) - tm.size.height / 2f).clampSafe(0f, plotH - tm.size.height)))
                 m += 120
             }
             val slot = plotW / bars.size
             val barW = min(slot * (if (range == TimingRange.QUARTER) 0.8f else 0.62f), 28.dp.toPx()).coerceAtLeast(2.dp.toPx())
+            val placer = LabelPlacer(6.dp.toPx())
             bars.forEachIndexed { i, b ->
                 val cx = gutter + slot * i + slot / 2
                 if (b.date == selectedDate) drawRoundRect(colors.primary.copy(alpha = 0.14f), Offset(gutter + slot * i, 0f), Size(slot, plotH), CornerRadius(4.dp.toPx()))
@@ -156,7 +158,7 @@ fun SleepTimingChart(
                 }
                 showDayLabel(i, bars.size, b, range)?.let { text ->
                     val tm = measurer.measure(text, type.caption)
-                    label(measurer, text, type.caption, colors.onSurfaceMuted, Offset((cx - tm.size.width / 2f).coerceIn(gutter, size.width - tm.size.width), plotH + 4.dp.toPx()))
+                    placer.place(cx, tm.size.width.toFloat(), gutter, size.width)?.let { label(measurer, text, type.caption, colors.onSurfaceMuted, Offset(it, plotH + 4.dp.toPx())) }
                 }
             }
         }
@@ -201,10 +203,12 @@ fun SleepDurationChart(
             if (bars.isEmpty()) return@Canvas
             val axisH = measurer.measure("M", type.caption).size.height + 6.dp.toPx()
             val plotH = size.height - axisH
+            if (plotH <= 0f) return@Canvas
             val maxMin = max(600, max(bars.maxOf { it.durationMinutes ?: 0 }, need?.toMinutes()?.toInt() ?: 0) + 30)
             val slot = size.width / bars.size
             val barW = min(slot * (if (range == TimingRange.QUARTER) 0.8f else 0.62f), 28.dp.toPx()).coerceAtLeast(2.dp.toPx())
             drawLine(colors.outline, Offset(0f, plotH), Offset(size.width, plotH), 1.dp.toPx())
+            val placer = LabelPlacer(6.dp.toPx())
             bars.forEachIndexed { i, b ->
                 val cx = slot * i + slot / 2
                 if (b.date == selectedDate) drawRoundRect(colors.primary.copy(alpha = 0.14f), Offset(slot * i, 0f), Size(slot, plotH), CornerRadius(4.dp.toPx()))
@@ -217,7 +221,7 @@ fun SleepDurationChart(
                 }
                 showDayLabel(i, bars.size, b, range)?.let { text ->
                     val tm = measurer.measure(text, type.caption)
-                    label(measurer, text, type.caption, colors.onSurfaceMuted, Offset((cx - tm.size.width / 2f).coerceIn(0f, size.width - tm.size.width), plotH + 4.dp.toPx()))
+                    placer.place(cx, tm.size.width.toFloat(), 0f, size.width)?.let { label(measurer, text, type.caption, colors.onSurfaceMuted, Offset(it, plotH + 4.dp.toPx())) }
                 }
             }
             if (need != null) {

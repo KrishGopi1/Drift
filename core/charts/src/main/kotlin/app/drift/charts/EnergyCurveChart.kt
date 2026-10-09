@@ -86,6 +86,7 @@ fun EnergyCurveChart(
         val topPad = 6.dp.toPx()
         val plotH = size.height - axisH - topPad
         val plotW = size.width
+        if (plotH <= 0f || plotW <= 0f) return@Canvas
         fun x(t: Instant) = EnergyGeometry.fraction(range, t) * plotW
         fun y(level: Double) = topPad + (1f - (level / 100.0).coerceIn(0.0, 1.0).toFloat()) * plotH
 
@@ -130,25 +131,7 @@ fun EnergyCurveChart(
             }
         }
         // Time axis.
-        val zdt = ZonedDateTime.ofInstant(range.start, zone)
-        val sample = measurer.measure(DriftFormat.clockMinutes(23 * 60 + 59, use24h), type.caption).size.width.toFloat()
-        val spanMin = java.time.Duration.between(range.start, range.endInclusive).toMinutes().toFloat()
-        val step = axisStepMinutes(spanMin, sample, plotW)
-        val startMinuteOfDay = zdt.hour * 60 + zdt.minute
-        var tick = ((startMinuteOfDay + step - 1) / step) * step - startMinuteOfDay
-        var lastRight = -Float.MAX_VALUE
-        val minGap = 8.dp.toPx()
-        while (tick <= spanMin) {
-            val t = range.start.plusSeconds(tick * 60L)
-            val text = DriftFormat.clock(t, zone, use24h)
-            val m = measurer.measure(text, type.caption)
-            val tx = (x(t) - m.size.width / 2f).coerceIn(0f, (plotW - m.size.width).coerceAtLeast(0f))
-            if (tx >= lastRight + minGap) {
-                lastRight = tx + m.size.width
-                label(measurer, text, type.caption, colors.onSurfaceMuted, Offset(tx, topPad + plotH + 6.dp.toPx()))
-            }
-            tick += step
-        }
+        drawTimeTicks(measurer, type.caption, colors.onSurfaceMuted, range.start, range.endInclusive, zone, use24h, 0f, plotW, topPad + plotH + 6.dp.toPx())
         // Now marker.
         if (now != null && now >= range.start && now <= range.endInclusive) {
             val nx = x(now)
