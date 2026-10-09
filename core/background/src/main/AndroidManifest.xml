@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Expedited jobs run through WorkManager's foreground service on Android 11 and older only. -->
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE"
+        android:maxSdkVersion="30" />
+
+    <application>
+        <receiver
+            android:name="app.drift.background.reschedule.RescheduleReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="app.drift.background.schedule.MorningAlarmReceiver"
+            android:exported="false" />
+        <receiver
+            android:name="app.drift.background.reminders.ReminderAlarmReceiver"
+            android:exported="false" />
+        <receiver
+            android:name="app.drift.background.notify.ConfirmActionReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name="app.drift.background.widget.DriftWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/drift_widget_info" />
+        </receiver>
+    </application>
+</manifest>
