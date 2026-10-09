@@ -54,7 +54,7 @@ object SnapshotFixtures {
 
     /** Chronic short sleeping: debt at the HIGH band. */
     fun highDebt(ctx: FixtureContext = FixtureContext.IST) = SnapshotBuilder.build(
-        SnapshotSpec(ctx, SufficiencyTier.FULL, NightPatterns.hours(ctx, 30, 6.5, 7.4)),
+        SnapshotSpec(ctx, SufficiencyTier.FULL, NightPatterns.hours(ctx, 30, 5.5, 6.5)),
     )
 
     /** Three consecutive missing nights: debt and band are null, debt not available. */
@@ -108,7 +108,7 @@ object SnapshotFixtures {
 
     /** Moderate debt plus an afternoon dip: a nap is advised. */
     fun withNap(ctx: FixtureContext = FixtureContext.IST) = SnapshotBuilder.build(
-        SnapshotSpec(ctx, SufficiencyTier.FULL, NightPatterns.hours(ctx, 30, 7.3, 8.4)),
+        SnapshotSpec(ctx, SufficiencyTier.FULL, NightPatterns.hours(ctx, 30, 6.5, 7.6)),
     )
 
     /** Day-0 snapshot whose explanations are the first-run lines. */

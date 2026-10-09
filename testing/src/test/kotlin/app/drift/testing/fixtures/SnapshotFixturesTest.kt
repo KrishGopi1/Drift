@@ -160,7 +160,7 @@ class SnapshotFixturesTest {
     @Test fun `high debt is in the HIGH band`() {
         val s = SnapshotFixtures.highDebt()
         assertThat(s.debtBand).isEqualTo(DebtBand.HIGH)
-        assertThat(s.sleepDebt!!.value).isAtLeast(Duration.ofHours(5))
+        assertThat(s.sleepDebt!!.value).isGreaterThan(Duration.ofHours(10))
         assertThat(s.debtBand).isEqualTo(SnapshotBuilder.bandFor(s.sleepDebt!!.value))
     }
 
@@ -238,13 +238,22 @@ class SnapshotFixturesTest {
         assertThat(s.energyCurve.calibrationCheckIns).isEqualTo(12)
     }
 
-    @Test fun `daily debt contributions follow the repay rule`() {
+    @Test fun `debt follows the plan 4-3 leaky accumulator`() {
+        val lambda = Math.pow(0.5, 1.0 / 7.0)
         val s = SnapshotFixtures.full()
-        s.debtTrend.filter { !it.imputed }.forEach { row ->
-            val raw = row.need.minus(row.sleep!!.value)
-            // Shortfalls add in full; surpluses repay at most half, never below zero debt.
-            if (!raw.isNegative) assertThat(row.contribution).isAtMost(raw)
-            else assertThat(row.contribution.abs()).isAtMost(raw.abs().dividedBy(2).plusMinutes(1))
+        var prev = Duration.ZERO
+        s.debtTrend.forEach { row ->
+            val raw = (row.need.seconds - (row.sleep?.value?.seconds ?: row.need.seconds)).toDouble()
+            val expected = Math.max(0.0, lambda * prev.seconds + if (raw >= 0) raw else 0.6 * raw)
+            assertThat(row.debtAfter.seconds.toDouble()).isWithin(2.0).of(expected)
+            prev = row.debtAfter
         }
+    }
+
+    @Test fun `bands follow plan 4-3 thresholds`() {
+        assertThat(SnapshotBuilder.bandFor(Duration.ofMinutes(299))).isEqualTo(DebtBand.LOW)
+        assertThat(SnapshotBuilder.bandFor(Duration.ofHours(5))).isEqualTo(DebtBand.MODERATE)
+        assertThat(SnapshotBuilder.bandFor(Duration.ofHours(10))).isEqualTo(DebtBand.MODERATE)
+        assertThat(SnapshotBuilder.bandFor(Duration.ofMinutes(601))).isEqualTo(DebtBand.HIGH)
     }
 }
