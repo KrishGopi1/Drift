@@ -3,7 +3,7 @@
 #   1. checks        ./gradlew driftChecks            (dependency rules, no INTERNET, no placeholders)
 #   2. unit-tests    unit tests of every module       (JVM modules: test, Android modules: testDebugUnitTest)
 #   3. assemble      ./gradlew :app:assembleDebug
-#   4. screenshots   verifyRoborazziDebug for every module that applies Roborazzi
+#   4. screenshots   verifyRoborazziDebug for every module with src/test/screenshots or recorded PNGs
 #   5. lint          ./gradlew lintDebug
 #
 # Usage:
@@ -40,9 +40,15 @@ jvm_modules() {
   done
 }
 
+# Modules that have screenshot tests: a src/test/screenshots directory, or recorded Roborazzi PNGs.
+# (The drift.android.compose convention plugin applies Roborazzi to every Compose module, so applying it is not enough.)
 screenshot_modules() {
   module_paths | while read -r m; do
-    grep -qiE 'roborazzi' "$(module_dir "$m")/build.gradle.kts" 2>/dev/null && printf '%s\n' "$m"
+    d="$(module_dir "$m")"
+    if [ -d "$d/src/test/screenshots" ] \
+       || find "$d/src/test" "$d/build/outputs/roborazzi" -name '*.png' -print -quit 2>/dev/null | grep -q .; then
+      printf '%s\n' "$m"
+    fi
   done
 }
 

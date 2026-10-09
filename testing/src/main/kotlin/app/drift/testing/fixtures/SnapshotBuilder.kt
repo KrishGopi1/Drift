@@ -77,8 +77,9 @@ object SnapshotBuilder {
     val ENGINE_VERSION = EngineVersion(1, 0, 0)
     private val HC = setOf(SourceId.HEALTH_CONNECT)
     private const val SLEEP_EFFICIENCY = 0.88
-    private const val MAX_DEBT_HOURS = 12.0
-    private const val REPAY_RATE = 0.5
+    /** Plan 4.3: surplus repays at eta = 0.6; the leak lambda gives a 7-day half-life. */
+    private const val ETA = 0.6
+    private val LAMBDA = Math.pow(0.5, 1.0 / 7.0)
     private const val WINDOW_NIGHTS = 14
 
     fun build(spec: SnapshotSpec): AnalysisSnapshot {
@@ -114,9 +115,11 @@ object SnapshotBuilder {
         var debt = Duration.ZERO
         for (i in windowStart until n) {
             val h = nights[i]
+            // D_t = lambda*D_(t-1) + (N-S) on a shortfall, lambda*D_(t-1) - eta*(S-N) on a surplus, floored at 0.
             val raw = if (h == null) Duration.ZERO else need.minus(hours(h))
-            val delta = if (raw.isNegative) raw.multipliedBy((REPAY_RATE * 100).toLong()).dividedBy(100) else raw
-            val after = (debt + delta).coerceIn(Duration.ZERO, hours(MAX_DEBT_HOURS))
+            val leaked = Duration.ofSeconds(Math.round(debt.seconds * LAMBDA))
+            val step = if (raw.isNegative) Duration.ofSeconds(Math.round(raw.seconds * ETA)) else raw
+            val after = (leaked + step).coerceIn(Duration.ZERO, Duration.ofDays(1))
             trend += DailyDebt(
                 date = dateOf(i),
                 sleep = h?.let { Quantity(hours(it), Provenance.MEASURED, sourceIds = HC) },
@@ -281,8 +284,8 @@ object SnapshotBuilder {
     }
 
     fun bandFor(debt: Duration): DebtBand = when {
-        debt < Duration.ofHours(2) -> DebtBand.LOW
-        debt < Duration.ofHours(5) -> DebtBand.MODERATE
+        debt < Duration.ofHours(5) -> DebtBand.LOW
+        debt <= Duration.ofHours(10) -> DebtBand.MODERATE
         else -> DebtBand.HIGH
     }
 
