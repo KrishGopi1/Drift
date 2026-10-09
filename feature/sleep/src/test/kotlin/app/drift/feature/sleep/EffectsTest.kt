@@ -71,8 +71,8 @@ class SleepScreenEffectsTest {
 
     private val explained = mutableListOf<MetricKey>()
     private val opened = mutableListOf<EpisodeId>()
-    private val added = mutableListOf<LocalDate>()
-    private var history = 0
+    private var settingsOpened = 0
+    private var energyOpened = 0
     private var bodyClock = 0
     private var retried = 0
 
@@ -80,14 +80,14 @@ class SleepScreenEffectsTest {
         SleepScreen(
             state,
             SleepActions(
-                onExplain = { explained += it }, onOpenHistory = { history++ }, onOpenBodyClock = { bodyClock++ },
-                onOpenNight = { opened += it }, onAddNight = { added += it }, onRetry = { retried++ },
+                onExplain = { explained += it }, onOpenSettings = { settingsOpened++ }, onOpenBodyClock = { bodyClock++ },
+                onOpenNight = { opened += it }, onOpenEnergy = { energyOpened++ }, onRetry = { retried++ },
             ),
         )
     }
 
-    private fun ready(snap: app.drift.model.engine.AnalysisSnapshot = SnapshotFixtures.full(ctx), ids: Map<LocalDate, EpisodeId> = emptyMap()) =
-        ScreenState.Ready(snap.toSleepUiModel(ctx.zone, true, ids))
+    private fun ready(snap: app.drift.model.engine.AnalysisSnapshot = SnapshotFixtures.full(ctx), lastNight: app.drift.model.SleepEpisode? = null) =
+        ScreenState.Ready(snap.toSleepUiModel(ctx.zone, true, emptyMap(), lastNight))
 
     @Test fun debtCardOpensWhySheetForDebt() {
         show(ready())
@@ -108,10 +108,23 @@ class SleepScreenEffectsTest {
         assertThat(explained).containsExactly(MetricKey.REGULARITY, MetricKey.RECOMMENDATION).inOrder()
     }
 
-    @Test fun historyButtonOpensHistory() {
+    @Test fun profileButtonOpensSettings() {
         show(ready())
-        rule.onNodeWithText("History").performClick()
-        assertThat(history).isEqualTo(1)
+        rule.onNodeWithContentDescription("Profile and settings").performClick()
+        assertThat(settingsOpened).isEqualTo(1)
+    }
+
+    @Test fun potentialTileAndEnergyCardOpenTheEnergyTab() {
+        show(ready())
+        rule.onNode(hasClickAction() and hasText("Energy potential", substring = true)).performScrollTo().performClick()
+        rule.onNode(hasClickAction() and hasText("See your full energy schedule", substring = true)).performScrollTo().performClick()
+        assertThat(energyOpened).isEqualTo(2)
+    }
+
+    @Test fun headerShowsTheDebtWindowAndCounters() {
+        show(ready())
+        rule.onNodeWithText("My sleep").assertExists()
+        rule.onNode(hasContentDescription("Great", substring = true) and hasContentDescription("Super", substring = true)).assertExists()
     }
 
     @Test fun regularityNumbersOpenBodyClock() {
@@ -120,17 +133,17 @@ class SleepScreenEffectsTest {
         assertThat(bodyClock).isEqualTo(1)
     }
 
-    @Test fun nightRowOpensThatNight() {
-        val id = EpisodeId("last-night")
-        show(ready(ids = mapOf(ctx.today to id)))
-        rule.onAllNodes(hasClickAction() and hasText("Slept", substring = true)).onFirst().performScrollTo().performClick()
-        assertThat(opened).containsExactly(id)
+    @Test fun lastNightCardOpensThatNight() {
+        val night = Eps.night("last-night", ctx.today, ctx.zone)
+        show(ready(lastNight = night))
+        rule.onNode(hasClickAction() and hasContentDescription("Last night:", substring = true)).performScrollTo().performClick()
+        assertThat(opened).containsExactly(night.id)
     }
 
-    @Test fun missingNightRowOffersAddANight() {
-        show(ready(SnapshotFixtures.debtUnavailable(ctx)))
-        rule.onAllNodes(hasClickAction() and hasText("Estimated night", substring = true)).onFirst().performScrollTo().performClick()
-        assertThat(added).hasSize(1)
+    @Test fun changeTileExplainsDebt() {
+        show(ready())
+        rule.onNode(hasClickAction() and hasText("Since yesterday", substring = true)).performScrollTo().performClick()
+        assertThat(explained).containsExactly(MetricKey.SLEEP_DEBT)
     }
 
     @Test fun errorRetryCallsBack() {
@@ -141,7 +154,7 @@ class SleepScreenEffectsTest {
 
     @Test fun tooFewNightsShowsCounterAndNoBars() {
         show(ready(SnapshotFixtures.early(ctx)))
-        rule.onNodeWithText("Up adds to debt, down repays it").assertDoesNotExist()
+        rule.onNodeWithText("Since yesterday").assertDoesNotExist()
 
     }
 }

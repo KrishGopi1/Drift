@@ -51,6 +51,7 @@ import app.drift.model.ui.ScreenState
 import kotlin.math.roundToInt
 
 data class BodyClockActions(
+    val onBack: (() -> Unit)? = null,
     val onExplain: (MetricKey) -> Unit = {},
     val onRetry: () -> Unit = {},
     val onFix: (SourceFix) -> Unit = {},
@@ -66,7 +67,7 @@ fun BodyClockScreen(
     ScreenBody(
         modifier = modifier,
         scrollable = scrollable,
-        topBar = { DriftTopBar(title = stringResource(R.string.body_title)) },
+        topBar = { DriftTopBar(title = stringResource(R.string.body_title), onBack = actions.onBack) },
     ) {
         ScreenStateHost(state, onRetry = actions.onRetry, onFix = actions.onFix) { model ->
             BodyClockContent(model, actions)

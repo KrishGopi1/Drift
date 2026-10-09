@@ -67,16 +67,59 @@ fun DriftTopBar(
     }
 }
 
+/**
+ * Header of a main tab: bold [title] over a muted [subtitle] (for example a date range), with [trailing] content
+ * (usually [ProfileButton]) on the right. Announced as a heading.
+ */
+@Composable
+fun DriftScreenHeader(
+    title: String,
+    modifier: Modifier = Modifier,
+    subtitle: (@Composable () -> Unit)? = null,
+    trailing: @Composable RowScope.() -> Unit = {},
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(DriftTheme.colors.background)
+            .padding(start = DriftTheme.spacing.gutter, end = DriftTheme.spacing.md, top = DriftTheme.spacing.lg, bottom = DriftTheme.spacing.md),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(title, style = DriftTheme.typography.screenTitle, color = DriftTheme.colors.onSurface, modifier = Modifier.semantics { heading() })
+            subtitle?.invoke()
+        }
+        trailing()
+    }
+}
+
+/** Muted subtitle line for [DriftScreenHeader]. */
+@Composable
+fun HeaderSubtitle(text: String) {
+    Text(text, style = DriftTheme.typography.screenSubtitle, color = DriftTheme.colors.onSurfaceMuted)
+}
+
+/** Round profile button that opens Settings, drawn in the accent colour. */
+@Composable
+fun ProfileButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    androidx.compose.material3.IconButton(onClick = onClick, modifier = modifier.size(48.dp)) {
+        Icon(
+            DriftIcons.Profile, contentDescription = stringResource(R.string.ds_profile),
+            tint = DriftTheme.colors.primary, modifier = Modifier.size(36.dp),
+        )
+    }
+}
+
 /** One destination in [DriftBottomNavBar]. [contentDescription] defaults to the label. */
 data class DriftNavItem(val label: String, val icon: ImageVector, val contentDescription: String = label)
 
-/** Energy / Sleep / Body clock / Settings, in the order the main screens appear. */
+/** Sleep / Energy / Progress / Learn, in the order the main tabs appear. */
 @Composable
 fun driftDefaultNavItems(): List<DriftNavItem> = listOf(
-    DriftNavItem(stringResource(R.string.ds_nav_energy), DriftIcons.Energy),
-    DriftNavItem(stringResource(R.string.ds_nav_sleep), DriftIcons.Moon),
-    DriftNavItem(stringResource(R.string.ds_nav_body_clock), DriftIcons.BodyClock),
-    DriftNavItem(stringResource(R.string.ds_nav_settings), DriftIcons.Settings),
+    DriftNavItem(stringResource(R.string.ds_nav_sleep), DriftIcons.TabSleep),
+    DriftNavItem(stringResource(R.string.ds_nav_energy), DriftIcons.TabEnergy),
+    DriftNavItem(stringResource(R.string.ds_nav_progress), DriftIcons.TabProgress),
+    DriftNavItem(stringResource(R.string.ds_nav_learn), DriftIcons.TabLearn),
 )
 
 /**
@@ -91,8 +134,7 @@ fun DriftBottomNavBar(
     modifier: Modifier = Modifier,
 ) {
     val c = DriftTheme.colors
-    Column(modifier.fillMaxWidth().background(c.background).navigationBarsPadding()) {
-        DriftDivider()
+    Column(modifier.fillMaxWidth().background(c.surface).navigationBarsPadding()) {
         Row(
             modifier = Modifier.fillMaxWidth().selectableGroup().padding(horizontal = DriftTheme.spacing.xs, vertical = DriftTheme.spacing.sm),
             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -110,18 +152,11 @@ fun DriftBottomNavBar(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(DriftTheme.spacing.xs),
                 ) {
-                    Box(
-                        Modifier
-                            .width(56.dp)
-                            .heightIn(min = 28.dp)
-                            .clip(RoundedCornerShape(DriftTheme.radii.pill))
-                            .background(if (selected) c.primaryContainer else androidx.compose.ui.graphics.Color.Transparent),
-                        contentAlignment = Alignment.Center,
-                    ) {
+                    Box(Modifier.width(56.dp).heightIn(min = 28.dp), contentAlignment = Alignment.Center) {
                         Icon(
                             item.icon, null,
-                            tint = if (selected) c.onPrimaryContainer else c.onSurfaceMuted,
-                            modifier = Modifier.size(24.dp),
+                            tint = if (selected) c.onSurface else c.primary.copy(alpha = 0.75f),
+                            modifier = Modifier.size(26.dp),
                         )
                     }
                     // Labels are secondary to the icon + TalkBack name, so they stop growing at 1.3x to keep four tabs on screen.

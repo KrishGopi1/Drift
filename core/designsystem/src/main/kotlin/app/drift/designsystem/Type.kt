@@ -31,6 +31,11 @@ class DriftTypography(
     val caption: TextStyle = style(12, 16, FontWeight.Medium, tracking = 0.2),
     /** Unit next to a hero number. */
     val unit: TextStyle = style(20, 26, FontWeight.Medium),
+    /** Main-tab header: bold title over a muted subtitle of nearly the same size. */
+    val screenTitle: TextStyle = style(24, 30, FontWeight.Bold),
+    val screenSubtitle: TextStyle = style(22, 28, FontWeight.Bold),
+    /** Small capitals over a card ("LAST NIGHT"). */
+    val overline: TextStyle = style(12, 16, FontWeight.SemiBold, tracking = 1.2),
 ) {
     companion object {
         private fun style(

@@ -56,6 +56,7 @@ class SettingsUiTest {
             CompositionLocalProvider(LocalActivityResultRegistryOwner provides registry) {
                 DriftTheme(ThemeMode.LIGHT, reducedMotion = true) {
                     SettingsRoute(
+                        onBack = { nav += "back" },
                         onOpenSchedule = { nav += "schedule" }, onOpenMethodology = { nav += "methodology" },
                         onOpenLicenses = { nav += "licenses" }, onFix = { fixes += it }, onResetComplete = { resets++ }, viewModel = vm,
                     )

@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -17,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.drift.designsystem.DriftTheme
 import app.drift.feature.energy.EnergyUiModel
+import app.drift.feature.energy.lastNight
 import app.drift.feature.energy.pendingEpisode
 import app.drift.feature.energy.readyModel
 import app.drift.model.repository.ThemeMode
@@ -59,13 +61,21 @@ abstract class EnergyGalleryCase(private val name: String) {
 }
 
 private fun model(snap: app.drift.model.engine.AnalysisSnapshot, c: FixtureContext, kind: String): EnergyUiModel = when (kind) {
-    "evening" -> readyModel(snap, c, now = c.today.atTime(18, 30).atZone(c.zone).toInstant())
+    "evening" -> readyModel(snap, c, now = c.today.atTime(18, 30).atZone(c.zone).toInstant(), episodes = listOf(lastNight(c)))
     "pending" -> readyModel(snap, c, pending = pendingEpisode(c), checkInDue = true)
-    else -> readyModel(snap, c)
+    else -> readyModel(snap, c, episodes = listOf(lastNight(c)))
 }
 
 @Composable
-private fun Screen(state: ScreenState<EnergyUiModel>) = EnergyScreen(state, EnergyActions(), scrollable = false)
+private fun Screen(state: ScreenState<EnergyUiModel>, expanded: Boolean = false) =
+    EnergyScreen(state, EnergyActions(), Modifier.height(800.dp), sheetExpanded = expanded)
+
+class Energy_sheet_ist_Gallery : EnergyGalleryCase("energy_sheet_ist") {
+    @Composable override fun Content() {
+        val c = FixtureContext.IST
+        Screen(ScreenState.Ready(model(SnapshotFixtures.full(c), c, "")), expanded = true)
+    }
+}
 
 class Energy_full_ist_Gallery : EnergyGalleryCase("energy_full_ist") {
     @Composable override fun Content() {

@@ -66,3 +66,26 @@ Cards: radius lg (24 dp), no border in dark. Selected segment and nav item use p
 3. "Last night" card: the newest contribution row (slept vs needed, +added / repaid in debt/repaid colours).
    Tapping it opens the night, or adds one when there is no data.
 4. Contribution, need, regularity, tonight cards stay below.
+
+## October 2026 structure (RISE as direct reference, plan section 1 amended)
+Tabs: **Sleep** (home) · **Energy** · **Progress** · **Learn**. Settings opens from the profile button on every tab
+header; Body clock and the methodology open from Learn and the Sleep tab.
+
+- **Sleep (home):** "My sleep" over the 14-night window ("Oct 1 – 14"). Debt gauge with Great/Super night counters,
+  band and confidence; tiles "+0.4h debt since yesterday" and "Energy potential 97% >" (opens Energy); LAST NIGHT
+  card (total sleep, times, source, provenance; opens the night); TODAY'S ENERGY mini curve (opens Energy); need,
+  regularity and tonight cards.
+- **Energy:** "My energy" with "Great ⚡ 85% ?" (potential label, score, explain). One continuous timeline from
+  yesterday 18:00 to tomorrow 12:00 at 60 dp/hour: last night's sleep is a block with drag handles on both edges
+  (5-minute steps, 30 min–16 h, never past now; TalkBack gets earlier/later actions). While dragging the engine reruns
+  as a preview and the curve and potential update; release saves a user edit. Tonight's recommended sleep is a dashed
+  block. Habits, melatonin window and nap window sit on the line as icon badges. A pull-up "Up next" panel holds
+  next peak/dip, tonight, habits, nap, trade-off and check-in.
+- **Progress:** "My progress" with Times / Debt / Quality. Times: one column per night (named by the evening it
+  started), time axis on the right, sleep blocks with a sleep mark and sun, moon target at the melatonin window, a
+  "Debt-free schedule · GREAT IN N DAYS" card and "All sleep times". Debt: line chart with hours axis and "All sleep
+  debt". Quality: 1–5 morning rating prompt, dot chart and "All sleep quality".
+- **Learn:** seven short original articles plus Body clock and How Drift calculates.
+
+Icons: Material Symbols Rounded (Apache 2.0) plus drawn tab icons (ring for Sleep, stacked lines for Energy) and the
+"zz" sleep mark. Palette: background #000000, cards #1C1C23, violet #6B3CF0 container and #A98BFF text accent.

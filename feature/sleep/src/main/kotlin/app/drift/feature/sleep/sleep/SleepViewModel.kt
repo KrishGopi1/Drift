@@ -49,13 +49,12 @@ class SleepViewModel @Inject constructor(
             today.minusDays(15).atStartOfDay(zone).toInstant(),
             today.plusDays(1).atStartOfDay(zone).toInstant(),
         )
-        val ids = sleep.observeEpisodes(window).map { list ->
-            list.filter { it.kind == EpisodeKind.MAIN }
-                .associate { it.end.atZone(it.zone).toLocalDate() to it.id }
-        }
-        combine(snapshotFeed(analysis, sources, settings, texts), ids) { feed, nightIds ->
+        val mains = sleep.observeEpisodes(window).map { list -> list.filter { it.kind == EpisodeKind.MAIN } }
+        combine(snapshotFeed(analysis, sources, settings, texts), mains) { feed, nights ->
+            val nightIds = nights.associate { it.end.atZone(it.zone).toLocalDate() to it.id }
+            val last = nights.filter { !it.end.isAfter(clock.instant()) }.maxByOrNull { it.end }
             when (feed) {
-                is SnapshotFeed.Data -> ScreenState.Ready(feed.snapshot.toSleepUiModel(zone, feed.use24hSetting, nightIds))
+                is SnapshotFeed.Data -> ScreenState.Ready(feed.snapshot.toSleepUiModel(zone, feed.use24hSetting, nightIds, last))
                 is SnapshotFeed.NoSnapshot -> feed.toState(MIN_NIGHTS)
             }
         }.catch { emit(ScreenState.Error(texts.loadFailed(), retryable = true)) }

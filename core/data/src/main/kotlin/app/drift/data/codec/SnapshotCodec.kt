@@ -19,6 +19,7 @@ import app.drift.model.engine.DebtBand
 import app.drift.model.engine.EnergyCurve
 import app.drift.model.engine.EnergyLabel
 import app.drift.model.engine.EnergyPotential
+import app.drift.model.engine.PotentialDay
 import app.drift.model.engine.EnergyPhase
 import app.drift.model.engine.EnergyPoint
 import app.drift.model.engine.EnergySegment
@@ -93,7 +94,8 @@ data class SufficiencyDto(
     val debtAvailable: Boolean, val regularityAvailable: Boolean,
 )
 
-@Serializable data class PotentialDto(val score: QDto<Double>, val label: EnergyLabel, val trend: List<TrendPointDto>)
+@Serializable data class PotentialDayDto(val date: String, val score: Double, val label: EnergyLabel)
+@Serializable data class PotentialDto(val score: QDto<Double>, val label: EnergyLabel, val trend: List<PotentialDayDto>)
 @Serializable data class ProjectionDto(val date: String, val debt: String)
 @Serializable data class CatchUpDto(val nightsToGreat: Int?, val projection: List<ProjectionDto>)
 @Serializable
@@ -191,7 +193,7 @@ fun AnalysisSnapshot.toDto() = SnapshotDto(
         dataSufficiency.nightsUntilPersonalNeed, dataSufficiency.debtAvailable, dataSufficiency.regularityAvailable,
     ),
     energyPotential = energyPotential?.let { p ->
-        PotentialDto(p.score.dblDto(), p.label, p.trend.map { TrendPointDto(it.first.toString(), it.second) })
+        PotentialDto(p.score.dblDto(), p.label, p.trend.map { PotentialDayDto(it.date.toString(), it.score, it.label) })
     },
     catchUp = catchUp?.let { c -> CatchUpDto(c.nightsToGreat, c.projection.map { ProjectionDto(it.first.toString(), it.second.toString()) }) },
 )
@@ -242,7 +244,7 @@ fun SnapshotDto.toModel() = AnalysisSnapshot(
         dataSufficiency.nightsUntilPersonalNeed, dataSufficiency.debtAvailable, dataSufficiency.regularityAvailable,
     ),
     energyPotential = energyPotential?.let { p ->
-        EnergyPotential(p.score.dbl(), p.label, p.trend.map { LocalDate.parse(it.date) to it.value })
+        EnergyPotential(p.score.dbl(), p.label, p.trend.map { PotentialDay(LocalDate.parse(it.date), it.score, it.label) })
     },
     catchUp = catchUp?.let { c -> CatchUp(c.nightsToGreat, c.projection.map { LocalDate.parse(it.date) to Duration.parse(it.debt) }) },
 )

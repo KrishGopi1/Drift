@@ -63,7 +63,11 @@ class SleepScreenshots : ScreenshotBase() {
         rule.shots("sleep_$name", ctx, combos) { SleepScreen(state, SleepActions(), scrollable = false) }
 
     private fun ready(snap: AnalysisSnapshot, ctx: FixtureContext = IST, ids: Boolean = false) = ScreenState.Ready(
-        snap.toSleepUiModel(ctx.zone, true, if (ids) snap.debtTrend.associate { it.date to app.drift.model.EpisodeId("e-${it.date}") } else emptyMap()),
+        snap.toSleepUiModel(
+            ctx.zone, true,
+            if (ids) snap.debtTrend.associate { it.date to app.drift.model.EpisodeId("e-${it.date}") } else emptyMap(),
+            Eps.night("last", ctx.today, ctx.zone, bed = LocalTime.of(23, 5), wake = LocalTime.of(6, 55)),
+        ),
     )
 
     @Test fun loading() = states("loading", ScreenStateFixtures.loading())
@@ -77,6 +81,27 @@ class SleepScreenshots : ScreenshotBase() {
     @Test fun tooFewNights() = states("too_few_nights", ready(SnapshotFixtures.early(IST)), combos = listOf(Combo.DARK_2X))
     @Test fun debtUnavailable() = states("debt_unavailable", ready(SnapshotFixtures.debtUnavailable(IST)), combos = listOf(Combo.DARK_2X))
     @Test fun tradeOff() = states("trade_off", ready(SnapshotFixtures.withTradeOff(IST)), combos = listOf(Combo.DARK_2X))
+}
+
+@RunWith(AndroidJUnit4::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(sdk = [35], qualifiers = CFG)
+class ProgressScreenshots : ScreenshotBase() {
+    private fun shot(name: String, tab: app.drift.feature.sleep.progress.ProgressTab, ctx: FixtureContext = IST, combos: List<Combo> = Combo.ALL) {
+        val eps = Eps.history(ctx, 20, setOf(4))
+        val model = app.drift.feature.sleep.progress.buildProgressModel(
+            ctx.today, ctx.zone, eps, SnapshotFixtures.highDebt(ctx),
+            listOf(app.drift.model.CheckIn.SleepRating(ctx.now, ctx.today.minusDays(1), 4), app.drift.model.CheckIn.SleepRating(ctx.now, ctx.today.minusDays(2), 2)),
+            false,
+        )
+        rule.shots("progress_$name", ctx, combos) {
+            app.drift.feature.sleep.progress.ProgressScreen(ScreenState.Ready(model), app.drift.feature.sleep.progress.ProgressActions(), initialTab = tab, scrollable = false)
+        }
+    }
+
+    @Test fun times() = shot("times", app.drift.feature.sleep.progress.ProgressTab.TIMES)
+    @Test fun debt() = shot("debt", app.drift.feature.sleep.progress.ProgressTab.DEBT, combos = listOf(Combo.DARK_1X, Combo.LIGHT_1X))
+    @Test fun quality() = shot("quality", app.drift.feature.sleep.progress.ProgressTab.QUALITY, combos = listOf(Combo.DARK_1X))
 }
 
 @RunWith(AndroidJUnit4::class)

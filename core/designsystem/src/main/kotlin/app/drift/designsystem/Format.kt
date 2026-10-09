@@ -67,6 +67,39 @@ object DriftFormat {
         }
     }
 
+    /** Compact clock for timelines: "1:36a" / "11p" (12 h) or "01:36" (24 h). Whole hours drop the minutes in 12 h. */
+    fun shortClock(at: Instant, zone: ZoneId, use24h: Boolean): String {
+        val z = ZonedDateTime.ofInstant(at, zone)
+        if (use24h) return String.format(Locale.US, "%02d:%02d", z.hour, z.minute)
+        val h12 = if (z.hour % 12 == 0) 12 else z.hour % 12
+        val suffix = if (z.hour < 12) "a" else "p"
+        return if (z.minute == 0) "$h12$suffix" else String.format(Locale.US, "%d:%02d%s", h12, z.minute, suffix)
+    }
+
+    /** Hour axis label: "2p" (12 h) or "14" (24 h). */
+    fun hourLabel(at: Instant, zone: ZoneId, use24h: Boolean): String {
+        val h = ZonedDateTime.ofInstant(at, zone).hour
+        if (use24h) return String.format(Locale.US, "%02d", h)
+        val h12 = if (h % 12 == 0) 12 else h % 12
+        return "$h12" + if (h < 12) "a" else "p"
+    }
+
+    /** Short duration: "6h 29m", "45m", "8h". */
+    fun hm(d: Duration): String {
+        val m = abs((d.seconds / 60.0).roundToInt())
+        val h = m / 60
+        val r = m % 60
+        val sign = if (d.isNegative && m > 0) "-" else ""
+        return sign + when {
+            h == 0 -> "${r}m"
+            r == 0 -> "${h}h"
+            else -> "${h}h ${r}m"
+        }
+    }
+
+    /** Hours with one decimal: "6.3". */
+    fun hoursDecimal(d: Duration): String = decimal(d.seconds / 3600.0, 1)
+
     /** One decimal place, dot separator regardless of device locale for stable test output. */
     fun decimal(value: Double, decimals: Int): String = String.format(Locale.US, "%.${decimals}f", value)
 }

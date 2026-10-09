@@ -23,6 +23,9 @@ import app.drift.feature.sleep.bodyclock.BodyClockViewModel
 import app.drift.feature.sleep.history.HistoryActions
 import app.drift.feature.sleep.history.HistoryScreen
 import app.drift.feature.sleep.history.HistoryViewModel
+import app.drift.feature.sleep.progress.ProgressActions
+import app.drift.feature.sleep.progress.ProgressScreen
+import app.drift.feature.sleep.progress.ProgressViewModel
 import app.drift.feature.sleep.night.AddEntryActions
 import app.drift.feature.sleep.night.AddEntryScreen
 import app.drift.feature.sleep.night.AddEntryViewModel
@@ -49,8 +52,11 @@ const val SLEEP_ROUTE = "sleep"
 /** History: week / month / 3-month review. Reached from the Sleep screen. */
 const val HISTORY_ROUTE = "sleep/history"
 
-/** Body clock tab. */
+/** Body clock, reached from the Sleep tab and Learn. */
 const val BODY_CLOCK_ROUTE = "bodyclock"
+
+/** Progress tab: sleep times, debt and quality over two weeks. */
+const val PROGRESS_ROUTE = "progress"
 
 internal const val NIGHT_PATTERN = "sleep/night/{${NightDetailViewModel.ARG_EPISODE_ID}}"
 internal const val WHY_PATTERN = "sleep/why/{${WhyViewModel.ARG_METRIC}}"
@@ -79,6 +85,8 @@ fun NavGraphBuilder.sleepGraph(
     navController: NavHostController,
     onFix: (SourceFix) -> Unit,
     onOpenMethodology: ((MetricKey) -> Unit)? = null,
+    onOpenSettings: () -> Unit = {},
+    onOpenEnergy: () -> Unit = {},
 ) {
     composable(SLEEP_ROUTE) {
         val vm: SleepViewModel = hiltViewModel()
@@ -87,10 +95,29 @@ fun NavGraphBuilder.sleepGraph(
             state = state,
             actions = SleepActions(
                 onExplain = navController::navigateToWhy,
-                onOpenHistory = { navController.navigate(HISTORY_ROUTE) },
                 onOpenBodyClock = { navController.navigate(BODY_CLOCK_ROUTE) { launchSingleTop = true } },
                 onOpenNight = navController::navigateToNight,
+                onOpenEnergy = onOpenEnergy,
+                onOpenSettings = onOpenSettings,
+                onRetry = vm::retry,
+                onFix = onFix,
+            ),
+        )
+    }
+    composable(PROGRESS_ROUTE) {
+        val vm: ProgressViewModel = hiltViewModel()
+        val state by vm.state.collectAsStateWithLifecycle()
+        val ratingFailed by vm.ratingFailed.collectAsStateWithLifecycle()
+        ProgressScreen(
+            state = state,
+            ratingFailed = ratingFailed,
+            actions = ProgressActions(
+                onOpenNight = navController::navigateToNight,
                 onAddNight = { navController.navigateToAdd(it, EpisodeKind.MAIN) },
+                onRate = vm::rate,
+                onExplain = navController::navigateToWhy,
+                onOpenHistory = { navController.navigate(HISTORY_ROUTE) },
+                onOpenSettings = onOpenSettings,
                 onRetry = vm::retry,
                 onFix = onFix,
             ),
@@ -168,7 +195,12 @@ fun NavGraphBuilder.sleepGraph(
         val state by vm.state.collectAsStateWithLifecycle()
         BodyClockScreen(
             state = state,
-            actions = BodyClockActions(onExplain = navController::navigateToWhy, onRetry = vm::retry, onFix = onFix),
+            actions = BodyClockActions(
+                onBack = { navController.popBackStack() },
+                onExplain = navController::navigateToWhy,
+                onRetry = vm::retry,
+                onFix = onFix,
+            ),
         )
     }
     dialog(

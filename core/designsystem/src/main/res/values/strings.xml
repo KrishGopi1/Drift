@@ -15,8 +15,9 @@
 
     <string name="ds_nav_energy">Energy</string>
     <string name="ds_nav_sleep">Sleep</string>
-    <string name="ds_nav_body_clock">Body clock</string>
-    <string name="ds_nav_settings">Settings</string>
+    <string name="ds_nav_progress">Progress</string>
+    <string name="ds_nav_learn">Learn</string>
+    <string name="ds_profile">Profile and settings</string>
 
     <string name="ds_back">Back</string>
     <string name="ds_close">Close</string>

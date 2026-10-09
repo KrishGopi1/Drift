@@ -23,6 +23,7 @@ fun NavGraphBuilder.energyScreen(
     onFix: (SourceFix) -> Unit,
     onStartSetup: () -> Unit = {},
     onOpenSources: (() -> Unit)? = null,
+    onOpenSettings: () -> Unit = {},
 ) {
     composable(ENERGY_ROUTE) {
         EnergyRoute(
@@ -32,6 +33,7 @@ fun NavGraphBuilder.energyScreen(
                 onFix = onFix,
                 onStartSetup = onStartSetup,
                 onOpenSources = onOpenSources,
+                onOpenSettings = onOpenSettings,
             ),
         )
     }

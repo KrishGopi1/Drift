@@ -2,6 +2,23 @@
 <resources>
     <!-- Sleep screen -->
     <string name="sleep_title">Sleep</string>
+    <string name="sleep_home_title">My sleep</string>
+    <string name="sleep_label_super">Super</string>
+    <string name="sleep_label_great">Great</string>
+    <string name="sleep_label_good">Good</string>
+    <string name="sleep_label_fair">Fair</string>
+    <string name="sleep_label_low">Low</string>
+    <string name="sleep_change_value">%1$sh debt</string>
+    <string name="sleep_change_since">Since yesterday</string>
+    <string name="sleep_change_none">Change shows after two nights</string>
+    <string name="sleep_potential_title">Energy potential</string>
+    <string name="sleep_potential_pending">Shows once debt is known</string>
+    <string name="sleep_open_energy">Open energy schedule</string>
+    <string name="sleep_last_night_overline">Last night</string>
+    <string name="sleep_total_sleep">Total sleep time</string>
+    <string name="sleep_last_night_a11y">Last night: %1$s of sleep, %2$s, recorded by %3$s. Opens the night.</string>
+    <string name="sleep_energy_today">Today\'s energy</string>
+    <string name="sleep_energy_open_schedule">See your full energy schedule</string>
     <string name="sleep_subtitle">Last 14 nights</string>
     <string name="sleep_open_history">History</string>
     <string name="sleep_debt_label">Sleep debt</string>
@@ -185,4 +202,42 @@
     <string name="why_none_body">Check back after your next night\'s sleep.</string>
     <string name="why_open_night">Open this night</string>
     <string name="why_methodology">How this is calculated</string>
+    <!-- Progress -->
+    <string name="progress_title">My progress</string>
+    <string name="progress_subtitle">Last 14 nights</string>
+    <string name="progress_tab_times">Times</string>
+    <string name="progress_tab_debt">Debt</string>
+    <string name="progress_tab_quality">Quality</string>
+    <string name="progress_tabs_label">Choose what to show</string>
+    <string name="progress_no_data_short">--</string>
+    <string name="progress_column_a11y">%1$s: slept %2$s. Opens the night.</string>
+    <string name="progress_column_empty_a11y">%1$s: nothing recorded. Adds a night.</string>
+    <string name="progress_target_legend">Moon marks the start of your melatonin window, your best time to fall asleep</string>
+    <string name="progress_all_times">All sleep times</string>
+    <string name="progress_last_night">Last night (%1$s)</string>
+    <string name="progress_night_of">%1$s night</string>
+    <string name="progress_longer_history">See longer history</string>
+    <string name="progress_catchup_title">Debt-free schedule</string>
+    <string name="progress_catchup_there">Great now</string>
+    <plurals name="progress_catchup_in">
+        <item quantity="one">Great in %d day</item>
+        <item quantity="other">Great in %d days</item>
+    </plurals>
+    <string name="progress_catchup_long">Over two weeks</string>
+    <string name="progress_catchup_why">How sleep debt is paid back</string>
+    <string name="progress_debt_pending">Sleep debt shows after five recorded nights.</string>
+    <string name="progress_debt_point_a11y">%1$s: %2$s of sleep debt</string>
+    <string name="progress_all_debt">All sleep debt</string>
+    <string name="progress_today">Today</string>
+    <string name="progress_debt_value">%1$sh debt</string>
+    <string name="progress_rating_1">Poor</string>
+    <string name="progress_rating_2">Fair</string>
+    <string name="progress_rating_3">OK</string>
+    <string name="progress_rating_4">Good</string>
+    <string name="progress_rating_5">Great</string>
+    <string name="progress_not_rated">Not rated</string>
+    <string name="progress_rate_title">How did you sleep last night?</string>
+    <string name="progress_rate_failed">Your rating was not saved. Try again.</string>
+    <string name="progress_all_quality">All sleep quality</string>
+    <string name="progress_quality_note">Ratings are yours alone. Drift keeps them next to your sleep times so you can see what helps.</string>
 </resources>

@@ -39,8 +39,11 @@ enum class EnergyLabel { SUPER, GREAT, GOOD, FAIR, LOW }
 data class EnergyPotential(
     val score: app.drift.model.Quantity<Double>,
     val label: EnergyLabel,
-    val trend: List<Pair<LocalDate, Double>> = emptyList(),
+    val trend: List<PotentialDay> = emptyList(),
 )
+
+/** Energy potential after the night that ended on [date]. */
+data class PotentialDay(val date: LocalDate, val score: Double, val label: EnergyLabel)
 
 /**
  * If the user follows tonight's recommended bedtime and wake time from now on: the projected debt after each

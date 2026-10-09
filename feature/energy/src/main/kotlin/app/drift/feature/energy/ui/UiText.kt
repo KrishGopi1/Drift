@@ -17,6 +17,18 @@ import java.time.ZoneId
 @Immutable
 internal data class TimeFormat(val zone: ZoneId, val use24h: Boolean) {
     fun clock(at: Instant): String = DriftFormat.clock(at, zone, use24h)
+
+    /** Compact timeline form: "1:05p" or "13:05". */
+    fun short(at: Instant): String = DriftFormat.shortClock(at, zone, use24h)
+}
+
+internal fun app.drift.model.engine.HabitKind.icon(): androidx.compose.ui.graphics.vector.ImageVector = when (this) {
+    app.drift.model.engine.HabitKind.CAFFEINE_CUTOFF -> app.drift.designsystem.DriftIcons.Caffeine
+    app.drift.model.engine.HabitKind.LAST_MEAL -> app.drift.designsystem.DriftIcons.Meal
+    app.drift.model.engine.HabitKind.ALCOHOL_CUTOFF -> app.drift.designsystem.DriftIcons.Alcohol
+    app.drift.model.engine.HabitKind.MORNING_LIGHT -> app.drift.designsystem.DriftIcons.Daylight
+    app.drift.model.engine.HabitKind.EXERCISE_WINDOW -> app.drift.designsystem.DriftIcons.Exercise
+    app.drift.model.engine.HabitKind.DIM_LIGHTS -> app.drift.designsystem.DriftIcons.DimLights
 }
 
 @StringRes

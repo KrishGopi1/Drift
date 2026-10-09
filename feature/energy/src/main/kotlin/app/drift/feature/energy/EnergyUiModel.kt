@@ -1,6 +1,8 @@
 package app.drift.feature.energy
 
+import app.drift.model.Interval
 import app.drift.model.SleepEpisode
+import app.drift.model.engine.EnergyPotential
 import app.drift.model.engine.DayCurve
 import app.drift.model.engine.Recommendations
 import app.drift.model.engine.Reentrainment
@@ -32,6 +34,13 @@ data class EnergyUiModel(
     val pending: SleepEpisode?,
     val checkInDue: Boolean,
     val actionError: EnergyActionError? = null,
+    /** Today's energy potential (null until debt is available). */
+    val potential: EnergyPotential? = null,
+    /** Recorded sleep from yesterday evening on, drawn as blocks on the timeline (past ones can be dragged). */
+    val episodes: List<SleepEpisode> = emptyList(),
+    val melatoninWindow: Interval? = null,
+    /** True while the curve shows a preview of a sleep edit that is not saved yet. */
+    val previewing: Boolean = false,
 ) {
     val priorsOnly: Boolean get() = tier == SufficiencyTier.PRIORS_ONLY
     fun dayAt(offsetFromToday: Int): DayCurve? = days.firstOrNull { it.date == today.plusDays(offsetFromToday.toLong()) }

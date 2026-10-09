@@ -7,6 +7,10 @@ import app.drift.model.Provenance
 import app.drift.model.Quantity
 import app.drift.model.SourceId
 import app.drift.model.engine.AnalysisSnapshot
+import app.drift.model.engine.CatchUp
+import app.drift.model.engine.EnergyLabel
+import app.drift.model.engine.EnergyPotential
+import app.drift.model.engine.PotentialDay
 import app.drift.model.engine.CircadianEstimate
 import app.drift.model.engine.Chronotype
 import app.drift.model.engine.ChronotypeLabel
@@ -279,8 +283,47 @@ object SnapshotBuilder {
             explanations = emptyList(),
             state = EngineState(ENGINE_VERSION, spec.ctx.now, mapOf("need" to spec.needHours, "debt" to debt.toHoursDouble())),
             dataSufficiency = sufficiency,
+            energyPotential = if (debtAvailable) potentialFor(debt, trend, sleepDebt?.confidence?.level ?: ConfidenceLevel.MEDIUM, sources) else null,
+            catchUp = if (debtAvailable) catchUpFor(debt, nextWakeDate) else null,
         )
         return snapshotWithoutExplanations.copy(explanations = Explanations.build(spec.explanations, snapshotWithoutExplanations, spec))
+    }
+
+    /** Same mapping as engine model 4.6b: 100 * exp(-debt / 24 h), Super 92+, Great 80+, Good 68+, Fair 55+. */
+    fun potentialScore(debt: Duration): Double = Math.round(1000.0 * Math.exp(-debt.toMinutes() / (24.0 * 60.0))) / 10.0
+
+    fun potentialLabel(score: Double): EnergyLabel = when {
+        score >= 92 -> EnergyLabel.SUPER
+        score >= 80 -> EnergyLabel.GREAT
+        score >= 68 -> EnergyLabel.GOOD
+        score >= 55 -> EnergyLabel.FAIR
+        else -> EnergyLabel.LOW
+    }
+
+    private fun potentialFor(debt: Duration, trend: List<DailyDebt>, level: ConfidenceLevel, sources: Set<SourceId>): EnergyPotential {
+        val s = potentialScore(debt)
+        val lo = potentialScore(debt.plusMinutes(40))
+        val hi = potentialScore(debt.minusMinutes(40).coerceAtLeast(Duration.ZERO))
+        return EnergyPotential(
+            Quantity(s, Provenance.ESTIMATED, Confidence(minOf(lo, s), maxOf(hi, s), 0.9, level), sources),
+            potentialLabel(s),
+            trend.map { d -> potentialScore(d.debtAfter).let { PotentialDay(d.date, it, potentialLabel(it)) } },
+        )
+    }
+
+    /** Recovery at the engine's payback rule with the default eta (0.6) and a 7-day half-life. */
+    private fun catchUpFor(debt: Duration, firstNight: LocalDate): CatchUp {
+        val lambda = Math.pow(0.5, 1.0 / 7.0)
+        var d = debt.toMinutes().toDouble()
+        var nights: Int? = if (potentialScore(debt) >= 80) 0 else null
+        val projection = (0 until 14).map { k ->
+            val payback = minOf(0.25 * d, 60.0)
+            d = maxOf(0.0, lambda * d - 0.6 * payback)
+            val dur = Duration.ofMinutes(Math.round(d))
+            if (nights == null && potentialScore(dur) >= 80) nights = k + 1
+            firstNight.plusDays(k.toLong()) to dur
+        }
+        return CatchUp(nights, projection)
     }
 
     fun bandFor(debt: Duration): DebtBand = when {

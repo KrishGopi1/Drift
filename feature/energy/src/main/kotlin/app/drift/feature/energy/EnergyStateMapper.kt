@@ -25,6 +25,9 @@ internal data class EnergyInputs(
     val zone: ZoneId,
     val actionError: EnergyActionError?,
     val dismissedEpisodes: Set<EpisodeId>,
+    val episodes: List<SleepEpisode> = emptyList(),
+    /** A preview run for an unsaved sleep edit; replaces [snapshot]'s curve and potential while set. */
+    val preview: AnalysisSnapshot? = null,
 )
 
 /**
@@ -37,7 +40,7 @@ internal data class EnergyInputs(
  *   history, Insufficient otherwise (debt availability picks the reason).
  */
 internal fun mapEnergyState(input: EnergyInputs): ScreenState<EnergyUiModel> {
-    val snapshot = input.snapshot
+    val snapshot = input.preview ?: input.snapshot
         ?: return if (input.analysisFailed || input.refreshFailed) ScreenState.Error(message = "", retryable = true) else ScreenState.Loading
     val sufficiency = snapshot.dataSufficiency
     if (snapshot.energyCurve.days.isEmpty()) {
@@ -70,6 +73,10 @@ internal fun mapEnergyState(input: EnergyInputs): ScreenState<EnergyUiModel> {
             pending = input.pending?.takeIf { it.id !in input.dismissedEpisodes },
             checkInDue = isCheckInDue(input.checkIns, input.now, phase),
             actionError = input.actionError,
+            potential = snapshot.energyPotential,
+            episodes = input.episodes,
+            melatoninWindow = snapshot.circadian.melatoninWindow,
+            previewing = input.preview != null,
         ),
     )
 }

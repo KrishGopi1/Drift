@@ -3,6 +3,7 @@ package app.drift.charts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.height
 import androidx.compose.ui.unit.dp
 import app.drift.model.engine.EnergyPhase
 import app.drift.model.engine.EnergySegment
@@ -94,12 +95,18 @@ class StageChartAxisGallery : GalleryCase("chart_stages_axis") {
 }
 
 class EnergyTimelineGallery : GalleryCase("chart_energy_timeline") {
-    @Composable override fun Content() = EnergyTimelineChart(
-        Fx.energyCurve(), now = Fx.at(Fx.today, 14, 20), zone = z,
-        markers = listOf(
-            TimelineMarker(Fx.at(Fx.today, 13, 0), "13:00", "Last caffeine"),
-            TimelineMarker(Fx.at(Fx.today, 17, 30), "17:30 to 19:00", "Exercise"),
+    @Composable override fun Content() = EnergyTimeline(
+        days = listOf(Fx.energyCurve(Fx.today.minusDays(1)), Fx.energyCurve(), Fx.energyCurve(Fx.today.plusDays(1))),
+        now = Fx.at(Fx.today, 9, 40), zone = z, use24h = false,
+        contentDescription = "Energy timeline",
+        blocks = listOf(
+            TimelineBlock("last", Fx.at(Fx.today.minusDays(1), 23, 40), Fx.at(Fx.today, 6, 30), editable = true, heading = "Total sleep time", value = "6h 50m", detail = "Phone detection"),
         ),
+        markers = listOf(
+            TimelineMarker(Fx.at(Fx.today, 7, 0), "7a to 8a", "Morning light", app.drift.designsystem.DriftIcons.Daylight),
+            TimelineMarker(Fx.at(Fx.today, 13, 30), "1:30p", "Last caffeine", app.drift.designsystem.DriftIcons.Caffeine),
+        ),
+        modifier = androidx.compose.ui.Modifier.height(640.dp),
     )
 }
 

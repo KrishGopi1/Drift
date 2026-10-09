@@ -66,6 +66,8 @@ import java.time.format.FormatStyle
 import java.util.Locale
 
 data class SettingsActions(
+    /** Settings opens from the profile button, so it has a back arrow when the host provides this. */
+    val onBack: (() -> Unit)? = null,
     val onOpenSchedule: () -> Unit = {},
     val onOpenMethodology: () -> Unit = {},
     val onOpenLicenses: () -> Unit = {},
@@ -91,6 +93,7 @@ data class SettingsActions(
  */
 @Composable
 fun SettingsRoute(
+    onBack: (() -> Unit)?,
     onOpenSchedule: () -> Unit,
     onOpenMethodology: () -> Unit,
     onOpenLicenses: () -> Unit,
@@ -118,6 +121,7 @@ fun SettingsRoute(
         state = state,
         appVersion = appVersion(context),
         actions = SettingsActions(
+            onBack = onBack,
             onOpenSchedule = onOpenSchedule, onOpenMethodology = onOpenMethodology, onOpenLicenses = onOpenLicenses,
             onSyncNow = viewModel::syncNow, onSourceEnabled = viewModel::setSourceEnabled, onFix = { fix ->
                 if (fix == SourceFix.ImportSleepAsAndroidBackup) saaPicker.launch(arrayOf("*/*")) else onFix(fix)
@@ -152,7 +156,7 @@ fun SettingsScreen(
     onTryAnotherFile: () -> Unit = {},
 ) {
     Column(Modifier.fillMaxSize().background(DriftTheme.colors.background)) {
-        DriftTopBar(stringResource(R.string.st_title), applyStatusBarInsets = true)
+        DriftTopBar(stringResource(R.string.st_title), onBack = actions.onBack, applyStatusBarInsets = true)
         ScreenStateHost(
             state = state, modifier = Modifier.weight(1f).padding(horizontal = DriftTheme.spacing.gutter),
             onRetry = actions.onRetry, onFix = actions.onFix,

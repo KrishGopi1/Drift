@@ -1,13 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Top bar and day switcher -->
-    <string name="energy_title">Energy</string>
-    <string name="energy_day_yesterday">Yesterday</string>
-    <string name="energy_day_today">Today</string>
-    <string name="energy_day_tomorrow">Tomorrow</string>
-    <string name="energy_day_switcher_label">Choose a day</string>
-    <string name="energy_date_pattern">EEEE d MMMM</string>
-    <string name="energy_no_curve_for_day">No energy curve is available for this day yet.</string>
+    <!-- Header and timeline -->
+    <string name="energy_header_title">My energy</string>
+    <string name="energy_label_super">Super</string>
+    <string name="energy_label_great">Great</string>
+    <string name="energy_label_good">Good</string>
+    <string name="energy_label_fair">Fair</string>
+    <string name="energy_label_low">Low</string>
+    <string name="energy_potential_a11y">Energy potential %1$s, %2$d percent, %3$s. Shows why.</string>
+    <string name="energy_previewing">Release to save</string>
+    <string name="energy_total_sleep">Total sleep time</string>
+    <string name="energy_nap">Nap</string>
+    <string name="energy_recommended">Recommended for you</string>
+    <string name="energy_handle_start">Fell asleep %1$s. Drag to change.</string>
+    <string name="energy_handle_end">Woke up %1$s. Drag to change.</string>
+    <string name="energy_earlier">5 minutes earlier</string>
+    <string name="energy_later">5 minutes later</string>
+    <string name="energy_nap_window">Nap window</string>
+    <string name="energy_up_next">Up next</string>
+    <string name="energy_next_short">%1$s at %2$s</string>
+    <string name="energy_sheet_expand">Show details</string>
+    <string name="energy_sheet_collapse">Hide details</string>
+    <string name="energy_source_health_connect">Health Connect</string>
+    <string name="energy_source_saa">Sleep as Android</string>
+    <string name="energy_source_phone">Phone detection</string>
+    <string name="energy_source_user">Entered by you</string>
+    <string name="energy_source_other">Another app</string>
     <string name="energy_error_default">Drift could not load your energy curve.</string>
 
     <!-- Phases -->

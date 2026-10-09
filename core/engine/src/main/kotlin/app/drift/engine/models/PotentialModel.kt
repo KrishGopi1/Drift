@@ -7,6 +7,7 @@ import app.drift.model.Quantity
 import app.drift.model.engine.CatchUp
 import app.drift.model.engine.EnergyLabel
 import app.drift.model.engine.EnergyPotential
+import app.drift.model.engine.PotentialDay
 import java.time.LocalDate
 import kotlin.math.exp
 import kotlin.math.roundToInt
@@ -40,7 +41,10 @@ internal class PotentialModel(private val p: ParameterSet) {
         val lo = round1(score(debt.upper))
         val hi = round1(score(debt.lower))
         val q = Quantity(s, Provenance.ESTIMATED, Confidence(minOf(lo, s), maxOf(hi, s), 0.9, debt.level), debt.sources)
-        val trend = debt.daily.map { it.date to round1(score(it.debtAfter.seconds / 60.0)) }
+        val trend = debt.daily.map { d ->
+            val v = round1(score(d.debtAfter.seconds / 60.0))
+            PotentialDay(d.date, v, label(v))
+        }
         return EnergyPotential(q, label(s), trend)
     }
 

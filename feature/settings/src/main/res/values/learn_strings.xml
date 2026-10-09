@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="learn_title">Learn</string>
+    <string name="learn_subtitle">How your sleep works</string>
+    <string name="learn_more_title">Go deeper</string>
+    <string name="learn_body_clock_title">Your body clock</string>
+    <string name="learn_body_clock_summary">Melatonin timing, regularity and chronotype</string>
+    <string name="learn_methodology_title">How Drift calculates</string>
+    <string name="learn_methodology_summary">Every model, parameter and source</string>
+
+    <string name="learn_debt_title">Sleep debt</string>
+    <string name="learn_debt_summary">The sleep you owe your body, counted over two weeks.</string>
+    <string-array name="learn_debt_body">
+        <item>Sleep debt is the sleep you missed compared with what your body needs. If you need 8 hours and sleep 7, that night adds an hour.</item>
+        <item>Drift counts the last 14 nights. Recent nights matter most: debt fades by half over about a week, so a short night from two weeks ago barely counts while last night counts in full.</item>
+        <item>Extra sleep pays debt back, but not minute for minute. On average about six minutes of debt go for every ten extra minutes you sleep, so recovery takes a few nights rather than one long lie-in.</item>
+        <item>Keeping debt under about 5 hours is a good target. Above that, most people notice slower thinking, lower mood and stronger afternoon dips, even when they feel used to it.</item>
+        <item>Naps count too: up to 90 minutes in full, longer naps at half rate.</item>
+    </string-array>
+
+    <string name="learn_potential_title">Energy potential</string>
+    <string name="learn_potential_summary">How much of a well-rested day you have today.</string>
+    <string-array name="learn_potential_body">
+        <item>Energy potential is a score from 0 to 100% that tells you how much of a fully rested day\'s energy is available to you today. It comes straight from your sleep debt.</item>
+        <item>With no debt you are at 100%. Each hour of debt takes a little off, faster at first: about 81% at 5 hours of debt, about 66% at 10 hours.</item>
+        <item>The labels are a quick read: Super from 92%, Great from 80%, Good from 68%, Fair from 55%, and Low below that.</item>
+        <item>Debt changes how strongly you feel your day, not when things happen. With more debt your peaks are lower and your dips are deeper, but they arrive at about the same times.</item>
+    </string-array>
+
+    <string name="learn_schedule_title">Your energy schedule</string>
+    <string name="learn_schedule_summary">Why energy rises and falls through the day.</string>
+    <string-array name="learn_schedule_body">
+        <item>Two systems shape your energy. Sleep pressure builds the longer you are awake and clears while you sleep. Your body clock pushes alertness up and down on a roughly 24-hour cycle.</item>
+        <item>Right after waking you feel groggy for up to an hour or two while sleep inertia wears off. Then energy climbs to a morning peak.</item>
+        <item>Early in the afternoon most people hit a dip. It is part of the body clock, not just lunch, and it is the best time for routine work, a walk or a short nap.</item>
+        <item>Energy comes back for an evening peak, then winds down towards your melatonin window, when sleep comes most easily.</item>
+        <item>Drift draws this from your own recent sleep times, so the schedule moves when your sleep moves. Drag last night\'s sleep on the Energy tab to see how a different night changes your day.</item>
+    </string-array>
+
+    <string name="learn_melatonin_title">The melatonin window</string>
+    <string name="learn_melatonin_summary">The hour when falling asleep is easiest.</string>
+    <string-array name="learn_melatonin_body">
+        <item>A couple of hours after your body starts releasing melatonin in the evening, there is roughly an hour when falling asleep is easiest. Drift calls it your melatonin window.</item>
+        <item>Going to bed well before it often means lying awake. Going to bed well after it pushes your body clock later and makes the next morning harder.</item>
+        <item>Drift estimates when your melatonin starts from when you usually fall asleep and wake, weighting free days most because alarms hide your natural timing.</item>
+        <item>Bright light in the evening delays the window; daylight in the morning brings it earlier. Dimming lights during wind-down helps you be ready when it opens.</item>
+    </string-array>
+
+    <string name="learn_need_title">Your sleep need</string>
+    <string name="learn_need_summary">How much sleep you personally need.</string>
+    <string-array name="learn_need_body">
+        <item>People need different amounts of sleep. Most adults need between 7 and 9 hours, and some need noticeably more or less.</item>
+        <item>Drift starts from a typical need for your age and learns yours from how long you sleep when you can, especially on free days without an alarm.</item>
+        <item>Long sleep after a run of short nights is partly catch-up, so Drift discounts it rather than assuming you need that much every night.</item>
+        <item>After about two weeks of nights the estimate becomes personal, and it keeps adjusting slowly as your life changes.</item>
+    </string-array>
+
+    <string name="learn_payback_title">Paying back sleep debt</string>
+    <string name="learn_payback_summary">Small, steady changes beat one long lie-in.</string>
+    <string-array name="learn_payback_body">
+        <item>The quickest sustainable way down is an earlier bedtime. Drift adds a little extra time to tonight\'s recommendation while you carry debt, up to an hour.</item>
+        <item>Keep your wake time steady and limit lie-ins to about an hour. Sleeping in much longer shifts your body clock and makes the next night harder.</item>
+        <item>A short nap of 20 to 30 minutes in the afternoon dip helps without spoiling the night. Finish naps several hours before bedtime.</item>
+        <item>The Progress tab shows how many nights it takes to reach Great energy if you follow the recommended times.</item>
+    </string-array>
+
+    <string name="learn_habits_title">Habits that help</string>
+    <string name="learn_habits_summary">Caffeine, light, food and exercise, timed to you.</string>
+    <string-array name="learn_habits_body">
+        <item>Caffeine lingers for hours. Stopping about 8 hours before bed protects deep sleep even if you fall asleep fine.</item>
+        <item>Morning daylight within an hour of waking anchors your body clock and makes evenings sleepier on time.</item>
+        <item>Alcohol and large meals in the last 3 hours before bed break up sleep in the second half of the night.</item>
+        <item>Hard exercise is best from an hour after waking until wind-down starts.</item>
+        <item>Drift places each of these on your energy schedule, so the times follow your own day instead of a fixed clock.</item>
+    </string-array>
+</resources>

@@ -27,6 +27,7 @@ data class Combo(val mode: ThemeMode, val fontScale: Float) {
     companion object {
         val ALL = listOf(Combo(ThemeMode.LIGHT, 1f), Combo(ThemeMode.DARK, 1f), Combo(ThemeMode.LIGHT, 2f), Combo(ThemeMode.DARK, 2f))
         val LIGHT_1X = Combo(ThemeMode.LIGHT, 1f)
+        val DARK_1X = Combo(ThemeMode.DARK, 1f)
         val DARK_2X = Combo(ThemeMode.DARK, 2f)
         val EDGES = listOf(LIGHT_1X, DARK_2X)
     }

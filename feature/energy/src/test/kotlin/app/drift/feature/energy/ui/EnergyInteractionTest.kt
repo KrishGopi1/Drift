@@ -61,26 +61,41 @@ class EnergyInteractionTest {
         onRetry = { retries++ },
     )
 
-    private fun show(state: ScreenState<EnergyUiModel>, a: EnergyActions = actions()) {
-        rule.setContent { DriftTheme(reducedMotion = true) { EnergyScreen(state, a) } }
+    private fun show(state: ScreenState<EnergyUiModel>, a: EnergyActions = actions(), expanded: Boolean = true) {
+        rule.setContent { DriftTheme(reducedMotion = true) { EnergyScreen(state, a, sheetExpanded = expanded) } }
     }
 
-    private fun showReady(snap: AnalysisSnapshot = SnapshotFixtures.full(ctx), pending: SleepEpisode? = null, due: Boolean = false, a: EnergyActions = actions()) =
-        show(ScreenState.Ready(readyModel(snap, ctx, pending, due)), a)
+    private fun showReady(
+        snap: AnalysisSnapshot = SnapshotFixtures.full(ctx),
+        pending: SleepEpisode? = null,
+        due: Boolean = false,
+        a: EnergyActions = actions(),
+        expanded: Boolean = true,
+        episodes: List<SleepEpisode> = emptyList(),
+    ) = show(ScreenState.Ready(readyModel(snap, ctx, pending, due).copy(episodes = episodes)), a, expanded)
+
+    private var analysis = FakeAnalysisRepository()
 
     /** Screen backed by the real view model and fakes, to assert repository effects. */
-    private fun showWired(pending: SleepEpisode? = null, snap: AnalysisSnapshot = SnapshotFixtures.full(ctx)) {
+    private fun showWired(pending: SleepEpisode? = null, snap: AnalysisSnapshot = SnapshotFixtures.full(ctx), episodes: List<SleepEpisode> = emptyList()) {
         sleep.setPending(pending)
+        sleep.setEpisodes(episodes)
+        analysis = FakeAnalysisRepository(snap)
         val vm = EnergyViewModel(
-            FakeAnalysisRepository(snap), sleep, FakeSettingsRepository(AppSettings(use24HourClock = true)),
+            analysis, sleep, FakeSettingsRepository(AppSettings(use24HourClock = true)),
             checkIns, MutableClock(ctx.now, ctx.zone),
         )
         rule.setContent { DriftTheme(reducedMotion = true) { EnergyRoute(actions(), viewModel = vm) } }
         rule.waitForIdle()
     }
 
-    private fun click(tag: String) = rule.onNodeWithTag(tag).performScrollTo().performClick()
-    private fun clickText(text: String) = rule.onNodeWithText(text).performScrollTo().performClick()
+    /** Scrolls a node into view when it sits in a scrolling container (the header and banners do not scroll). */
+    private fun androidx.compose.ui.test.SemanticsNodeInteraction.reveal() = apply {
+        try { performScrollTo() } catch (_: AssertionError) { }
+    }
+
+    private fun click(tag: String) = rule.onNodeWithTag(tag).reveal().performClick()
+    private fun clickText(text: String) = rule.onNodeWithText(text).reveal().performClick()
 
     @Test fun confirmCallsConfirmEpisodeAndHidesTheCard() {
         val pending = pendingEpisode(ctx)
@@ -142,6 +157,7 @@ class EnergyInteractionTest {
 
     @Test fun ratingRecordsAnEnergyCheckIn() {
         showWired()
+        click("energy_sheet_header")
         click("energy_rating_4")
         rule.waitForIdle()
         val added = checkIns.callsTo("add").single().args.single() as CheckIn.EnergyRating
@@ -162,25 +178,53 @@ class EnergyInteractionTest {
         rule.onNodeWithText("12 check-ins shaped your curve").assertExists()
     }
 
-    @Test fun daySwitcherChangesTheHeadline() {
-        showReady()
-        rule.onNodeWithText("Right now").assertExists()
-        clickText("Tomorrow")
-        rule.onNodeWithText("Right now").assertDoesNotExist()
-        rule.onNodeWithTag("energy_headline").assertIsDisplayed()
-        clickText("Yesterday")
-        rule.onNodeWithText("Right now").assertDoesNotExist()
-        clickText("Today")
-        rule.onNodeWithText("Right now").assertExists()
+    @Test fun sheetOpensAndClosesFromItsHeader() {
+        showReady(expanded = false)
+        rule.onNodeWithTag("energy_bedtime_card").assertDoesNotExist()
+        click("energy_sheet_header")
+        rule.onNodeWithTag("energy_bedtime_card").assertExists()
+        click("energy_sheet_header")
+        rule.waitForIdle()
+        rule.onNodeWithTag("energy_bedtime_card").assertDoesNotExist()
     }
 
-    @Test fun curveHeadlineAndNextUpRowsExplainEnergy() {
+    @Test fun potentialHeaderAndNextUpRowsExplainEnergy() {
         showReady()
-        click("energy_curve_card")
-        click("energy_headline")
+        click("energy_potential")
         click("energy_next_peak")
         click("energy_next_dip")
-        assertThat(explained).containsExactly(MetricKey.ENERGY, MetricKey.ENERGY, MetricKey.ENERGY, MetricKey.ENERGY)
+        assertThat(explained).containsExactly(MetricKey.ENERGY, MetricKey.ENERGY, MetricKey.ENERGY)
+    }
+
+    @Test fun draggingLastNightPreviewsThenSavesTheEdit() {
+        val night = pendingEpisode(ctx, id = "night-1")
+        showWired(episodes = listOf(night))
+        rule.onNodeWithTag("sleep_handle_night-1_end").performTouchInput {
+            down(center)
+            moveBy(androidx.compose.ui.geometry.Offset(0f, 120f))
+            moveBy(androidx.compose.ui.geometry.Offset(0f, 120f))
+            up()
+        }
+        rule.waitForIdle()
+        val previews = analysis.callsTo("preview")
+        assertThat(previews).isNotEmpty()
+        val saved = sleep.callsTo("saveUserEpisode").single().args.single() as SleepEpisode
+        assertThat(saved.id).isEqualTo(night.id)
+        assertThat(saved.start).isEqualTo(night.start)
+        assertThat(saved.end).isGreaterThan(night.end)
+        assertThat(saved.end.epochSecond % 300).isEqualTo(0)
+        assertThat(saved.userEdited).isTrue()
+        assertThat(analysis.callsTo("refresh")).hasSize(2)
+    }
+
+    @Test fun handleAccessibilityActionsMoveFiveMinutesAndSave() {
+        val night = pendingEpisode(ctx, id = "night-1")
+        val committed = mutableListOf<Pair<java.time.Instant, java.time.Instant>>()
+        showReady(episodes = listOf(night), a = EnergyActions(onCommitSleep = { _, s, e -> committed += s to e }))
+        val node = rule.onNodeWithTag("sleep_handle_night-1_start").fetchSemanticsNode()
+        rule.runOnIdle { node.config[androidx.compose.ui.semantics.SemanticsActions.CustomActions].first { it.label == "5 minutes earlier" }.action() }
+        rule.waitForIdle()
+        assertThat(committed.single().first).isEqualTo(night.start.minus(Duration.ofMinutes(5)))
     }
 
     @Test fun flatCurveRowExplainsEnergy() {
@@ -233,7 +277,6 @@ class EnergyInteractionTest {
 
     @Test fun improveItFallsBackToTheEnergyExplanation() {
         showReady(SnapshotFixtures.priorsOnlyDay0(ctx))
-        rule.onNodeWithText("Based on people like you").assertExists()
         clickText("Improve it")
         assertThat(explained).containsExactly(MetricKey.ENERGY)
     }

@@ -4,6 +4,11 @@ import app.drift.feature.sleep.common.MIN_NIGHTS
 import app.drift.model.EpisodeId
 import app.drift.model.Provenance
 import app.drift.model.Quantity
+import app.drift.model.SleepEpisode
+import app.drift.model.engine.CatchUp
+import app.drift.model.engine.DayCurve
+import app.drift.model.engine.EnergyLabel
+import app.drift.model.engine.EnergyPotential
 import app.drift.model.engine.AnalysisSnapshot
 import app.drift.model.engine.DailyDebt
 import app.drift.model.engine.DebtBand
@@ -25,7 +30,24 @@ data class SleepUiModel(
     val need: NeedSection,
     val regularity: RegularitySection,
     val tonight: TonightSection,
-)
+    /** When the snapshot was computed; "today" for the energy preview. */
+    val asOf: Instant = Instant.EPOCH,
+    val potential: EnergyPotential? = null,
+    val catchUp: CatchUp? = null,
+    /** Today's energy curve for the small preview card. */
+    val todayCurve: DayCurve? = null,
+    /** The most recent main sleep, for the "Last night" card. */
+    val lastNight: SleepEpisode? = null,
+) {
+    /** First and last night of the debt window ("Oct 12 - 26" in the header). */
+    val windowStart: LocalDate? get() = days.firstOrNull()?.date
+    val windowEnd: LocalDate? get() = days.lastOrNull()?.date
+
+    /** Debt change from the night before last to last night (positive = more debt). */
+    val debtChange: Duration? get() = if (days.size >= 2) days.last().debtAfter.minus(days[days.size - 2].debtAfter) else null
+
+    fun nightsWith(label: EnergyLabel): Int = potential?.trend?.count { it.label == label } ?: 0
+}
 
 sealed interface DebtSection {
     data class Available(val debt: Quantity<Duration>, val band: DebtBand?) : DebtSection
@@ -94,6 +116,7 @@ fun AnalysisSnapshot.toSleepUiModel(
     zone: ZoneId,
     use24hSetting: Boolean?,
     nightIds: Map<LocalDate, EpisodeId> = emptyMap(),
+    lastNight: SleepEpisode? = null,
 ): SleepUiModel {
     val history = dataSufficiency.daysOfHistory
     val debtSection: DebtSection = when {
@@ -129,6 +152,11 @@ fun AnalysisSnapshot.toSleepUiModel(
             opportunity = recommendations.sleepOpportunity,
             tradeOff = recommendations.tradeOff,
         ),
+        asOf = computedAt,
+        potential = energyPotential,
+        catchUp = catchUp,
+        todayCurve = energyCurve.forDate(computedAt.atZone(zone).toLocalDate()),
+        lastNight = lastNight,
     )
 }
 

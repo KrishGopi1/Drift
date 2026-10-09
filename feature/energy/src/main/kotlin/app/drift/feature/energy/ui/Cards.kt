@@ -27,8 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
-import app.drift.charts.EnergyTimelineChart
-import app.drift.charts.TimelineMarker
 import app.drift.designsystem.ButtonStyle
 import app.drift.designsystem.CardTone
 import app.drift.designsystem.DriftButton
@@ -62,100 +60,6 @@ import java.time.Duration
 
 private const val MAX_HABITS_COLLAPSED = 4
 
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-internal fun HeadlineCard(
-    model: EnergyUiModel,
-    day: DayCurve,
-    isToday: Boolean,
-    fmt: TimeFormat,
-    dateLabel: String,
-    onExplain: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val segment = if (isToday) currentSegment(day, model.now) else null
-    val next = if (isToday) nextSegment(model.days, model.now, model.zone) else null
-    val confidence = if (model.priorsOnly) app.drift.model.ConfidenceLevel.LOW else day.confidence
-    val phaseText = segment?.phase?.let { stringResource(it.labelRes()) }
-    val nextText = next?.let { nextEventText(it, model, fmt) }
-    val summary = if (isToday) null else daySummary(day, fmt)
-    val label = if (isToday) stringResource(R.string.energy_right_now) else dateLabel
-    val provenanceText = stringResource(day.provenance.labelRes())
-    val confidenceText = stringResource(confidence.labelRes())
-    val spokenNext = if (next != null) {
-        stringResource(
-            R.string.energy_headline_a11y,
-            phaseText.orEmpty(), stringResource(next.phase.labelRes()).lowercase(), fmt.clock(next.displayAt),
-            DriftFormat.durationSpoken(Duration.between(model.now, next.displayAt)), provenanceText, confidenceText,
-        )
-    } else if (isToday) {
-        stringResource(R.string.energy_headline_a11y_no_next, phaseText.orEmpty(), provenanceText, confidenceText)
-    } else {
-        stringResource(R.string.energy_headline_a11y_day, dateLabel, summary.orEmpty(), provenanceText, confidenceText)
-    }
-    DriftCard(
-        modifier = modifier.testTag("energy_headline"),
-        tone = CardTone.Default,
-        onClick = onExplain,
-        onClickLabel = stringResource(R.string.energy_why_label),
-        contentDescription = spokenNext,
-    ) {
-        Text(label, style = DriftTheme.typography.label, color = DriftTheme.colors.onSurfaceMuted)
-        if (isToday) {
-            Crossfade(
-                targetState = phaseText.orEmpty(),
-                animationSpec = DriftTheme.motion.spec(DriftTheme.reducedMotion, DriftTheme.motion.short),
-                label = "phase",
-            ) { text ->
-                Text(text, style = DriftTheme.typography.headline, color = segment?.phase?.color() ?: DriftTheme.colors.onSurface)
-            }
-            if (nextText != null) Text(nextText, style = DriftTheme.typography.body, color = DriftTheme.colors.onSurface)
-        } else if (summary != null) {
-            Text(summary, style = DriftTheme.typography.headline, color = DriftTheme.colors.onSurface)
-        }
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(DriftTheme.spacing.sm),
-            verticalArrangement = Arrangement.spacedBy(DriftTheme.spacing.xs),
-            itemVerticalAlignment = Alignment.CenterVertically,
-        ) {
-            ProvenanceChip(day.provenance)
-            Text(confidenceText, style = DriftTheme.typography.bodySmall, color = DriftTheme.colors.onSurfaceMuted)
-        }
-        if (model.priorsOnly) {
-            Text(
-                stringResource(R.string.energy_based_on_people_like_you),
-                style = DriftTheme.typography.bodySmall,
-                color = DriftTheme.colors.onSurfaceMuted,
-            )
-        }
-    }
-}
-
-@Composable
-private fun nextEventText(next: Upcoming, model: EnergyUiModel, fmt: TimeFormat): String {
-    val phase = stringResource(next.phase.labelRes())
-    val at = fmt.clock(next.displayAt)
-    val exact = next.extremumAt != null
-    return if (next.laterDay) {
-        stringResource(if (exact) R.string.energy_next_extremum_later else R.string.energy_next_event_later, phase, at)
-    } else {
-        stringResource(
-            if (exact) R.string.energy_next_extremum else R.string.energy_next_event,
-            phase, at, DriftFormat.duration(Duration.between(model.now, next.displayAt)),
-        )
-    }
-}
-
-@Composable
-private fun daySummary(day: DayCurve, fmt: TimeFormat): String {
-    val h = dayHighlights(day)
-    return when {
-        h.peak != null && h.dip != null -> stringResource(R.string.energy_day_summary, fmt.clock(h.peak), fmt.clock(h.dip))
-        h.peak != null -> stringResource(R.string.energy_day_summary_peak_only, fmt.clock(h.peak))
-        else -> stringResource(R.string.energy_day_summary_none)
-    }
-}
-
 /** "Based on typical sleep for now" with an action that leads to adding a data source. */
 @Composable
 internal fun PriorsBanner(onImprove: () -> Unit, modifier: Modifier = Modifier) {
@@ -170,53 +74,6 @@ internal fun PriorsBanner(onImprove: () -> Unit, modifier: Modifier = Modifier) 
             ProvenanceChip(Provenance.ESTIMATED)
         }
         DriftButton(stringResource(R.string.energy_priors_action), onImprove, style = ButtonStyle.Text)
-    }
-}
-
-@Composable
-internal fun CurveCard(
-    model: EnergyUiModel,
-    day: DayCurve,
-    isToday: Boolean,
-    fmt: TimeFormat,
-    onExplain: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val habits = if (isToday) model.recommendations.habits else emptyList()
-    val markers = habits.map { habit ->
-        val start = fmt.clock(habit.window.start)
-        val end = fmt.clock(habit.window.end)
-        TimelineMarker(
-            at = habit.window.start,
-            time = if (start == end) start else stringResource(R.string.energy_habit_window, start, end),
-            title = stringResource(habit.kind.titleRes()),
-        )
-    }
-    androidx.compose.foundation.layout.Column(
-        modifier
-            .testTag("energy_curve_card")
-            .clickable(onClickLabel = stringResource(R.string.energy_why_label), role = Role.Button, onClick = onExplain),
-        verticalArrangement = Arrangement.spacedBy(DriftTheme.spacing.sm),
-    ) {
-        if (model.shiftWorkMode) {
-            Row(horizontalArrangement = Arrangement.spacedBy(DriftTheme.spacing.sm), verticalAlignment = Alignment.CenterVertically) {
-                Icon(DriftIcons.Moon, null, tint = DriftTheme.colors.melatonin, modifier = Modifier.size(20.dp))
-                Text(
-                    stringResource(R.string.energy_shift_work_banner),
-                    style = DriftTheme.typography.bodySmall,
-                    color = DriftTheme.colors.onSurface,
-                )
-            }
-        }
-        EnergyTimelineChart(
-            dayCurve = day,
-            now = if (isToday) model.now else null,
-            zone = fmt.zone,
-            use24h = fmt.use24h,
-            markers = markers,
-            peakLabel = stringResource(R.string.energy_peak),
-            dipLabel = stringResource(R.string.energy_dip),
-        )
     }
 }
 
@@ -377,19 +234,13 @@ private fun HabitCardView(habit: HabitCard, past: Boolean, fmt: TimeFormat, onEx
 
 @Composable
 private fun HabitIcon(kind: HabitKind, past: Boolean) {
-    val tint = if (past) DriftTheme.colors.onSurfaceMuted else when (kind) {
-        HabitKind.DIM_LIGHTS -> DriftTheme.colors.windDown
-        HabitKind.MORNING_LIGHT, HabitKind.EXERCISE_WINDOW -> DriftTheme.colors.energy
-        else -> DriftTheme.colors.primary
-    }
-    val icon: ImageVector? = when (kind) {
-        HabitKind.MORNING_LIGHT, HabitKind.EXERCISE_WINDOW -> DriftIcons.Energy
-        HabitKind.DIM_LIGHTS -> DriftIcons.Moon
-        else -> null
-    }
-    Box(Modifier.size(24.dp).clearAndSetSemantics {}, contentAlignment = Alignment.Center) {
-        if (icon != null) Icon(icon, null, tint = tint, modifier = Modifier.size(24.dp))
-        else Box(Modifier.size(12.dp).background(tint, CircleShape).alpha(0.9f))
+    val bg = if (past) DriftTheme.colors.surfaceRaised else DriftTheme.colors.primaryContainer
+    val tint = if (past) DriftTheme.colors.onSurfaceMuted else DriftTheme.colors.onPrimaryContainer
+    Box(
+        Modifier.size(32.dp).clearAndSetSemantics {}.background(bg, androidx.compose.foundation.shape.RoundedCornerShape(8.dp)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(kind.icon(), null, tint = tint, modifier = Modifier.size(20.dp))
     }
 }
 

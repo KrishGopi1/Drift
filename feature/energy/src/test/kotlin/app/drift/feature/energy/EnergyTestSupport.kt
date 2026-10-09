@@ -37,6 +37,17 @@ fun pendingEpisode(ctx: FixtureContext, id: String = "pending-1"): SleepEpisode 
     )
 }
 
+/** Last night as recorded by Health Connect: 23:20 yesterday to 06:50 today. */
+fun lastNight(ctx: FixtureContext): SleepEpisode = SleepEpisode(
+    id = EpisodeId("night-1"),
+    start = ctx.today.minusDays(1).atTime(23, 20).atZone(ctx.zone).toInstant(),
+    end = ctx.today.atTime(6, 50).atZone(ctx.zone).toInstant(),
+    zone = ctx.zone,
+    kind = EpisodeKind.MAIN,
+    origin = SourceRef(SourceId.HEALTH_CONNECT, "hc-night-1", QualityTier.WEARABLE_WRIST),
+    quality = DataQuality(1.0, 0.95),
+)
+
 /** Runs the real mapper on a snapshot to get the Ready model screens render. */
 fun readyModel(
     snapshot: AnalysisSnapshot,
@@ -45,6 +56,7 @@ fun readyModel(
     checkInDue: Boolean = false,
     use24h: Boolean? = true,
     now: Instant = ctx.now,
+    episodes: List<SleepEpisode> = emptyList(),
 ): EnergyUiModel {
     val state = mapEnergyState(
         EnergyInputs(
@@ -58,6 +70,7 @@ fun readyModel(
             zone = ctx.zone,
             actionError = null,
             dismissedEpisodes = emptySet(),
+            episodes = episodes,
         ),
     )
     val model = (state as ScreenState.Ready).model

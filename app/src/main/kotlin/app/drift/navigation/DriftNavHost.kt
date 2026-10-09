@@ -19,18 +19,20 @@ import app.drift.feature.energy.navigation.ENERGY_ROUTE
 import app.drift.feature.energy.navigation.energyScreen
 import app.drift.feature.onboarding.navigation.ONBOARDING_ROUTE
 import app.drift.feature.onboarding.navigation.onboardingGraph
+import app.drift.feature.settings.navigation.LEARN_ROUTE
 import app.drift.feature.settings.navigation.SETTINGS_METHODOLOGY_ROUTE
 import app.drift.feature.settings.navigation.SETTINGS_ROUTE
 import app.drift.feature.settings.navigation.settingsGraph
 import app.drift.feature.sleep.navigation.BODY_CLOCK_ROUTE
+import app.drift.feature.sleep.navigation.PROGRESS_ROUTE
 import app.drift.feature.sleep.navigation.SLEEP_ROUTE
 import app.drift.feature.sleep.navigation.navigateToNight
 import app.drift.feature.sleep.navigation.navigateToWhy
 import app.drift.feature.sleep.navigation.sleepGraph
 import app.drift.fix.rememberSourceFixHandler
 
-/** Top-level tabs in bottom-bar order; must match driftDefaultNavItems() (Energy, Sleep, Body clock, Settings). */
-private val TAB_ROUTES = listOf(ENERGY_ROUTE, SLEEP_ROUTE, BODY_CLOCK_ROUTE, SETTINGS_ROUTE)
+/** Top-level tabs in bottom-bar order; must match driftDefaultNavItems() (Sleep, Energy, Progress, Learn). */
+private val TAB_ROUTES = listOf(SLEEP_ROUTE, ENERGY_ROUTE, PROGRESS_ROUTE, LEARN_ROUTE)
 
 @Composable
 fun DriftNavHost(
@@ -43,7 +45,7 @@ fun DriftNavHost(
 ) {
     val onFix = rememberSourceFixHandler(
         onResolved = {},
-        onImportBackup = { navController.navigateToTab(SETTINGS_ROUTE) },
+        onImportBackup = { navController.navigate(SETTINGS_ROUTE) { launchSingleTop = true } },
     )
     val backStack by navController.currentBackStackEntryAsState()
     val currentRoute = backStack?.destination?.route
@@ -76,12 +78,12 @@ fun DriftNavHost(
         Box(Modifier.padding(padding)) {
             NavHost(
                 navController = navController,
-                startDestination = if (onboardingComplete) ENERGY_ROUTE else ONBOARDING_ROUTE,
+                startDestination = if (onboardingComplete) SLEEP_ROUTE else ONBOARDING_ROUTE,
             ) {
                 onboardingGraph(
                     onFinished = {
                         onOnboardingFinished()
-                        navController.navigate(ENERGY_ROUTE) { popUpTo(ONBOARDING_ROUTE) { inclusive = true } }
+                        navController.navigate(SLEEP_ROUTE) { popUpTo(ONBOARDING_ROUTE) { inclusive = true } }
                     },
                     onFix = onFix,
                 )
@@ -90,12 +92,15 @@ fun DriftNavHost(
                     onOpenNight = navController::navigateToNight,
                     onFix = onFix,
                     onStartSetup = { navController.navigate(ONBOARDING_ROUTE) },
-                    onOpenSources = { navController.navigateToTab(SETTINGS_ROUTE) },
+                    onOpenSources = { navController.navigate(SETTINGS_ROUTE) { launchSingleTop = true } },
+                    onOpenSettings = { navController.navigate(SETTINGS_ROUTE) { launchSingleTop = true } },
                 )
                 sleepGraph(
                     navController = navController,
                     onFix = onFix,
                     onOpenMethodology = { navController.navigate(SETTINGS_METHODOLOGY_ROUTE) },
+                    onOpenSettings = { navController.navigate(SETTINGS_ROUTE) { launchSingleTop = true } },
+                    onOpenEnergy = { navController.navigateToTab(ENERGY_ROUTE) },
                 )
                 settingsGraph(
                     navController = navController,
@@ -104,6 +109,7 @@ fun DriftNavHost(
                         onResetComplete()
                         navController.navigate(ONBOARDING_ROUTE) { popUpTo(0) { inclusive = true } }
                     },
+                    onOpenBodyClock = { navController.navigate(BODY_CLOCK_ROUTE) { launchSingleTop = true } },
                 )
             }
         }

@@ -142,8 +142,8 @@ class DesignSystemTest {
         rule.setContent {
             DriftTheme(ThemeMode.DARK, reducedMotion = true) { DriftBottomNavBar(driftDefaultNavItems(), sel, { sel = it }) }
         }
-        rule.onNodeWithContentDescription("Energy").assert(hasRole(Role.Tab)).assertIsSelected()
-        rule.onNodeWithContentDescription("Body clock").performClick()
+        rule.onNodeWithContentDescription("Sleep").assert(hasRole(Role.Tab)).assertIsSelected()
+        rule.onNodeWithContentDescription("Progress").performClick()
         assertThat(sel).isEqualTo(2)
     }
 
