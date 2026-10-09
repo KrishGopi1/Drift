@@ -75,3 +75,13 @@ class EmptyChartsGallery : GalleryCase("chart_empty_inputs") {
         EnergyCurveChart(Fx.energyCurve().copy(points = emptyList(), segments = listOf(EnergySegment(EnergyPhase.SLEEP, app.drift.model.Interval(Fx.at(Fx.today, 1), Fx.at(Fx.today, 2)), null))), now = null, zone = z)
     }
 }
+
+class EnergyCurveFullDayGallery : GalleryCase("chart_energy_full_day") {
+    @Composable override fun Content() = Stack {
+        val c = Fx.energyCurve()
+        val start = Fx.at(Fx.today, 0)
+        val full = c.copy(points = (0..288).map { i -> app.drift.model.engine.EnergyPoint(start.plusSeconds(i * 300L), 40.0 + 30 * kotlin.math.sin(i / 46.0)) })
+        EnergyCurveChart(full, now = Fx.at(Fx.today, 9), zone = z)
+        EnergyCurveChart(full, now = null, zone = z, use24h = false, showLegend = false)
+    }
+}
