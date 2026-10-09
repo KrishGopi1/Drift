@@ -82,8 +82,8 @@ internal fun HeadlineCard(
     val spokenNext = if (next != null) {
         stringResource(
             R.string.energy_headline_a11y,
-            phaseText.orEmpty(), stringResource(next.phase.labelRes()).lowercase(), fmt.clock(next.at),
-            DriftFormat.durationSpoken(Duration.between(model.now, next.at)), provenanceText, confidenceText,
+            phaseText.orEmpty(), stringResource(next.phase.labelRes()).lowercase(), fmt.clock(next.displayAt),
+            DriftFormat.durationSpoken(Duration.between(model.now, next.displayAt)), provenanceText, confidenceText,
         )
     } else if (isToday) {
         stringResource(R.string.energy_headline_a11y_no_next, phaseText.orEmpty(), provenanceText, confidenceText)
@@ -131,10 +131,15 @@ internal fun HeadlineCard(
 @Composable
 private fun nextEventText(next: Upcoming, model: EnergyUiModel, fmt: TimeFormat): String {
     val phase = stringResource(next.phase.labelRes())
+    val at = fmt.clock(next.displayAt)
+    val exact = next.extremumAt != null
     return if (next.laterDay) {
-        stringResource(R.string.energy_next_event_later, phase, fmt.clock(next.at))
+        stringResource(if (exact) R.string.energy_next_extremum_later else R.string.energy_next_event_later, phase, at)
     } else {
-        stringResource(R.string.energy_next_event, phase, fmt.clock(next.at), DriftFormat.duration(Duration.between(model.now, next.at)))
+        stringResource(
+            if (exact) R.string.energy_next_extremum else R.string.energy_next_event,
+            phase, at, DriftFormat.duration(Duration.between(model.now, next.displayAt)),
+        )
     }
 }
 
@@ -328,8 +333,8 @@ internal fun HabitCards(
 @Composable
 private fun HabitCardView(habit: HabitCard, past: Boolean, fmt: TimeFormat, onExplain: () -> Unit, modifier: Modifier) {
     val title = stringResource(habit.kind.titleRes())
-    val window = stringResource(R.string.energy_habit_window, fmt.clock(habit.window.start), fmt.clock(habit.window.end))
-    val basis = stringResource(R.string.energy_habit_basis, habit.basis)
+    val window = habitInstruction(habit, fmt)
+    val basis = basisText(habit.basis)
     val muted = DriftTheme.colors.onSurfaceMuted
     DriftCard(
         modifier = modifier.testTag("energy_habit_${habit.kind.name}"),

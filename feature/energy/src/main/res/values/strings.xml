@@ -22,6 +22,8 @@
     <!-- Headline card -->
     <string name="energy_right_now">Right now</string>
     <string name="energy_next_event">%1$s starts around %2$s (in %3$s)</string>
+    <string name="energy_next_extremum">%1$s around %2$s (in %3$s)</string>
+    <string name="energy_next_extremum_later">%1$s around %2$s tomorrow</string>
     <string name="energy_next_event_later">%1$s starts around %2$s tomorrow</string>
     <string name="energy_day_summary">Peak %1$s, dip %2$s</string>
     <string name="energy_day_summary_peak_only">Peak %1$s, no clear dip</string>
@@ -78,7 +80,20 @@
     <string name="energy_habit_exercise">Exercise window</string>
     <string name="energy_habit_dim">Dim the lights</string>
     <string name="energy_habit_window">%1$s to %2$s</string>
-    <string name="energy_habit_basis">Basis: %1$s</string>
+    <string name="energy_habit_do_caffeine">No caffeine after %1$s</string>
+    <string name="energy_habit_do_meal">Finish your last large meal by %1$s</string>
+    <string name="energy_habit_do_alcohol">No alcohol after %1$s</string>
+    <string name="energy_habit_do_light">Get daylight %1$s to %2$s</string>
+    <string name="energy_habit_do_exercise">Good time for intense exercise %1$s to %2$s</string>
+    <string name="energy_habit_do_dim">Dim the lights from %1$s</string>
+    <string name="energy_habit_basis">Based on: %1$s</string>
+    <string name="energy_basis_drake">Drake et al., 2013 (caffeine before bed)</string>
+    <string name="energy_basis_ebrahim">Ebrahim et al., 2013 (alcohol and sleep)</string>
+    <string name="energy_basis_wright2013">Wright et al., 2013 (daylight and the body clock)</string>
+    <string name="energy_basis_youngstedt">Youngstedt et al., 2019 (exercise timing and sleep)</string>
+    <string name="energy_basis_gooley">Gooley et al., 2011 (room light before bed)</string>
+    <string name="energy_basis_sutton">Sutton et al., 2018 (meal timing and sleep)</string>
+    <string name="energy_basis_plan">Drift methodology (meal timing guideline)</string>
     <string name="energy_habit_passed">Passed</string>
 
     <!-- Nap and trade-off -->
