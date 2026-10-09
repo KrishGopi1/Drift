@@ -21,6 +21,8 @@ import kotlin.math.roundToLong
 internal class Headline(
     val todayDay: Long,
     val needMin: Double,
+    /** The need that debt was measured against (see DefaultSleepEngine). */
+    val debtNeedMin: Double,
     val needPersonal: Boolean,
     val informative: Int,
     val debtMin: Double?,
@@ -44,6 +46,7 @@ internal class ExplanationModel(private val p: ParameterSet) {
         val v = LinkedHashMap<String, Double>()
         v["prev.day"] = h.todayDay.toDouble()
         v["prev.needMinutes"] = h.needMin
+        v["prev.debtNeedMinutes"] = h.debtNeedMin
         v["prev.needPersonal"] = if (h.needPersonal) 1.0 else 0.0
         v["prev.informative"] = h.informative.toDouble()
         h.debtMin?.let { v["prev.debtMinutes"] = it }
@@ -217,11 +220,11 @@ internal class ExplanationModel(private val p: ParameterSet) {
         }
         val total = cur.debtMin - prevDebt
         if (abs(needShift) >= 1.0) {
-            val prevNeed = pv["prev.needMinutes"] ?: cur.needMin
-            if (abs(cur.needMin - prevNeed) >= 1.0) {
+            val prevNeed = pv["prev.debtNeedMinutes"] ?: cur.debtNeedMin
+            if (abs(cur.debtNeedMin - prevNeed) >= 1.0) {
                 explained += needShift
                 causes += Cause(CauseKind.NEED_REESTIMATED, null, needShift,
-                    "your sleep need moved from ${RecommendationModel.durText(prevNeed.roundToLong())} to ${RecommendationModel.durText(cur.needMin.roundToLong())}")
+                    "your sleep need moved from ${RecommendationModel.durText(prevNeed.roundToLong())} to ${RecommendationModel.durText(cur.debtNeedMin.roundToLong())}")
             }
         }
         val residual = total - explained

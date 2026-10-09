@@ -70,6 +70,15 @@ internal class Preprocessed(
     val usable: List<NightRecord> = nights.filter { it.main != null }
     val sources: Set<SourceId> = usable.flatMap { n -> (listOfNotNull(n.main) + n.naps).flatMap { it.sources } }.toSet()
     fun main(day: Long): ProcEpisode? = byDay[day]?.main
+
+    /** The same data restricted to sleep days before [day], as if analysis had run on the evening before. */
+    fun before(day: Long): Preprocessed {
+        val kept = nights.filter { it.day < day }
+        return Preprocessed(
+            kept, kept.associateBy { it.day }, todayDay, minOf(lastDay, day - 1), nowLocal, nowAbs,
+            shiftWorkMode, shiftNightDays, alarmAbs, excludedCount,
+        )
+    }
     val nowMinuteOfDay: Int get() = Math.floorMod(nowLocal, DAY_MIN_L).toInt()
 }
 

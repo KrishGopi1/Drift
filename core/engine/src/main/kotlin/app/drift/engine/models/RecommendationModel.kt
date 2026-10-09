@@ -69,9 +69,9 @@ internal class RecommendationModel(private val p: ParameterSet) {
         val target = input.profile.goals.targetSleep?.let { it.seconds / 60.0 }
         val n = target ?: need.displayed
         val payback = minOf(p.debtPaybackFraction.v * (debtMinutes ?: 0.0), p.debtPaybackCap.v)
-        val tib = (n + payback) / se
-        val tibLo = ((target ?: need.lower) + payback) / se
-        val tibHi = ((target ?: need.upper) + payback) / se
+        val tib = Math.round((n + payback) / se).toDouble()
+        val tibLo = Math.round(((target ?: need.lower) + payback) / se).toDouble()
+        val tibHi = Math.round(((target ?: need.upper) + payback) / se).toDouble()
 
         val nowHour = Math.floorMod(pre.nowLocal, DAY_MIN_L) / 60.0
         var wakeDay = if (pre.main(pre.todayDay) != null || nowHour >= 12.0) pre.todayDay + 1 else pre.todayDay

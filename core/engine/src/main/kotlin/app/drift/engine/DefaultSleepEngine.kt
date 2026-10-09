@@ -64,7 +64,16 @@ class DefaultSleepEngine(
         val detector = FreeNightDetector(p).classify(pre, input)
         val types = detector.types
         val need = SleepNeedModel(p).run(pre, types, input)
-        val debt = DebtModel(p).run(pre, need)
+        // Debt is measured against the need established before the 14-day window, so that the window's own
+        // nights are not both the yardstick and the thing measured (a short night must never look "repaid"
+        // because it lowered the need estimate).
+        val windowStart = pre.lastDay - p.debtWindowDays.i + 1
+        val baseline = pre.before(windowStart).let { early ->
+            val t = FreeNightDetector(p).classify(early, input).types
+            SleepNeedModel(p).run(early, t, input)
+        }
+        val debtNeed = if (baseline.personal) baseline else need
+        val debt = DebtModel(p).run(pre, debtNeed)
         val regularity = RegularityModel(p).run(pre, types, input)
         val rec = RecommendationModel(p)
         val habitual = Habitual.of(pre, input, p, need.displayed, rec.sleepEfficiency(pre))
@@ -118,6 +127,7 @@ class DefaultSleepEngine(
         val headline = Headline(
             todayDay = pre.todayDay,
             needMin = need.displayed,
+            debtNeedMin = debtNeed.displayed,
             needPersonal = need.personal,
             informative = need.informativeNights,
             debtMin = debt?.minutes,

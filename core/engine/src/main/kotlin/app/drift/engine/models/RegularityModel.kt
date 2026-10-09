@@ -59,10 +59,15 @@ internal class RegularityModel(private val p: ParameterSet) {
         private fun observed(day: Long): Boolean =
             pre.main(day) != null && (day == pre.lastDay || pre.main(day + 1) != null)
 
-        private fun limit(day: Long): Int =
-            if (day == pre.lastDay && pre.lastDay == pre.todayDay) {
-                (pre.nowMinuteOfDay / epochLen).toInt().coerceIn(0, epochs)
-            } else epochs
+        /**
+         * Epochs of [day] that are known. Only the last sleep day is partial: up to now when it is today,
+         * otherwise up to the wake-up (the evening before the next recorded night is not known yet).
+         */
+        private fun limit(day: Long): Int {
+            if (day != pre.lastDay) return epochs
+            val minutes = if (pre.lastDay == pre.todayDay) pre.nowMinuteOfDay else pre.main(day)?.wakeMinuteOfDay ?: 0
+            return (minutes / epochLen).toInt().coerceIn(0, epochs)
+        }
 
         /** Returns (matches, total) for the pair (day, day + 1) or null if either day is unobserved. */
         fun pair(day: Long): Pair<Int, Int>? {

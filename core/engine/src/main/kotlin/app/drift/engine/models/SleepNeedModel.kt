@@ -14,7 +14,8 @@ import kotlin.math.ln
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-internal enum class NightType { FREE, ALARM }
+/** FREE: sleep ended on its own; ALARM: cut short by an alarm; DISTURBED: interrupted (long waking inside the night). */
+internal enum class NightType { FREE, ALARM, DISTURBED }
 
 /** Decides which nights are free (informative about need) and which were cut short by an alarm. */
 internal class FreeNightDetector(private val p: ParameterSet) {
@@ -35,8 +36,10 @@ internal class FreeNightDetector(private val p: ParameterSet) {
             val m = n.main!!
             val a = ann[n.date]
             val alarmNear = pre.alarmAbs.any { it >= m.endAbs - p.alarmNearWakeMin.v && it <= m.endAbs + p.alarmNearWakeMin.v }
+            val waso = m.spanMin - m.tst
             types[n.day] = when {
                 a?.freeDay == true -> NightType.FREE
+                waso >= p.disturbedWaso.v -> NightType.DISTURBED
                 a?.alarmSet == true || a?.alarmDismissedAt != null -> NightType.ALARM
                 a?.freeDay == false -> NightType.ALARM
                 a?.alarmSet == false -> NightType.FREE

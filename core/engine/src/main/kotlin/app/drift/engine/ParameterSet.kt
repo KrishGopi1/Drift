@@ -62,6 +62,7 @@ internal object Cites {
     val GOOLEY = Citation("Gooley JJ, et al.", 2011, "Exposure to room light before bedtime suppresses melatonin onset and shortens melatonin duration in humans", "Journal of Clinical Endocrinology & Metabolism 96(3):E463-E472", "10.1210/jc.2010-2098")
     val BROOKS_LACK = Citation("Brooks A, Lack L", 2006, "A brief afternoon nap following nocturnal sleep restriction: which nap duration is most recuperative?", "Sleep 29(6):831-840", "10.1093/sleep/29.6.831")
     val ROENNEBERG_SLEEP_DEBT = Citation("Roenneberg T, Kuehnle T, Juda M, et al.", 2007, "Epidemiology of the human circadian clock", "Sleep Medicine Reviews 11(6):429-438", "10.1016/j.smrv.2007.07.005", "Source of the MSFsc sleep-debt correction as I recall it; verify.")
+    val OHAYON = Citation("Ohayon M, et al.", 2017, "National Sleep Foundation's sleep quality recommendations: first report", "Sleep Health 3(1):6-19", "10.1016/j.sleh.2016.11.006", "The guideline calls waking after sleep onset of 20 min or less good; the 60 min threshold used here is a stricter, engineering choice. Verify.")
     val DERIVED_MEQ = Citation("Drift project plan", 2026, "Questionnaire answer to mid-sleep prior mapping", verificationNote = "Mapping from the five onboarding answers to MSFsc is a design choice informed by Roenneberg 2003 chronotype distribution; verify.")
 }
 
@@ -136,6 +137,7 @@ class ParameterSet private constructor(private val overrides: Map<String, Double
     val needObsClampLow = p("need.obsClampLow", 240.0, "min", "Observations are clamped to at least this value", Cites.PLAN)
     val needObsClampHigh = p("need.obsClampHigh", 780.0, "min", "Observations are clamped to at most this value", Cites.PLAN)
     val bandZ = p("need.bandZ", 1.645, "z", "Normal quantile for the 90% band", Cites.PLAN)
+    val disturbedWaso = p("need.disturbedWasoMin", 60.0, "min", "Wake after sleep onset at or above this marks a night as disturbed (sleep was interrupted, not satisfied)", Cites.OHAYON)
     val alarmNearWakeMin = p("need.alarmNearWakeMin", 45.0, "min", "An alarm event within this distance of the wake counts as an alarm night", Cites.PLAN)
 
     fun needPrior(age: AgeBand): Double = when (age) {

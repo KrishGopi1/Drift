@@ -107,7 +107,7 @@ internal class CircadianModel(private val p: ParameterSet) {
 
             val fromOnset = m.onsetClock - p.dlmoOnsetOffset.v
             val fromMid = m.midClock - p.dlmoMidpointOffset.v
-            val alarm = types[n.day] == NightType.ALARM
+            val alarm = types[n.day].let { it == NightType.ALARM || it == NightType.DISTURBED }
             val shiftNight = n.day in pre.shiftNightDays
             val obs = if (alarm || shiftNight) {
                 Circ.mod(fromOnset)
