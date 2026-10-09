@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Top bar and day switcher -->
+    <string name="energy_title">Energy</string>
+    <string name="energy_day_yesterday">Yesterday</string>
+    <string name="energy_day_today">Today</string>
+    <string name="energy_day_tomorrow">Tomorrow</string>
+    <string name="energy_day_switcher_label">Choose a day</string>
+    <string name="energy_date_pattern">EEEE d MMMM</string>
+    <string name="energy_no_curve_for_day">No energy curve is available for this day yet.</string>
+    <string name="energy_error_default">Drift could not load your energy curve.</string>
+
+    <!-- Phases -->
+    <string name="energy_phase_groggy">Waking up</string>
+    <string name="energy_phase_morning_peak">Morning peak</string>
+    <string name="energy_phase_afternoon_dip">Afternoon dip</string>
+    <string name="energy_phase_evening_peak">Evening peak</string>
+    <string name="energy_phase_wind_down">Wind-down</string>
+    <string name="energy_phase_melatonin">Melatonin window</string>
+    <string name="energy_phase_sleep">Sleep</string>
+
+    <!-- Headline card -->
+    <string name="energy_right_now">Right now</string>
+    <string name="energy_next_event">%1$s starts around %2$s (in %3$s)</string>
+    <string name="energy_next_event_later">%1$s starts around %2$s tomorrow</string>
+    <string name="energy_day_summary">Peak %1$s, dip %2$s</string>
+    <string name="energy_day_summary_peak_only">Peak %1$s, no clear dip</string>
+    <string name="energy_day_summary_none">No clear peak or dip</string>
+    <string name="energy_confidence_low">Low confidence</string>
+    <string name="energy_confidence_medium">Medium confidence</string>
+    <string name="energy_confidence_high">High confidence</string>
+    <string name="energy_based_on_people_like_you">Based on people like you</string>
+    <string name="energy_headline_a11y">Right now: %1$s. Next, %2$s around %3$s, in %4$s. %5$s, %6$s.</string>
+    <string name="energy_headline_a11y_no_next">Right now: %1$s. %2$s, %3$s.</string>
+    <string name="energy_headline_a11y_day">%1$s. %2$s. %3$s, %4$s.</string>
+    <string name="energy_why_label">Why this curve</string>
+
+    <!-- Prior-only banner -->
+    <string name="energy_priors_banner">Based on typical sleep for now</string>
+    <string name="energy_priors_action">Improve it</string>
+
+    <!-- Banners -->
+    <string name="energy_shift_work_banner">Shift-work mode: schedule follows your last sleep</string>
+    <string name="energy_travel_east">Adjusting after eastward travel, %1$s (%2$s to catch up)</string>
+    <string name="energy_travel_west">Adjusting after westward travel, %1$s (%2$s to catch up)</string>
+    <plurals name="energy_travel_days_left">
+        <item quantity="one">about %d day left</item>
+        <item quantity="other">about %d days left</item>
+    </plurals>
+
+    <!-- Next up -->
+    <string name="energy_next_peak">Next peak</string>
+    <string name="energy_next_dip">Next dip</string>
+    <string name="energy_peak">Peak</string>
+    <string name="energy_dip">Dip</string>
+    <string name="energy_time_tomorrow">Tomorrow, %1$s</string>
+    <string name="energy_no_more_peaks">No more peaks to show</string>
+    <string name="energy_flat_today">The curve is too flat to find a dip today</string>
+    <string name="energy_flat_day">The curve is too flat to find a dip on this day</string>
+    <string name="energy_flat_sub">Your energy stays fairly level</string>
+    <string name="energy_no_dip">No dip to show</string>
+
+    <!-- Recommended bed and wake -->
+    <string name="energy_tonight_title">Tonight</string>
+    <string name="energy_bedtime">Bedtime</string>
+    <string name="energy_wake_time">Wake-up</string>
+    <string name="energy_sleep_opportunity">Time in bed %1$s</string>
+    <string name="energy_bedtime_a11y">Tonight. Bedtime %1$s, wake-up %2$s. Time in bed %3$s.</string>
+
+    <!-- Habits -->
+    <string name="energy_habits_title">Timing for today</string>
+    <string name="energy_habits_show_all">Show all</string>
+    <string name="energy_habits_show_fewer">Show fewer</string>
+    <string name="energy_habit_caffeine">Last caffeine</string>
+    <string name="energy_habit_meal">Last large meal</string>
+    <string name="energy_habit_alcohol">Last alcohol</string>
+    <string name="energy_habit_light">Morning light</string>
+    <string name="energy_habit_exercise">Exercise window</string>
+    <string name="energy_habit_dim">Dim the lights</string>
+    <string name="energy_habit_window">%1$s to %2$s</string>
+    <string name="energy_habit_basis">Basis: %1$s</string>
+    <string name="energy_habit_passed">Passed</string>
+
+    <!-- Nap and trade-off -->
+    <string name="energy_nap_title">Nap window</string>
+    <string name="energy_nap_max">Up to %1$s</string>
+    <string name="energy_tradeoff_title">Bedtime trade-off</string>
+    <string name="energy_tradeoff_action">Show me the later bedtime</string>
+    <string name="energy_tradeoff_later">Following the melatonin window: bedtime around %1$s</string>
+
+    <!-- Confirm sleep -->
+    <string name="energy_confirm_title">Confirm your sleep</string>
+    <string name="energy_confirm_body">Looks like you slept %1$s to %2$s</string>
+    <string name="energy_confirm_action">Confirm</string>
+    <string name="energy_adjust_action">Adjust</string>
+    <string name="energy_not_right_action">Not right</string>
+    <string name="energy_adjust_title">Adjust your sleep</string>
+    <string name="energy_adjust_start">Fell asleep</string>
+    <string name="energy_adjust_end">Woke up</string>
+    <string name="energy_adjust_handle">%1$s, %2$s</string>
+    <string name="energy_adjust_total">Total %1$s</string>
+    <string name="energy_adjust_start_earlier">Start -5 min</string>
+    <string name="energy_adjust_start_later">Start +5 min</string>
+    <string name="energy_adjust_end_earlier">End -5 min</string>
+    <string name="energy_adjust_end_later">End +5 min</string>
+    <string name="energy_adjust_save">Save</string>
+    <string name="energy_adjust_cancel">Cancel</string>
+
+    <!-- Check-in -->
+    <string name="energy_checkin_title">How is your energy?</string>
+    <plurals name="energy_checkin_count">
+        <item quantity="one">%d check-in shaped your curve</item>
+        <item quantity="other">%d check-ins shaped your curve</item>
+    </plurals>
+    <string name="energy_checkin_none">Rate your energy a few times to tune your curve</string>
+    <string name="energy_checkin_action">Check in now</string>
+    <string name="energy_checkin_low">Exhausted</string>
+    <string name="energy_checkin_high">Very alert</string>
+    <string name="energy_checkin_rating">Energy %1$d of 5</string>
+    <string name="energy_checkin_thanks">Thanks, logged</string>
+    <string name="energy_checkin_group">Energy rating</string>
+
+    <!-- Action errors -->
+    <string name="energy_action_confirm_failed">Could not confirm that night. Try again.</string>
+    <string name="energy_action_save_failed">Could not save your changes. Try again.</string>
+    <string name="energy_action_checkin_failed">Could not save your check-in. Try again.</string>
+    <string name="energy_action_dismiss">Dismiss</string>
+</resources>
