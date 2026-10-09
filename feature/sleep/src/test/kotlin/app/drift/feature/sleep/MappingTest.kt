@@ -162,7 +162,7 @@ class MappingTest {
         assertThat(d.duration).isEqualTo(Duration.ofMinutes(475))
         assertThat(d.errors()).isEmpty()
         assertThat(d.withStart(7 * 60).errors()).containsExactly(EditError.TOO_LONG)
-        assertThat(d.withStart(6 * 60 + 55).withEnd(7 * 60 + 5).errors()).containsExactly(EditError.TOO_SHORT)
+        assertThat(d.withStart(6 * 60 + 55).errors()).containsExactly(EditError.TOO_SHORT)
         assertThat(d.copy(wakeDate = ctx.today.plusDays(5)).errors(ctx.now)).containsExactly(EditError.ENDS_IN_FUTURE)
     }
 

@@ -52,9 +52,9 @@ const val HISTORY_ROUTE = "sleep/history"
 /** Body clock tab. */
 const val BODY_CLOCK_ROUTE = "bodyclock"
 
-private const val NIGHT_PATTERN = "sleep/night/{${NightDetailViewModel.ARG_EPISODE_ID}}"
-private const val WHY_PATTERN = "sleep/why/{${WhyViewModel.ARG_METRIC}}"
-private const val ADD_PATTERN = "sleep/add?${AddEntryViewModel.ARG_DATE}={${AddEntryViewModel.ARG_DATE}}&${AddEntryViewModel.ARG_KIND}={${AddEntryViewModel.ARG_KIND}}"
+internal const val NIGHT_PATTERN = "sleep/night/{${NightDetailViewModel.ARG_EPISODE_ID}}"
+internal const val WHY_PATTERN = "sleep/why/{${WhyViewModel.ARG_METRIC}}"
+internal const val ADD_PATTERN = "sleep/add?${AddEntryViewModel.ARG_DATE}={${AddEntryViewModel.ARG_DATE}}&${AddEntryViewModel.ARG_KIND}={${AddEntryViewModel.ARG_KIND}}"
 
 /** Opens night detail (and from there edit, nap, free day and delete) for [id]. */
 fun NavHostController.navigateToNight(id: EpisodeId) {
