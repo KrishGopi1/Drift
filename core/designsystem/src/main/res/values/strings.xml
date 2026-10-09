@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ds_provenance_measured">Measured</string>
+    <string name="ds_provenance_derived">Derived</string>
+    <string name="ds_provenance_estimated">Estimated</string>
+    <string name="ds_provenance_user_entered">User-entered</string>
+    <string name="ds_provenance_measured_desc">Measured: recorded directly by your phone or a connected app</string>
+    <string name="ds_provenance_derived_desc">Derived: calculated from measured data using fixed rules</string>
+    <string name="ds_provenance_estimated_desc">Estimated: a model estimate with a margin of error</string>
+    <string name="ds_provenance_user_entered_desc">User-entered: typed in or edited by you</string>
+
+    <string name="ds_confidence_low">Low confidence</string>
+    <string name="ds_confidence_medium">Medium confidence</string>
+    <string name="ds_confidence_high">High confidence</string>
+
+    <string name="ds_nav_energy">Energy</string>
+    <string name="ds_nav_sleep">Sleep</string>
+    <string name="ds_nav_body_clock">Body clock</string>
+    <string name="ds_nav_settings">Settings</string>
+
+    <string name="ds_back">Back</string>
+    <string name="ds_close">Close</string>
+    <string name="ds_retry">Try again</string>
+    <string name="ds_loading">Loading</string>
+    <string name="ds_sheet_handle">Drag handle</string>
+
+    <string name="ds_first_use_title">Let\'s get you set up</string>
+    <plurals name="ds_first_use_body">
+        <item quantity="one">%d step left before this screen has something to show.</item>
+        <item quantity="other">%d steps left before this screen has something to show.</item>
+    </plurals>
+    <string name="ds_first_use_action">Continue setup</string>
+
+    <string name="ds_insufficient_title_no_nights">No nights yet</string>
+    <string name="ds_insufficient_title_few">Not enough nights yet</string>
+    <string name="ds_insufficient_title_missing">Too many missing nights</string>
+    <string name="ds_insufficient_title_free">Not enough free nights</string>
+    <string name="ds_insufficient_body_no_nights">Once a night of sleep is recorded, this screen fills in on its own.</string>
+    <string name="ds_insufficient_body_few">Drift needs a few more recorded nights before it can show this without guessing.</string>
+    <string name="ds_insufficient_body_missing">Several recent nights are missing, so this would be a guess. Recording again brings it back.</string>
+    <string name="ds_insufficient_body_free">This needs nights without an alarm, so your body clock can show through. Mark free days or keep recording.</string>
+    <plurals name="ds_days_needed_label">
+        <item quantity="one">more night needed</item>
+        <item quantity="other">more nights needed</item>
+    </plurals>
+    <string name="ds_days_needed_desc">%1$d more nights needed</string>
+
+    <string name="ds_error_title">Something went wrong</string>
+    <string name="ds_source_problem_title">A data source needs attention</string>
+    <string name="ds_fix_install_hc">Install Health Connect</string>
+    <string name="ds_fix_update_hc">Update Health Connect</string>
+    <string name="ds_fix_grant_hc">Grant access</string>
+    <string name="ds_fix_usage_access">Allow usage access</string>
+    <string name="ds_fix_runtime">Allow permissions</string>
+    <string name="ds_fix_import_saa">Import backup</string>
+    <string name="ds_fix_open_settings">Open app settings</string>
+</resources>
