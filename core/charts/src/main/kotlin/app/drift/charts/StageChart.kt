@@ -66,13 +66,14 @@ fun StageChart(
             val gutter = stageRows.maxOf { measurer.measure(stageName(it), type.caption).size.width } + 8.dp.toPx()
             val plotW = size.width - gutter
             val plotH = size.height - axisH
+            if (plotH <= 0f || plotW <= 0f) return@Canvas
             val rowH = plotH / stageRows.size
             fun x(t: Instant) = gutter + Duration.between(start, t).toMillis() / totalMs * plotW
             fun rowCenter(s: SleepStage) = rowH * (stageRows.indexOf(s).takeIf { it >= 0 } ?: 1) + rowH / 2
             stageRows.forEachIndexed { i, s ->
                 drawLine(colors.outlineSubtle, Offset(gutter, rowH * i + rowH / 2), Offset(size.width, rowH * i + rowH / 2), 1.dp.toPx())
                 val tm = measurer.measure(stageName(s), type.caption)
-                label(measurer, stageName(s), type.caption, colors.onSurfaceMuted, Offset(0f, rowH * i + (rowH - tm.size.height) / 2))
+                if (tm.size.height <= rowH) label(measurer, stageName(s), type.caption, colors.onSurfaceMuted, Offset(0f, rowH * i + (rowH - tm.size.height) / 2))
             }
             clipRect(left = 0f, right = gutter + plotW * progress) {
                 sorted.forEachIndexed { i, span ->
@@ -90,18 +91,7 @@ fun StageChart(
                     }
                 }
             }
-            val sample = measurer.measure(DriftFormat.clockMinutes(23 * 60 + 59, use24h), type.caption).size.width.toFloat()
-            val spanMin = Duration.between(start, end).toMinutes().toFloat()
-            val step = axisStepMinutes(spanMin, sample, plotW)
-            val z = ZonedDateTime.ofInstant(start, zone)
-            var tick = ((z.hour * 60 + z.minute + step - 1) / step) * step - (z.hour * 60 + z.minute)
-            while (tick <= spanMin) {
-                val t = start.plusSeconds(tick * 60L)
-                val text = DriftFormat.clock(t, zone, use24h)
-                val tm = measurer.measure(text, type.caption)
-                label(measurer, text, type.caption, colors.onSurfaceMuted, Offset((x(t) - tm.size.width / 2f).coerceIn(gutter, size.width - tm.size.width), plotH + 4.dp.toPx()))
-                tick += step
-            }
+            drawTimeTicks(measurer, type.caption, colors.onSurfaceMuted, start, end, zone, use24h, gutter, plotW, plotH + 4.dp.toPx())
         }
     }
 }

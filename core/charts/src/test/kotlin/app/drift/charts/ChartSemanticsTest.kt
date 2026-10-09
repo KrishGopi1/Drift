@@ -65,3 +65,33 @@ class ChartSemanticsTest {
         rule.onNodeWithContentDescription("Body clock dial. No melatonin estimate yet.").assertExists()
     }
 }
+
+@RunWith(AndroidJUnit4::class)
+@Config(sdk = [35])
+class ChartSmallHeightTest {
+    @get:Rule val rule = createComposeRule()
+
+    @Test fun everyChartSurvivesTinyHeightsAtDoubleFontScale() {
+        rule.setContent {
+            val base = androidx.compose.ui.platform.LocalDensity.current
+            androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(base.density, 2f)) {
+                DriftTheme(ThemeMode.DARK, reducedMotion = true) {
+                    androidx.compose.foundation.layout.Column {
+                        for (h in listOf(1, 40, 80, 120)) {
+                            val dp = androidx.compose.ui.unit.Dp(h.toFloat())
+                            val bars = timingBars(Fx.episodes(days = 7, gapEvery = 3), Fx.today, TimingRange.WEEK)
+                            EnergyCurveChart(Fx.energyCurve(), Fx.at(Fx.today, 12), zone = Fx.zone, height = dp)
+                            MiniEnergyCurve(Fx.energyCurve(), Fx.at(Fx.today, 12), zone = Fx.zone, height = dp)
+                            DebtBarsChart(Fx.debtDays(), height = dp)
+                            SleepTimingChart(bars, TimingRange.WEEK, height = dp)
+                            SleepDurationChart(bars, TimingRange.WEEK, need = java.time.Duration.ofHours(8), height = dp)
+                            StageChart(Fx.stages(), zone = Fx.zone, height = dp)
+                            RegularityTrendChart(Fx.regularity(), height = dp)
+                        }
+                    }
+                }
+            }
+        }
+        rule.waitForIdle()
+    }
+}
