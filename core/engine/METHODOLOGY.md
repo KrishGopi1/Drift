@@ -54,6 +54,16 @@ Normalised to 0-100 at 5-minute resolution; phases come from extrema with a mini
 marked "too flat for a dip" instead of inventing one. With 10+ check-ins a bounded least-squares fit adjusts
 circadian amplitude (x0.6-1.6) and phase (+-3 h).
 
+### 6b. Energy potential and debt on the curve
+The SAFTE model (Hursh et al. 2004) treats sleep as a reservoir that caps how effective a day can be: a depleted
+reservoir lowers peaks and deepens troughs. We keep the three-process timing above and add the reservoir view
+through debt: potential = 100 x exp(-debt / 24 h), so 5 h of debt gives about 81 and 6.3 h about 77. Labels:
+Super 92+, Great 80+, Good 68+, Fair 55+, else Low. Each day's curve loses 0.5 x (100 - potential) level points,
+scaled up to x2 at the bottom of the range, so a tired day has lower peaks and much deeper dips while the
+timing is unchanged. Yesterday uses that day's debt and tomorrow the projected debt after tonight's recommended
+sleep. The catch-up projection follows the recommendation rule each night (need plus a quarter of the debt, at most
+an hour) through the debt accumulator for 14 nights and reports the first night the potential reaches Great.
+
 ## 7. Recommendations
 Sleep opportunity = (need + min(0.25 x debt, 1 h)) / sleep efficiency (personal median in-bed efficiency, default
 0.88). Wake time comes from the schedule on workdays, otherwise from habit. Bedtime = wake - opportunity; if it

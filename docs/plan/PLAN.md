@@ -16,17 +16,22 @@ cards, notifications, home-screen widget, onboarding, data editing, export/backu
 import), and on-device phone detection (screen, usage, motion, charging, optional ambient light). A boAt
 ring plugs in later through the same adapter interface with zero engine changes.
 
-### Clean-room rules (how we study RISE)
-1. **Allowed:** using RISE as a normal user, our own screenshots/recordings, RISE's public help centre,
-   blog, marketing pages, store listings, and the published sleep-science literature RISE cites.
-2. **Not allowed:** decompiling/disassembling the RISE APK, extracting its assets, fonts, icons,
-   illustrations, copy or animation files, sniffing its private APIs.
-3. **Two-room process:** the UX Research role (A4) writes behaviour/layout specs from observation.
-   Implementers build only from those specs, never from RISE material directly.
+### How we use RISE as the reference (amended 9 Oct 2026, owner decision)
+The owner asked for Drift to look and behave like a close clone of RISE, with more focus on the core
+features and better output. So RISE is now a direct reference for layout, navigation, screen structure,
+interaction patterns and chart forms, and anyone may build straight from RISE screenshots, store listings,
+help centre, blog and marketing pages (the earlier two-room process is retired).
 
-RISE's algorithms are unpublished, so "comparable" means built on the same published science
-(two-process model, sleep regularity index, phase estimation from sleep timing) and judged by usefulness
-and stability on real data. Aim to be as close as possible to RISE, or better.
+Still not allowed, because they would make the app legally unshippable rather than better:
+1. Decompiling or disassembling the RISE APK, sniffing its private APIs, or extracting any file from it.
+2. Using RISE's name, logo, app icon, trademarks or brand phrases in the product, or copying its
+   illustrations, icon files, fonts, animation files or long-form text. Short generic UI words
+   ("Sleep debt", "Peak", "Dip", "Progress") are fine; we write our own wording for everything else.
+
+RISE says its energy schedule builds on the SAFTE fatigue model (Hursh et al. 2004, patent US 6,579,233,
+expired) and that its debt weights last night ~15% within a 14-night window. We implement from the
+published papers ourselves (no GPL code is copied) and aim to match or beat RISE on usefulness and
+stability on real data.
 
 ### Non-negotiables
 - No network permission in the manifest. No account, no analytics SDK, no crash reporter that phones home.

@@ -109,15 +109,18 @@ data class CheckInDto(
     val medianRtMillis: Double? = null,
     val lapses: Int? = null,
     val trials: Int? = null,
+    val night: String? = null,
 )
 
 fun CheckIn.toDto(): CheckInDto = when (this) {
     is CheckIn.EnergyRating -> CheckInDto("energy", at.toString(), rating = rating)
     is CheckIn.ReactionTest -> CheckInDto("reaction", at.toString(), medianRtMillis = medianRtMillis, lapses = lapses, trials = trials)
+    is CheckIn.SleepRating -> CheckInDto("sleep", at.toString(), rating = rating, night = night.toString())
 }
 
 fun CheckInDto.toModel(): CheckIn = when (type) {
     "energy" -> CheckIn.EnergyRating(Instant.parse(at), requireNotNull(rating))
+    "sleep" -> CheckIn.SleepRating(Instant.parse(at), LocalDate.parse(requireNotNull(night)), requireNotNull(rating))
     "reaction" -> CheckIn.ReactionTest(Instant.parse(at), requireNotNull(medianRtMillis), requireNotNull(lapses), requireNotNull(trials))
     else -> throw IllegalArgumentException("Unknown check-in type $type")
 }

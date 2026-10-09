@@ -70,4 +70,28 @@ class AnalysisRepositoryTest {
         assertThat(h.analysis.observePrevious().first()!!.inputHash).isEqualTo("a")
         assertThat(h.db.snapshots().all()).hasSize(2)
     }
+
+    @Test fun previewReplacesOverlappingEpisodesAndPersistsNothing() = runTest {
+        val night = episode("n", now.minus(Duration.ofHours(10)), now.minus(Duration.ofHours(2)))
+        val nap = episode("p", now.minus(Duration.ofHours(30)), now.minus(Duration.ofHours(29)))
+        h.db.sourceEpisodes().upsert(listOf(night, nap).map { it.toRawEntity(now) })
+        val merged = h.analysis.buildInput(now).episodes.first { it.origin.recordId == "n" }
+        val edited = merged.copy(start = merged.start.minus(Duration.ofHours(1)), userEdited = true)
+
+        h.analysis.preview(listOf(edited), now)
+        h.analysis.preview(listOf(edited.copy(end = edited.end.plus(Duration.ofMinutes(30)))), now.plusSeconds(5))
+
+        val inputs = h.engine.inputs
+        assertThat(inputs).hasSize(2)
+        assertThat(inputs[0].episodes.map { it.start }).containsExactly(nap.start, edited.start)
+        assertThat(inputs[1].episodes.single { it.id == merged.id }.end).isEqualTo(edited.end.plus(Duration.ofMinutes(30)))
+        assertThat(h.db.snapshots().all()).isEmpty()
+    }
+
+    @Test fun sleepRatingsRoundTripThroughCheckIns() = runTest {
+        h.checkIns.add(CheckIn.SleepRating(now, LocalDate.parse("2026-10-09"), 4))
+        val back = h.checkIns.observeCheckIns(now.minusSeconds(60)).first().single() as CheckIn.SleepRating
+        assertThat(back.night).isEqualTo(LocalDate.parse("2026-10-09"))
+        assertThat(back.rating).isEqualTo(4)
+    }
 }

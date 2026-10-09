@@ -147,6 +147,7 @@ data class SyntheticHistory(
                 when (it) {
                     is CheckIn.EnergyRating -> it.copy(at = map(it.at))
                     is CheckIn.ReactionTest -> it.copy(at = map(it.at))
+                    is CheckIn.SleepRating -> it.copy(at = map(it.at))
                 }
             },
             signals = signals.map { mapSignal(it, ::map, ::map) },

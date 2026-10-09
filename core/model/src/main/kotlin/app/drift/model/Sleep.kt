@@ -86,4 +86,9 @@ sealed interface CheckIn {
 
     /** Brief psychomotor vigilance test: median reaction time and lapses (>500 ms). */
     data class ReactionTest(override val at: Instant, val medianRtMillis: Double, val lapses: Int, val trials: Int) : CheckIn
+
+    /** Morning self-rated sleep quality for the night that ended on [night] (sleep day), 1 (poor) to 5 (great). */
+    data class SleepRating(override val at: Instant, val night: java.time.LocalDate, val rating: Int) : CheckIn {
+        init { require(rating in 1..5) { "rating must be 1..5" } }
+    }
 }

@@ -246,6 +246,9 @@ object ReplayJson {
             put("type", "REACTION_TEST"); put("at", c.at.toString())
             put("medianRtMillis", c.medianRtMillis); put("lapses", c.lapses); put("trials", c.trials)
         }
+        is CheckIn.SleepRating -> buildJsonObject {
+            put("type", "SLEEP_RATING"); put("at", c.at.toString()); put("night", c.night.toString()); put("rating", c.rating)
+        }
     }
 
     private fun readCheckIn(o: JsonObject): CheckIn = when (val t = o.str("type")) {
@@ -253,6 +256,7 @@ object ReplayJson {
         "REACTION_TEST" -> CheckIn.ReactionTest(
             Instant.parse(o.str("at")), o["medianRtMillis"]!!.jsonPrimitive.double, o["lapses"]!!.jsonPrimitive.int, o["trials"]!!.jsonPrimitive.int,
         )
+        "SLEEP_RATING" -> CheckIn.SleepRating(Instant.parse(o.str("at")), LocalDate.parse(o.str("night")), o["rating"]!!.jsonPrimitive.int)
         else -> error("Unknown check-in type $t")
     }
 

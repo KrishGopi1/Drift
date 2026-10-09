@@ -57,6 +57,7 @@ internal object Cites {
     val DRAKE = Citation("Drake C, Roehrs T, Shambroom J, Roth T", 2013, "Caffeine effects on sleep taken 0, 3, or 6 hours before going to bed", "Journal of Clinical Sleep Medicine 9(11):1195-1200", "10.5664/jcsm.3170")
     val CLARK_LANDOLT = Citation("Clark I, Landolt HP", 2017, "Coffee, caffeine, and sleep: a systematic review of epidemiological studies and randomized controlled trials", "Sleep Medicine Reviews 31:70-78", "10.1016/j.smrv.2016.01.006")
     val EBRAHIM = Citation("Ebrahim IO, Shapiro CM, Williams AJ, Fenwick PB", 2013, "Alcohol and sleep I: effects on normal sleep", "Alcoholism: Clinical and Experimental Research 37(4):539-549", "10.1111/acer.12006")
+    val HURSH_SAFTE = Citation("Hursh SR, Redmond DP, Johnson ML, et al.", 2004, "Fatigue models for applied research in warfighting", "Aviation, Space, and Environmental Medicine 75(3 Suppl):A44-A53", null, "SAFTE reservoir model (patent US 6,579,233, expired). Used for the idea that the sleep reservoir caps the day's effectiveness and that a depleted reservoir lowers peaks and deepens troughs; our exponential mapping and its constants are design values fitted to RISE's published examples, verify against replayed check-ins.")
     val WRIGHT_2013 = Citation("Wright KP Jr, et al.", 2013, "Entrainment of the human circadian clock to the natural light-dark cycle", "Current Biology 23(16):1554-1558", "10.1016/j.cub.2013.06.039")
     val YOUNGSTEDT = Citation("Youngstedt SD, Elliott JA, Kripke DF", 2019, "Human circadian phase-response curves for exercise", "The Journal of Physiology 597(8):2253-2268", "10.1113/JP276943")
     val GOOLEY = Citation("Gooley JJ, et al.", 2011, "Exposure to room light before bedtime suppresses melatonin onset and shortens melatonin duration in humans", "Journal of Clinical Endocrinology & Metabolism 96(3):E463-E472", "10.1210/jc.2010-2098")
@@ -71,7 +72,7 @@ internal object Cites {
  * public properties; [entries] lists them all for the methodology screen and for tests.
  */
 class ParameterSet private constructor(private val overrides: Map<String, Double>) {
-    val version: String = "1.0.0"
+    val version: String = "1.1.0"
     private val registry = LinkedHashMap<String, Param>()
 
     val entries: List<Param> get() = registry.values.toList()
@@ -251,6 +252,16 @@ class ParameterSet private constructor(private val overrides: Map<String, Double
     val rtWorst = p("energy.calibration.rtWorstMs", 600.0, "ms", "Median reaction time mapped to level 0", Cites.PLAN)
     val rtLapsePenalty = p("energy.calibration.lapsePenalty", 25.0, "level pts", "Level penalty at a 100% lapse rate", Cites.PLAN)
 
+    // ---- 4.6b Energy potential (SAFTE-style reservoir) -------------------------------------------------
+    val potentialTauHours = p("potential.tauHours", 24.0, "h", "Debt at which potential falls to 1/e of full (potential = 100 * exp(-debt / tau))", Cites.HURSH_SAFTE)
+    val potentialSuperMin = p("potential.superMin", 92.0, "score", "Potential at or above this is Super (debt under about 2 h)", Cites.PLAN)
+    val potentialGreatMin = p("potential.greatMin", 80.0, "score", "Potential at or above this is Great (debt under about 5.3 h, the usual 5 h target)", Cites.BELENKY)
+    val potentialGoodMin = p("potential.goodMin", 68.0, "score", "Potential at or above this is Good", Cites.PLAN)
+    val potentialFairMin = p("potential.fairMin", 55.0, "score", "Potential at or above this is Fair; below is Low", Cites.PLAN)
+    val debtCurveScale = p("energy.debtCurveScale", 0.5, "level pts per pt", "Curve level lost per point of potential below 100", Cites.HURSH_SAFTE)
+    val debtDipBoost = p("energy.debtDipBoost", 1.0, "x", "Extra loss at low levels, so debt deepens dips more than it lowers peaks", Cites.HURSH_SAFTE)
+    val catchUpHorizon = p("potential.catchUpHorizonNights", 14.0, "nights", "Nights projected when estimating the catch-up time", Cites.PLAN)
+
     // ---- 4.7 Recommendations ----------------------------------------------------------------------------
     val sleepEfficiencyDefault = p("rec.sleepEfficiencyDefault", 0.88, "fraction", "Sleep efficiency (asleep / in bed) when the user has none recorded", Cites.PLAN)
     val seMinNights = p("rec.sleepEfficiencyMinNights", 5.0, "nights", "Nights with in-bed data needed to use the personal median", Cites.PLAN)
@@ -270,7 +281,7 @@ class ParameterSet private constructor(private val overrides: Map<String, Double
     val defaultWakeMin = p("rec.defaultWakeMin", 450.0, "min of day", "Wake clock used when the user has no schedule and no history (07:30)", Cites.PLAN)
 
     companion object {
-        /** Parameters of engine 1.0.x. */
+        /** Parameters of engine 1.1.x. */
         val DEFAULT: ParameterSet by lazy { ParameterSet(emptyMap()) }
     }
 }

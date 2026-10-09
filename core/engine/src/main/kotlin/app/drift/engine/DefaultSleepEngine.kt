@@ -14,6 +14,9 @@ import app.drift.engine.models.RecommendationModel
 import app.drift.engine.models.RegularityModel
 import app.drift.engine.models.SleepNeedModel
 import app.drift.engine.models.minutesToDuration
+import app.drift.engine.models.DebtMath
+import app.drift.engine.models.PotentialModel
+import java.time.LocalDate
 import app.drift.model.Confidence
 import app.drift.model.ConfidenceLevel
 import app.drift.model.Provenance
@@ -93,7 +96,26 @@ class DefaultSleepEngine(
             SufficiencyTier.PERSONALIZING -> ConfidenceLevel.MEDIUM
             SufficiencyTier.FULL -> if (need.level == ConfidenceLevel.HIGH) ConfidenceLevel.HIGH else ConfidenceLevel.MEDIUM
         }
-        val energy = EnergyModel(p).run(pre, input, need.displayed, debt?.minutes ?: 0.0, circ, habitual, plan, energyLevel)
+        val potentialModel = PotentialModel(p)
+        val potential = debt?.let { potentialModel.potential(it) }
+        val catchUp = debt?.let {
+            potentialModel.catchUp(it.minutes, debtNeed.displayed, debtNeed.fittedEta, DebtMath.lambda(p), LocalDate.ofEpochDay(plan.wakeDay))
+        }
+        val debtByDay = debt?.daily?.associate { it.date.toEpochDay() to it.debtAfter.seconds / 60.0 }.orEmpty()
+        val tomorrowDebt = catchUp?.projection?.firstOrNull()?.second?.let { it.seconds / 60.0 }
+        val debtPenalty: (Double, Long) -> Double = if (debt == null) {
+            { _, _ -> 0.0 }
+        } else {
+            { lv, day ->
+                val d = when {
+                    day > pre.todayDay -> tomorrowDebt ?: debt.minutes
+                    day == pre.todayDay -> debt.minutes
+                    else -> debtByDay[day] ?: debt.minutes
+                }
+                potentialModel.curvePenalty(lv, d)
+            }
+        }
+        val energy = EnergyModel(p).run(pre, input, need.displayed, debt?.minutes ?: 0.0, circ, habitual, plan, energyLevel, debtPenalty)
         val recommendations = rec.complete(plan, pre, input, circ.estimate, energy, debt?.minutes, debt?.band)
 
         val sufficiency = Sufficiency(
@@ -160,6 +182,8 @@ class DefaultSleepEngine(
             explanations = explanations,
             state = state,
             dataSufficiency = sufficiency,
+            energyPotential = potential,
+            catchUp = catchUp,
         )
     }
 }

@@ -51,6 +51,9 @@ class GoldenTest {
         m["energy.flat"] = today.tooFlatForDip.toString()
         m["energy.phases"] = today.segments.filter { it.phase != EnergyPhase.SLEEP }.joinToString(">") { it.phase.name }
         m["energy.dip"] = today.segments.firstOrNull { it.phase == EnergyPhase.AFTERNOON_DIP }?.extremumAt?.let { clock(it) } ?: "none"
+        m["potential.score"] = fmt(snap.energyPotential?.score?.value)
+        m["potential.label"] = snap.energyPotential?.label?.name ?: "none"
+        m["catchup.nightsToGreat"] = snap.catchUp?.nightsToGreat?.toString() ?: "none"
         m["tier"] = snap.dataSufficiency.tier.name
         m["informative"] = snap.dataSufficiency.informativeNights.toString()
         return m

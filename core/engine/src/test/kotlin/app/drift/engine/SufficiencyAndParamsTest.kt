@@ -85,7 +85,7 @@ class SufficiencyAndParamsTest {
 
     @Test fun `engine reports its version`() {
         assertThat(DefaultSleepEngine().version).isEqualTo(ENGINE_VERSION)
-        assertThat(ENGINE_VERSION.toString()).isEqualTo("1.0.0")
+        assertThat(ENGINE_VERSION.toString()).isEqualTo("1.1.0")
         val snap = Kit.engine.analyze(Synth.steady(utc).input())
         assertThat(snap.engineVersion).isEqualTo(ENGINE_VERSION)
         assertThat(snap.inputHash).matches("[0-9a-f]{64}")

@@ -11,6 +11,7 @@ import app.drift.data.db.EngineStateEntity
 import app.drift.data.db.SnapshotEntity
 import app.drift.data.db.toSignal
 import app.drift.model.Interval
+import app.drift.model.SleepEpisode
 import app.drift.model.engine.AgeBand
 import app.drift.model.engine.AnalysisSnapshot
 import app.drift.model.engine.EngineInput
@@ -24,6 +25,8 @@ import app.drift.model.repository.AnalysisRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.time.Clock
 import java.time.DayOfWeek
@@ -44,11 +47,26 @@ class AnalysisRepositoryImpl @Inject constructor(
     override fun observeLatest(): Flow<AnalysisSnapshot?> = db.snapshots().observeLatest().map { it?.decode() }
     override fun observePrevious(): Flow<AnalysisSnapshot?> = db.snapshots().observePrevious().map { it?.decode() }
 
+    private val previewLock = Mutex()
+    private var previewBase: EngineInput? = null
+
     override suspend fun refresh(now: Instant): AnalysisSnapshot {
+        previewLock.withLock { previewBase = null }
         val input = buildInput(now)
         val snapshot = withContext(Dispatchers.Default) { engine.analyze(input) }
         persist(snapshot)
         return snapshot
+    }
+
+    override suspend fun preview(edits: List<SleepEpisode>, now: Instant): AnalysisSnapshot {
+        // Drags call this many times a second: reuse the stored input for a short while, then apply the edits.
+        val base = previewLock.withLock {
+            previewBase?.takeIf { Duration.between(it.now, now).abs() < PREVIEW_REUSE }
+                ?: buildInput(now).also { previewBase = it }
+        }
+        val kept = base.episodes.filter { e -> edits.none { it.id == e.id || it.interval.overlaps(e.interval) } }
+        val input = base.copy(episodes = (kept + edits).sortedBy { it.start })
+        return withContext(Dispatchers.Default) { engine.analyze(input) }
     }
 
     internal suspend fun buildInput(now: Instant): EngineInput {
@@ -99,6 +117,8 @@ class AnalysisRepositoryImpl @Inject constructor(
 
     companion object {
         val HISTORY: Duration = Duration.ofDays(90)
+        /** How long a preview reuses the input it built (the stored timeline cannot change much in this time). */
+        val PREVIEW_REUSE: Duration = Duration.ofMinutes(2)
         const val KEEP_SNAPSHOTS = 30
 
         /** Used until onboarding saves a real profile, so the engine can still serve its priors-only output. */

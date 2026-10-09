@@ -7,6 +7,7 @@ import app.drift.model.Provenance
 import app.drift.model.Quantity
 import app.drift.model.SourceId
 import app.drift.model.engine.AnalysisSnapshot
+import app.drift.model.engine.CatchUp
 import app.drift.model.engine.Cause
 import app.drift.model.engine.CauseKind
 import app.drift.model.engine.Chronotype
@@ -16,6 +17,8 @@ import app.drift.model.engine.DailyDebt
 import app.drift.model.engine.DayCurve
 import app.drift.model.engine.DebtBand
 import app.drift.model.engine.EnergyCurve
+import app.drift.model.engine.EnergyLabel
+import app.drift.model.engine.EnergyPotential
 import app.drift.model.engine.EnergyPhase
 import app.drift.model.engine.EnergyPoint
 import app.drift.model.engine.EnergySegment
@@ -90,6 +93,9 @@ data class SufficiencyDto(
     val debtAvailable: Boolean, val regularityAvailable: Boolean,
 )
 
+@Serializable data class PotentialDto(val score: QDto<Double>, val label: EnergyLabel, val trend: List<TrendPointDto>)
+@Serializable data class ProjectionDto(val date: String, val debt: String)
+@Serializable data class CatchUpDto(val nightsToGreat: Int?, val projection: List<ProjectionDto>)
 @Serializable
 data class SnapshotDto(
     val engineVersion: VersionDto,
@@ -106,6 +112,8 @@ data class SnapshotDto(
     val explanations: List<ExplanationDto>,
     val state: EngineStateDto,
     val dataSufficiency: SufficiencyDto,
+    val energyPotential: PotentialDto? = null,
+    val catchUp: CatchUpDto? = null,
 )
 
 // ---- generic quantity mapping ------------------------------------------------------------------
@@ -182,6 +190,10 @@ fun AnalysisSnapshot.toDto() = SnapshotDto(
         dataSufficiency.tier, dataSufficiency.daysOfHistory, dataSufficiency.informativeNights,
         dataSufficiency.nightsUntilPersonalNeed, dataSufficiency.debtAvailable, dataSufficiency.regularityAvailable,
     ),
+    energyPotential = energyPotential?.let { p ->
+        PotentialDto(p.score.dblDto(), p.label, p.trend.map { TrendPointDto(it.first.toString(), it.second) })
+    },
+    catchUp = catchUp?.let { c -> CatchUpDto(c.nightsToGreat, c.projection.map { ProjectionDto(it.first.toString(), it.second.toString()) }) },
 )
 
 fun SnapshotDto.toModel() = AnalysisSnapshot(
@@ -229,6 +241,10 @@ fun SnapshotDto.toModel() = AnalysisSnapshot(
         dataSufficiency.tier, dataSufficiency.daysOfHistory, dataSufficiency.informativeNights,
         dataSufficiency.nightsUntilPersonalNeed, dataSufficiency.debtAvailable, dataSufficiency.regularityAvailable,
     ),
+    energyPotential = energyPotential?.let { p ->
+        EnergyPotential(p.score.dbl(), p.label, p.trend.map { LocalDate.parse(it.date) to it.value })
+    },
+    catchUp = catchUp?.let { c -> CatchUp(c.nightsToGreat, c.projection.map { LocalDate.parse(it.date) to Duration.parse(it.debt) }) },
 )
 
 /** JSON codec shared by storage and backup. Non-finite doubles are allowed because engines may emit them. */

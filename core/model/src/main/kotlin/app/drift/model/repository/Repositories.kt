@@ -43,6 +43,12 @@ interface AnalysisRepository {
     fun observePrevious(): Flow<AnalysisSnapshot?>
     /** Recompute now (under 50 ms engine time) and persist. */
     suspend fun refresh(now: Instant = Instant.now()): AnalysisSnapshot
+
+    /**
+     * Runs the engine as if [edits] were saved: each edit replaces the stored episodes with the same id or that it
+     * overlaps. Nothing is persisted. Fast enough to call on every drag frame (the input is cached briefly).
+     */
+    suspend fun preview(edits: List<SleepEpisode>, now: Instant = Instant.now()): AnalysisSnapshot
 }
 
 data class SourceInfo(

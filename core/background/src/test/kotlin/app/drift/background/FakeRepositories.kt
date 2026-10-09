@@ -57,6 +57,8 @@ class FakeAnalysisRepository(var snapshot: AnalysisSnapshot? = Fixtures.snapshot
         refreshCount++
         return snapshot ?: Fixtures.snapshot(computedAt = now).also { snapshot = it }
     }
+    override suspend fun preview(edits: List<app.drift.model.SleepEpisode>, now: Instant): AnalysisSnapshot =
+        snapshot ?: Fixtures.snapshot(computedAt = now)
 }
 
 class FakeSourceRepository : SourceRepository {

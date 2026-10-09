@@ -23,6 +23,33 @@ data class AnalysisSnapshot(
     val explanations: List<Explanation>,
     val state: EngineState,
     val dataSufficiency: Sufficiency,
+    /** Today's energy potential (0..100), driven by sleep debt; null when debt is unavailable. */
+    val energyPotential: EnergyPotential? = null,
+    /** Projection of debt if the recommended schedule is followed; null when debt is unavailable. */
+    val catchUp: CatchUp? = null,
+)
+
+/** Plain-language band of [EnergyPotential.score], from best to worst. */
+enum class EnergyLabel { SUPER, GREAT, GOOD, FAIR, LOW }
+
+/**
+ * How much of a fully rested day's energy is available (plan 4.6b). Estimated from sleep debt with the same
+ * reservoir model that scales the energy curve. [trend] holds the score after each night of the debt window, oldest first.
+ */
+data class EnergyPotential(
+    val score: app.drift.model.Quantity<Double>,
+    val label: EnergyLabel,
+    val trend: List<Pair<LocalDate, Double>> = emptyList(),
+)
+
+/**
+ * If the user follows tonight's recommended bedtime and wake time from now on: the projected debt after each
+ * night ([projection], first entry = tomorrow morning) and how many nights until the potential reaches
+ * [EnergyLabel.GREAT] or better (0 = already there, null = not within the projection horizon).
+ */
+data class CatchUp(
+    val nightsToGreat: Int?,
+    val projection: List<Pair<LocalDate, Duration>>,
 )
 
 enum class DebtBand { LOW, MODERATE, HIGH }

@@ -26,8 +26,9 @@ import kotlin.math.roundToInt
 
 /**
  * Model 4.6: three-process alertness model (Akerstedt and Folkard). A(t) = S(t) + C(t) + W(t), simulated at
- * 5-minute resolution over the last 14 days of real sleep and tomorrow's recommended sleep, normalised to 0..100
- * and split into named phases by extrema with a minimum prominence.
+ * 5-minute resolution over the last 14 days of real sleep and tomorrow's recommended sleep, normalised to 0..100,
+ * lowered by that day's sleep debt (SAFTE-style reservoir, [debtPenalty]) and split into named phases by extrema
+ * with a minimum prominence.
  */
 internal class EnergyModel(private val p: ParameterSet) {
 
@@ -44,6 +45,7 @@ internal class EnergyModel(private val p: ParameterSet) {
         habitual: Habitual,
         plan: SleepPlan,
         level: ConfidenceLevel,
+        debtPenalty: (level: Double, day: Long) -> Double = { _, _ -> 0.0 },
     ): EnergyCurve {
         val step = p.simStepMin.i
         val zone = input.zone
@@ -117,7 +119,9 @@ internal class EnergyModel(private val p: ParameterSet) {
             val c1 = p.circAmp.v * cos(2 * PI * (tm - (dlmo + p.circAcrophase.v + phase)) / 1440.0)
             val c2 = p.circHarmonicAmp.v * cos(4 * PI * (tm - (dlmo + p.harmonicAcrophase.v + phase)) / 1440.0)
             val a = p.homeoWeight.v * s[i] + amp * (c1 + c2) + w[i]
-            return (100.0 * (a - p.levelLow.v) / (p.levelHigh.v - p.levelLow.v)).clamp(0.0, 100.0)
+            val raw = (100.0 * (a - p.levelLow.v) / (p.levelHigh.v - p.levelLow.v)).clamp(0.0, 100.0)
+            // Chronic debt (model 4.6b): lower peaks, deeper dips.
+            return (raw - debtPenalty(raw, day)).clamp(0.0, 100.0)
         }
 
         val fit = calibrate(input, pre, gridStart, step, n, ::levelAt)
@@ -236,6 +240,7 @@ internal class EnergyModel(private val p: ParameterSet) {
             if (i < 0 || i >= n) continue
             val y = when (c) {
                 is CheckIn.EnergyRating -> (c.rating - 1) / 4.0 * 100.0
+                is CheckIn.SleepRating -> continue
                 is CheckIn.ReactionTest -> {
                     val base = ((p.rtWorst.v - c.medianRtMillis) / (p.rtWorst.v - p.rtBest.v)).clamp(0.0, 1.0) * 100.0
                     val lapseRate = if (c.trials > 0) c.lapses.toDouble() / c.trials else 0.0
