@@ -139,6 +139,28 @@ class SourceRepositoryTest {
         assertThat(h.db.signals().count()).isEqualTo(1)
     }
 
+    @Test fun ninetyDayBackfillWithDenseSignalsIsFast() = runTest {
+        val eps = (0 until 90).map { n ->
+            val s = h.clock.now.minusSeconds((n + 1) * 86400L)
+            episode("n$n", s, s.plusSeconds(8 * 3600L), stages = true)
+        }
+        val origin = eps[0].origin
+        val signals = (0 until 90).flatMap { n ->
+            val s = h.clock.now.minusSeconds((n + 1) * 86400L)
+            (0 until 288).map { i -> Signal.HeartRateSample(origin, s.plusSeconds(i * 300L), 50.0 + i % 20) }
+        }
+        hc.results += PullResult(eps, signals, Checkpoint("t"))
+        val t0 = System.nanoTime()
+        val report = h.sources.sync(SyncReason.FIRST_RUN)
+        val seconds = (System.nanoTime() - t0) / 1e9
+        assertThat(report.newEpisodes).isEqualTo(90)
+        assertThat(report.newSignals).isEqualTo(90 * 288)
+        assertThat(seconds).isLessThan(10.0)
+        val refreshStart = System.nanoTime()
+        h.analysis.refresh(h.clock.now)
+        assertThat((System.nanoTime() - refreshStart) / 1e9).isLessThan(5.0)
+    }
+
     // ---- import ---------------------------------------------------------------------------------
 
     private fun importer(vararg eps: SleepEpisode, rejected: Int = 0) = object : BackupImporter {
