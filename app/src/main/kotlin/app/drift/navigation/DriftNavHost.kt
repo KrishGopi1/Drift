@@ -19,6 +19,7 @@ import app.drift.feature.energy.navigation.ENERGY_ROUTE
 import app.drift.feature.energy.navigation.energyScreen
 import app.drift.feature.onboarding.navigation.ONBOARDING_ROUTE
 import app.drift.feature.onboarding.navigation.onboardingGraph
+import app.drift.feature.settings.navigation.SETTINGS_METHODOLOGY_ROUTE
 import app.drift.feature.settings.navigation.SETTINGS_ROUTE
 import app.drift.feature.settings.navigation.settingsGraph
 import app.drift.feature.sleep.navigation.BODY_CLOCK_ROUTE
@@ -88,8 +89,14 @@ fun DriftNavHost(
                     onExplain = navController::navigateToWhy,
                     onOpenNight = navController::navigateToNight,
                     onFix = onFix,
+                    onStartSetup = { navController.navigate(ONBOARDING_ROUTE) },
+                    onOpenSources = { navController.navigateToTab(SETTINGS_ROUTE) },
                 )
-                sleepGraph(navController = navController, onFix = onFix)
+                sleepGraph(
+                    navController = navController,
+                    onFix = onFix,
+                    onOpenMethodology = { navController.navigate(SETTINGS_METHODOLOGY_ROUTE) },
+                )
                 settingsGraph(
                     navController = navController,
                     onFix = onFix,
