@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="st_title">Settings</string>
+    <string name="st_back">Back</string>
+    <string name="st_dismiss">Dismiss</string>
+    <string name="st_close">Close</string>
+    <string name="st_cancel">Cancel</string>
+    <string name="st_unknown_error">Something went wrong.</string>
+
+    <!-- Sources -->
+    <string name="st_sources_title">Sources and health</string>
+    <string name="st_source_status_available">Connected</string>
+    <string name="st_source_status_needs_permission">Access removed or not yet granted</string>
+    <string name="st_source_status_not_installed">Not installed</string>
+    <string name="st_source_status_not_supported">Not supported on this phone</string>
+    <string name="st_source_status_error">Problem: %1$s</string>
+    <string name="st_source_off">Turned off</string>
+    <string name="st_source_last_sync">Last sync: %1$s</string>
+    <string name="st_source_never_synced">Not synced yet</string>
+    <string name="st_source_last_error">Last error: %1$s</string>
+    <string name="st_sources_problem">%1$s has lost access to what it needs. Fix it so new nights keep arriving.</string>
+    <string name="st_sources_none">No sources are available on this phone.</string>
+    <string name="st_sync_now">Sync now</string>
+    <string name="st_sync_now_subtitle">Read new sleep from every source that is on</string>
+    <string name="st_syncing">Syncing</string>
+    <string name="st_sync_done">Sync finished. New or updated sleep sessions: %1$d.</string>
+    <string name="st_sync_failed">Sync failed: %1$s</string>
+    <string name="st_sync_source_errors">Some sources reported a problem: %1$s</string>
+    <string name="st_saa_import">Import Sleep as Android backup</string>
+    <string name="st_saa_import_subtitle">Choose a backup file to bring in older nights</string>
+    <string name="st_phone_detection_name">Phone detection</string>
+    <string name="st_phone_detection_subtitle">Infer sleep from how your phone is used. Less accurate than a wearable.</string>
+
+    <!-- Schedule -->
+    <string name="st_schedule_title">Schedule</string>
+    <string name="st_schedule_edit">Edit schedule</string>
+    <string name="st_schedule_edit_subtitle">Work days, wake-up and bed times, age and chronotype</string>
+    <string name="st_schedule_screen_title">Your schedule</string>
+    <string name="st_schedule_save">Save schedule</string>
+    <string name="st_schedule_saving">Saving</string>
+    <string name="st_schedule_save_failed">Your schedule could not be saved: %1$s</string>
+    <string name="st_workdays_label">Work or school days</string>
+    <string name="st_workdays_none">No fixed days selected. Drift will treat every day as a free day.</string>
+    <string name="st_day_selected">%1$s, selected</string>
+    <string name="st_day_not_selected">%1$s, not selected</string>
+    <string name="st_wake_workday">Wake-up time on work days</string>
+    <string name="st_bed_free">Bedtime on free days</string>
+    <string name="st_wake_free">Wake-up time on free days</string>
+    <string name="st_earlier">Earlier</string>
+    <string name="st_later">Later</string>
+    <string name="st_time_earlier_desc">Make %1$s earlier</string>
+    <string name="st_time_later_desc">Make %1$s later</string>
+    <string name="st_time_value_desc">%1$s: %2$s</string>
+    <string name="st_age_label">Age</string>
+    <string name="st_age_18_25">18 to 25</string>
+    <string name="st_age_26_35">26 to 35</string>
+    <string name="st_age_36_50">36 to 50</string>
+    <string name="st_age_51_64">51 to 64</string>
+    <string name="st_age_65_plus">65 or older</string>
+    <string name="st_chrono_label">Morning or evening person</string>
+    <string name="st_chrono_definitely_morning">Definitely a morning person</string>
+    <string name="st_chrono_moderately_morning">More of a morning person</string>
+    <string name="st_chrono_neither">Neither</string>
+    <string name="st_chrono_moderately_evening">More of an evening person</string>
+    <string name="st_chrono_definitely_evening">Definitely an evening person</string>
+    <string name="st_chrono_unsure">I am not sure</string>
+
+    <!-- Reminders -->
+    <string name="st_reminders_title">Reminders</string>
+    <string name="st_reminder_wind_down">Wind-down</string>
+    <string name="st_reminder_wind_down_desc">Before your melatonin window, to dim lights and slow down</string>
+    <string name="st_reminder_melatonin_window">Melatonin window</string>
+    <string name="st_reminder_melatonin_window_desc">When your body clock starts preparing for sleep</string>
+    <string name="st_reminder_caffeine_cutoff">Caffeine cut-off</string>
+    <string name="st_reminder_caffeine_cutoff_desc">The last good time for coffee or tea today</string>
+    <string name="st_reminder_morning_light">Morning light</string>
+    <string name="st_reminder_morning_light_desc">Daylight soon after waking to anchor your clock</string>
+    <string name="st_reminder_confirm_sleep">Confirm last night</string>
+    <string name="st_reminder_confirm_sleep_desc">When Drift inferred your sleep from your phone and wants a check</string>
+    <string name="st_reminder_energy_check_in">Energy check-in</string>
+    <string name="st_reminder_energy_check_in_desc">A quick 1 to 5 rating that tunes your curve</string>
+
+    <!-- Appearance -->
+    <string name="st_appearance_title">Appearance</string>
+    <string name="st_theme_label">Theme</string>
+    <string name="st_theme_system">System</string>
+    <string name="st_theme_light">Light</string>
+    <string name="st_theme_dark">Dark</string>
+    <string name="st_clock_label">Clock format</string>
+    <string name="st_clock_system">System</string>
+    <string name="st_clock_12">12 hour</string>
+    <string name="st_clock_24">24 hour</string>
+
+    <!-- Data -->
+    <string name="st_data_title">Data</string>
+    <string name="st_export">Export everything</string>
+    <string name="st_export_subtitle">Save all your data to a file you choose</string>
+    <string name="st_export_file_name">drift-backup</string>
+    <string name="st_exported">Export saved.</string>
+    <string name="st_export_failed">Export failed: %1$s</string>
+    <string name="st_import">Import a Drift export</string>
+    <string name="st_import_subtitle">Restore data from a file made by Export</string>
+    <string name="st_local_backups_title">Backups on this phone</string>
+    <string name="st_backup_now">Back up now</string>
+    <string name="st_backup_created">Backup created.</string>
+    <string name="st_backup_failed">Backup failed: %1$s</string>
+    <string name="st_backups_none">No backups yet.</string>
+    <string name="st_backup_row">%1$s</string>
+    <string name="st_backup_row_desc">Backup from %1$s, %2$s</string>
+    <string name="st_restore">Restore</string>
+    <string name="st_restore_desc">Restore backup from %1$s</string>
+    <string name="st_restore_confirm_title">Restore this backup?</string>
+    <string name="st_restore_confirm_body">Your current data is replaced by the data in the backup from %1$s.</string>
+    <string name="st_restored">Backup restored.</string>
+    <string name="st_restore_failed">Restore failed: %1$s</string>
+    <string name="st_reset">Reset all data</string>
+    <string name="st_reset_subtitle">Delete every night, setting and backup on this phone</string>
+    <string name="st_reset_title">Reset all data?</string>
+    <string name="st_reset_body">This permanently deletes your sleep history, schedule, settings, check-ins and the backups stored on this phone. Export first if you want to keep a copy. This cannot be undone.</string>
+    <string name="st_reset_type_prompt">Type %1$s to confirm</string>
+    <string name="st_reset_word">RESET</string>
+    <string name="st_reset_field">Confirmation word</string>
+    <string name="st_reset_confirm">Delete everything</string>
+    <string name="st_reset_failed">Reset failed: %1$s</string>
+    <string name="st_import_ok_title">Import finished</string>
+    <string name="st_import_failed_title">The import failed</string>
+    <string name="st_import_failed_unreadable">The file could not be opened.</string>
+    <string name="st_import_try_another">Try another file</string>
+    <plurals name="st_report_nights">
+        <item quantity="one">%1$d night imported</item>
+        <item quantity="other">%1$d nights imported</item>
+    </plurals>
+    <string name="st_report_duplicates">Already known: %1$d</string>
+    <string name="st_report_rejected">Rows skipped: %1$d</string>
+    <string name="st_report_range">From %1$s to %2$s</string>
+
+    <!-- About -->
+    <string name="st_about_title">About</string>
+    <string name="st_version">Version</string>
+    <string name="st_version_unknown">Unknown</string>
+    <string name="st_privacy_title">Privacy</string>
+    <string name="st_privacy_body">No account, no network, nothing leaves your phone. Drift has no internet permission, so it could not send your data anywhere even by mistake.</string>
+    <string name="st_methodology">How Drift calculates</string>
+    <string name="st_methodology_subtitle">Methods, parameters and citations</string>
+    <string name="st_licenses">Open-source licences</string>
+    <string name="st_licenses_subtitle">Fonts and libraries Drift is built with</string>
+
+    <!-- Methodology -->
+    <string name="st_meth_title">Methodology</string>
+    <string name="st_meth_intro">Every number in Drift comes from a small, fixed set of published models running on your phone. Estimates always carry a margin of error. The values below are the starting parameters; Drift personalizes them from your own nights.</string>
+    <string name="st_meth_parameters">Parameters</string>
+    <string name="st_meth_citations">References</string>
+    <string name="st_meth_expand">Show details</string>
+    <string name="st_meth_collapse">Hide details</string>
+
+    <string name="st_meth_need_title">Sleep need</string>
+    <string name="st_meth_need_summary">Your need is tracked with a one-dimensional Kalman filter. It starts from the average for your age band and moves toward what you actually sleep on free nights, when no alarm cuts sleep short. Alarm nights only tell the filter that you needed at least that much.</string>
+    <string name="st_meth_need_params">The prior is the population mean for your age band (about 8 to 8.5 hours for young adults, lower for older adults) with a spread of about 0.6 hours. Free nights are corrected for rebound after debt (a factor of about 0.3). The estimate may drift by about 10 minutes of real change per month. Below five informative nights Drift shows the prior and says so.</string>
+    <string-array name="st_meth_need_cites">
+        <item>Kalman, R. E. (1960). A new approach to linear filtering and prediction problems. Journal of Basic Engineering, 82(1), 35-45.</item>
+        <item>Hirshkowitz, M. et al. (2015). National Sleep Foundation\'s sleep time duration recommendations. Sleep Health, 1(1), 40-43.</item>
+        <item>Kitamura, S. et al. (2016). Estimating individual optimal sleep duration and potential sleep debt. Scientific Reports, 6, 35812.</item>
+    </string-array>
+
+    <string name="st_meth_debt_title">Sleep debt</string>
+    <string name="st_meth_debt_summary">Debt is a leaky account over your last 14 sleep days. A night shorter than your need adds the shortfall. A longer night repays only part of the surplus. Older debt fades, so one bad week does not follow you forever.</string>
+    <string name="st_meth_debt_params">The leak gives a half-life of about 7 days. Repayment starts at 60 percent of the surplus and is fitted to how quickly your own free-night rebound shrinks. Naps count fully up to 90 minutes and at half rate beyond that. Missing nights are filled from your same-weekday median and widen the margin. After three or more missing nights in a row Drift shows no debt rather than guessing.</string>
+    <string-array name="st_meth_debt_cites">
+        <item>Van Dongen, H. P. A. et al. (2003). The cumulative cost of additional wakefulness. Sleep, 26(2), 117-126.</item>
+        <item>Banks, S. and Dinges, D. F. (2007). Behavioral and physiological consequences of sleep restriction. Journal of Clinical Sleep Medicine, 3(5), 519-528.</item>
+    </string-array>
+
+    <string name="st_meth_sri_title">Regularity (Sleep Regularity Index)</string>
+    <string name="st_meth_sri_summary">The Sleep Regularity Index is the chance that you are in the same state, asleep or awake, at two moments exactly 24 hours apart. 100 means a perfectly repeating schedule. Drift also reports how widely your bedtime, wake time and mid-sleep vary.</string>
+    <string name="st_meth_sri_params">Computed over 7 and over 14 days and only when at least five paired days exist. Timing spread uses circular standard deviation, so times around midnight are handled correctly.</string>
+    <string-array name="st_meth_sri_cites">
+        <item>Phillips, A. J. K. et al. (2017). Irregular sleep/wake patterns are associated with poorer academic performance and delayed circadian and sleep/wake timing. Scientific Reports, 7, 3216.</item>
+    </string-array>
+
+    <string name="st_meth_chrono_title">Chronotype and social jetlag</string>
+    <string name="st_meth_chrono_summary">Your chronotype is the middle of your sleep on free days, corrected for the extra sleep you take to repay debt (MSFsc). Social jetlag is how far your free-day midpoint sits from your work-day midpoint.</string>
+    <string name="st_meth_chrono_params">Until Drift has seen at least four free nights it blends your questionnaire answer with the data, weighting the data more with every night.</string>
+    <string-array name="st_meth_chrono_cites">
+        <item>Roenneberg, T., Wirz-Justice, A. and Merrow, M. (2003). Life between clocks: daily temporal patterns of human chronotypes. Journal of Biological Rhythms, 18(1), 80-90.</item>
+        <item>Roenneberg, T. et al. (2007). Epidemiology of the human circadian clock. Sleep Medicine Reviews, 11(6), 429-438.</item>
+        <item>Wittmann, M. et al. (2006). Social jetlag: misalignment of biological and social time. Chronobiology International, 23(1-2), 497-509.</item>
+    </string-array>
+
+    <string name="st_meth_clock_title">Body clock and melatonin window</string>
+    <string name="st_meth_clock_summary">Drift estimates when your melatonin starts to rise (dim light melatonin onset, DLMO) from when you habitually fall asleep. DLMO usually comes about 2 to 3 hours before habitual sleep onset. The melatonin window and the wind-down reminder are placed relative to it.</string>
+    <string name="st_meth_clock_params">A circular Kalman filter follows your DLMO clock time from each night, giving less weight to alarm-driven and shift nights. After travel the estimate moves by at most about 1 hour per day eastward and 1.5 hours per day westward. The melatonin window is the hour starting about 2 hours after DLMO, and wind-down starts 1 hour before it.</string>
+    <string-array name="st_meth_clock_cites">
+        <item>Pandi-Perumal, S. R. et al. (2007). Dim light melatonin onset (DLMO): a tool for the analysis of circadian phase in human sleep and chronobiological disorders. Progress in Neuro-Psychopharmacology and Biological Psychiatry, 31(1), 1-11.</item>
+    </string-array>
+
+    <string name="st_meth_energy_title">Energy curve</string>
+    <string name="st_meth_energy_summary">Your energy curve adds three processes: how much sleep pressure has built up while awake (homeostatic), where you are in your body clock cycle (circadian), and the grogginess just after waking (sleep inertia). It is normalized from 0 to 100 and split into phases such as morning peak, afternoon dip and wind-down. If the curve is too flat to show a real dip, Drift says so.</string>
+    <string name="st_meth_energy_params">Sleep pressure is simulated over your last 14 days of sleep, falling while awake with a time constant of about 18 hours and recovering during sleep with about 4 hours. The circadian part is a 24 hour cosine plus a 12 hour harmonic that creates the post-lunch dip, tied to your DLMO. Sleep inertia decays over the first 1 to 2 hours after waking and is larger after short sleep. With 10 or more energy check-ins, a bounded fit adjusts the amplitude and phase.</string>
+    <string-array name="st_meth_energy_cites">
+        <item>Akerstedt, T. and Folkard, S. (1995). Validation of the S and C components of the three-process model of alertness regulation. Sleep, 18(1), 1-6.</item>
+        <item>Akerstedt, T. and Folkard, S. (1997). The three-process model of alertness and its extension to performance, sleep latency, and sleep length. Chronobiology International, 14(2), 115-123.</item>
+        <item>Borbely, A. A. (1982). A two process model of sleep regulation. Human Neurobiology, 1, 195-204.</item>
+        <item>Daan, S., Beersma, D. G. M. and Borbely, A. A. (1984). Timing of human sleep: recovery process gated by a circadian pacemaker. American Journal of Physiology, 246(2), R161-R183.</item>
+        <item>Tassi, P. and Muzet, A. (2000). Sleep inertia. Sleep Medicine Reviews, 4(4), 341-353.</item>
+    </string-array>
+
+    <string name="st_meth_sufficiency_title">How much data is enough</string>
+    <string name="st_meth_sufficiency_summary">With no nights, Drift draws your curve from your answers and population averages and marks it Estimated. A few nights give a debt estimate with a wide margin. Around a week brings your personal sleep need and regularity. Two weeks or more switches on the full model.</string>
+    <string name="st_meth_sufficiency_params">Every number carries a label: Measured (read directly), Derived (calculated by fixed rules), Estimated (a model with a margin of error) or User-entered.</string>
+    <string-array name="st_meth_sufficiency_cites">
+        <item>Drift engine methodology notes, shipped with the app source.</item>
+    </string-array>
+
+    <!-- Licences -->
+    <string name="st_lic_title">Open-source licences</string>
+    <string name="st_lic_font_title">Manrope typeface</string>
+    <string name="st_lic_font_body">Drift uses Manrope, copyright 2018 The Manrope Project Authors, under the SIL Open Font License 1.1. The full licence text follows.</string>
+    <string name="st_lic_libs_title">Libraries</string>
+    <string name="st_lic_libs_body">Drift is built with the libraries below. All are used under the licence shown and none sends data off your phone.</string>
+    <string-array name="st_lic_libs">
+        <item>AndroidX Compose (UI, Foundation, Material 3, Animation) - Apache License 2.0</item>
+        <item>AndroidX Activity and Core KTX - Apache License 2.0</item>
+        <item>AndroidX Lifecycle and ViewModel - Apache License 2.0</item>
+        <item>AndroidX Navigation - Apache License 2.0</item>
+        <item>AndroidX Hilt - Apache License 2.0</item>
+        <item>AndroidX Room and SQLite - Apache License 2.0</item>
+        <item>AndroidX DataStore - Apache License 2.0</item>
+        <item>AndroidX WorkManager - Apache License 2.0</item>
+        <item>AndroidX Glance - Apache License 2.0</item>
+        <item>AndroidX Health Connect client - Apache License 2.0</item>
+        <item>Dagger and Hilt - Apache License 2.0</item>
+        <item>Kotlin and kotlinx.coroutines - Apache License 2.0</item>
+        <item>SQLCipher for Android - BSD-style licence from Zetetic LLC</item>
+    </string-array>
+</resources>

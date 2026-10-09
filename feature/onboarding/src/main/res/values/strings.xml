@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ob_back">Back</string>
+    <string name="ob_step_progress">Step %1$d of %2$d</string>
+    <string name="ob_continue">Continue</string>
+    <string name="ob_skip">Skip</string>
+    <string name="ob_not_now">Not now</string>
+    <string name="ob_earlier">Earlier</string>
+    <string name="ob_later">Later</string>
+
+    <!-- 1 Welcome -->
+    <string name="ob_welcome_title">Know your energy before the day starts.</string>
+    <string name="ob_welcome_body">Drift turns your sleep into a simple schedule for the day.</string>
+    <string name="ob_welcome_energy_title">Your energy schedule</string>
+    <string name="ob_welcome_energy_body">See when you are likely to peak, dip and wind down.</string>
+    <string name="ob_welcome_debt_title">Your sleep debt</string>
+    <string name="ob_welcome_debt_body">Track what short nights cost you and how fast you repay it.</string>
+    <string name="ob_welcome_clock_title">Your body clock</string>
+    <string name="ob_welcome_clock_body">Learn when you naturally feel sleepy and how regular your sleep is.</string>
+    <string name="ob_welcome_private">Everything stays on your phone.</string>
+    <string name="ob_get_started">Get started</string>
+
+    <!-- 2 How it works -->
+    <string name="ob_how_title">How Drift works</string>
+    <string name="ob_how_body">Every number carries a label that says where it came from.</string>
+    <string name="ob_how_energy_title">Energy</string>
+    <string name="ob_how_energy_body">A model combines how long you have been awake, your body clock and how well you slept. It is an estimate with a margin of error.</string>
+    <string name="ob_how_debt_title">Sleep debt</string>
+    <string name="ob_how_debt_body">Calculated from your recent nights against the sleep you need. Short nights add to it and long nights pay it back gradually.</string>
+    <string name="ob_how_clock_title">Body clock</string>
+    <string name="ob_how_clock_body">Estimated from when you usually sleep. The more regular nights Drift sees, the narrower the margin becomes.</string>
+    <string name="ob_how_measured">Anything read straight from your phone or a connected app is labelled Measured.</string>
+
+    <!-- 3 Schedule -->
+    <string name="ob_schedule_title">Your usual week</string>
+    <string name="ob_schedule_body">This gives Drift a starting point before it has seen any of your nights.</string>
+    <string name="ob_workdays_label">Work or school days</string>
+    <string name="ob_workdays_none">No fixed days selected. Drift will treat every day as a free day.</string>
+    <string name="ob_day_selected">%1$s, selected</string>
+    <string name="ob_day_not_selected">%1$s, not selected</string>
+    <string name="ob_wake_workday">Wake-up time on work days</string>
+    <string name="ob_bed_free">Bedtime on free days</string>
+    <string name="ob_wake_free">Wake-up time on free days</string>
+    <string name="ob_time_earlier_desc">Make %1$s earlier</string>
+    <string name="ob_time_later_desc">Make %1$s later</string>
+    <string name="ob_time_value_desc">%1$s: %2$s</string>
+
+    <!-- 4 About you -->
+    <string name="ob_about_title">About you</string>
+    <string name="ob_about_body">Age shapes how much sleep people typically need. Your answers stay on this phone.</string>
+    <string name="ob_age_label">Age</string>
+    <string name="ob_age_18_25">18 to 25</string>
+    <string name="ob_age_26_35">26 to 35</string>
+    <string name="ob_age_36_50">36 to 50</string>
+    <string name="ob_age_51_64">51 to 64</string>
+    <string name="ob_age_65_plus">65 or older</string>
+    <string name="ob_chrono_label">Are you a morning or an evening person?</string>
+    <string name="ob_chrono_definitely_morning">Definitely a morning person</string>
+    <string name="ob_chrono_moderately_morning">More of a morning person</string>
+    <string name="ob_chrono_neither">Neither</string>
+    <string name="ob_chrono_moderately_evening">More of an evening person</string>
+    <string name="ob_chrono_definitely_evening">Definitely an evening person</string>
+    <string name="ob_chrono_unsure">I am not sure</string>
+    <string name="ob_save_failed">Drift could not save your answers: %1$s</string>
+
+    <!-- 5 Sources -->
+    <string name="ob_sources_title">Where should Drift read sleep from?</string>
+    <string name="ob_sources_body">Pick one or more. Drift merges them and prefers the most accurate source for each night.</string>
+    <string name="ob_source_hc_hint">Most accurate when you wear a watch or ring that writes to Health Connect.</string>
+    <string name="ob_source_saa_hint">Reads sleep that Sleep as Android records. You can also import its backup file.</string>
+    <string name="ob_source_phone_hint">No wearable needed. Drift infers sleep from how your phone is used, which is less accurate.</string>
+    <string name="ob_source_phone_name">Phone detection</string>
+    <string name="ob_source_hint_generic">Another sleep source.</string>
+    <string name="ob_source_status_available">Connected</string>
+    <string name="ob_source_status_needs_permission">Needs permission</string>
+    <string name="ob_source_status_not_installed">Not installed</string>
+    <string name="ob_source_status_not_supported">Not supported on this phone</string>
+    <string name="ob_source_status_error">Problem: %1$s</string>
+    <string name="ob_source_status_off">Off</string>
+    <string name="ob_sources_none">No sources are available yet. You can add sleep by hand later.</string>
+
+    <!-- 6 Permissions -->
+    <string name="ob_perm_hc_title">Read sleep from Health Connect</string>
+    <string name="ob_perm_hc_body">Drift reads sleep sessions and, if present, heart rate and steps. It stays on your phone. There is no account and no network access.</string>
+    <string name="ob_perm_hc_point_1">Sleep sessions and stages</string>
+    <string name="ob_perm_hc_point_2">Used only to build your schedule on this phone</string>
+    <string name="ob_perm_hc_granted">Access granted</string>
+    <string name="ob_perm_hc_missing">Still missing</string>
+    <string name="ob_perm_hc_ok">Granted</string>
+    <string name="ob_perm_hc_not_granted">Not granted</string>
+    <string name="ob_perm_hc_connected_title">Health Connect is connected</string>
+    <string name="ob_perm_hc_connected_body">Drift has the access it asked for.</string>
+    <string name="ob_perm_hc_missing_title">Health Connect is not installed</string>
+    <string name="ob_perm_hc_missing_body">Install it to read sleep from your watch or ring, or carry on with phone detection only.</string>
+    <string name="ob_perm_hc_update_body">Health Connect needs an update before Drift can read from it.</string>
+    <string name="ob_perm_hc_unsupported_body">Health Connect is not supported on this phone. Phone detection still works.</string>
+    <string name="ob_perm_use_phone_only">Use phone detection only</string>
+    <string name="ob_perm_activity_title">Activity recognition</string>
+    <string name="ob_perm_activity_body">Lets Drift use Android\'s sleep detection and count steps. Without it, Drift relies on screen use and has lower confidence.</string>
+    <string name="ob_perm_activity_point_1">Sleep and movement signals from the phone</string>
+    <string name="ob_perm_activity_point_2">Never leaves your phone</string>
+    <string name="ob_perm_activity_action">Allow activity recognition</string>
+    <string name="ob_perm_usage_title">Usage access</string>
+    <string name="ob_perm_usage_body">Lets Drift see when the screen was last in use overnight, which helps place bedtime and wake time. It never reads what you do in other apps.</string>
+    <string name="ob_perm_usage_point_1">When the phone was in use, not what was on screen</string>
+    <string name="ob_perm_usage_point_2">Never leaves your phone</string>
+    <string name="ob_perm_usage_action">Open usage access settings</string>
+    <string name="ob_perm_notif_title">Reminders</string>
+    <string name="ob_perm_notif_body">Drift can nudge you to wind down, get morning light and confirm last night\'s sleep. If you skip this, the same cards appear inside the app.</string>
+    <string name="ob_perm_notif_point_1">Wind-down and morning reminders</string>
+    <string name="ob_perm_notif_point_2">You choose which ones in Settings</string>
+    <string name="ob_perm_notif_action">Allow notifications</string>
+    <string name="ob_perm_granted_title">%1$s: allowed</string>
+    <string name="ob_perm_granted_body">Nothing more to do here.</string>
+    <string name="ob_perm_denied_note">Not allowed. You can change this later in Settings.</string>
+
+    <!-- 7 Import -->
+    <string name="ob_import_title">Reading your sleep history</string>
+    <string name="ob_import_body">Drift reads the history your sources already hold.</string>
+    <string name="ob_import_progress_desc">Import progress</string>
+    <string name="ob_import_progress_percent">%1$d%%</string>
+    <string name="ob_import_reading">Reading your sleep history</string>
+    <plurals name="ob_import_found">
+        <item quantity="one">%1$d sleep session found</item>
+        <item quantity="other">%1$d sleep sessions found</item>
+    </plurals>
+    <string name="ob_import_cancel">Cancel import</string>
+    <string name="ob_import_cancelled_title">Import cancelled</string>
+    <string name="ob_import_cancelled_body">You can read your history now or carry on. Drift will keep reading new nights as they arrive.</string>
+    <string name="ob_import_retry">Read history again</string>
+    <string name="ob_import_failed_title">History could not be read</string>
+    <string name="ob_import_partial_title">Some sources had a problem</string>
+    <string name="ob_import_done_title">History imported</string>
+    <string name="ob_import_zero_title">No nights found yet</string>
+    <string name="ob_import_zero_body">That is fine. Drift starts from typical sleep for your age and learns from each night it records. You can also import a backup below.</string>
+    <string name="ob_import_source_error">%1$s: %2$s</string>
+    <string name="ob_backup_title">Have a Sleep as Android backup?</string>
+    <string name="ob_backup_body">Choose the backup file to bring in your older nights. This is optional.</string>
+    <string name="ob_backup_action">Import Sleep as Android backup</string>
+    <string name="ob_backup_running">Importing backup</string>
+    <string name="ob_backup_failed_title">The backup could not be imported</string>
+    <string name="ob_backup_try_again">Try another file</string>
+    <string name="ob_backup_done_title">Backup imported</string>
+    <string name="ob_backup_unreadable">The file could not be opened.</string>
+    <plurals name="ob_report_nights">
+        <item quantity="one">%1$d night imported</item>
+        <item quantity="other">%1$d nights imported</item>
+    </plurals>
+    <string name="ob_report_duplicates">Already known: %1$d</string>
+    <string name="ob_report_rejected">Rows skipped: %1$d</string>
+    <string name="ob_report_range">From %1$s to %2$s</string>
+    <string name="ob_report_warning">%1$s</string>
+
+    <!-- 8 Reveal -->
+    <string name="ob_reveal_title">This is your first energy schedule</string>
+    <string name="ob_reveal_body">Peaks are good times for focus. Dips are good times for easy tasks or a short break.</string>
+    <string name="ob_reveal_typical">Based on typical sleep for your age. It sharpens with each night Drift records.</string>
+    <string name="ob_reveal_personal">Based on your own sleep history.</string>
+    <plurals name="ob_reveal_nights_needed">
+        <item quantity="one">%1$d more informative night until Drift can estimate your personal sleep need</item>
+        <item quantity="other">%1$d more informative nights until Drift can estimate your personal sleep need</item>
+    </plurals>
+    <string name="ob_reveal_loading">Building your schedule</string>
+    <string name="ob_reveal_failed_title">Your schedule could not be built</string>
+    <string name="ob_reveal_retry">Try again</string>
+    <string name="ob_reveal_no_day">There is no curve for today yet. Drift will build it as soon as it has data.</string>
+    <string name="ob_open_drift">Open Drift</string>
+    <string name="ob_finish_failed">Drift could not finish setup: %1$s</string>
+    <string name="ob_unknown_error">Something went wrong.</string>
+</resources>
