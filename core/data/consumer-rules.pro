@@ -1,0 +1,2 @@
+-keep class net.zetetic.database.** { *; }
+-keep class app.drift.data.codec.** { *; }
