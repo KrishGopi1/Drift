@@ -6,6 +6,8 @@ plugins {
 
 dependencies {
     api(project(":core:model"))
+    // Used only by the replay file format and CLI (app.drift.engine.replay); the analysis models do no I/O.
+    implementation(libs.kotlinx.serialization.json)
     testImplementation(project(":testing"))
 }
 
