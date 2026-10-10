@@ -1,6 +1,5 @@
 <div align="center">
 
-<img src="docs/assets/banner.jpg" alt="Drift - Sleep smarter. Live better." width="100%"/>
 
 <br/>
 
