@@ -12,8 +12,8 @@ No device or emulator is needed for tests: UI is verified with Robolectric and R
 ## Setup
 
 ```bash
-git clone https://github.com/KrishGopi1/Sleep-Project.git
-cd Sleep-Project
+git clone https://github.com/KrishGopi1/Drift.git
+cd Drift
 ```
 
 Point Gradle at your SDK, either with `ANDROID_HOME` or a `local.properties` file containing

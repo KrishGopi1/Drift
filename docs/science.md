@@ -10,7 +10,7 @@ engineering choices to be tuned against real data. The app shows the same materi
 **Learn → How Drift calculates**.
 
 Found something wrong? Open a
-[scientific issue](https://github.com/KrishGopi1/Sleep-Project/issues/new?template=scientific_issue.yml).
+[scientific issue](https://github.com/KrishGopi1/Drift/issues/new?template=scientific_issue.yml).
 
 - [Data quality](#data-quality)
 - [Energy model](#energy-model)

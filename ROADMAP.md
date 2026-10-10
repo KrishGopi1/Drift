@@ -4,7 +4,7 @@ What's done, what's next, and where Drift might go. No dates: this is a spare-ti
 they're ready and tested.
 
 Want to help with something here? Look for a matching issue or start a thread in
-[Discussions → Ideas](https://github.com/KrishGopi1/Sleep-Project/discussions/categories/ideas).
+[Discussions → Ideas](https://github.com/KrishGopi1/Drift/discussions/categories/ideas).
 
 ## Current
 

@@ -25,5 +25,5 @@ First public release. Engine 1.1.1.
 - Home-screen widget and reminders.
 - Encrypted SQLCipher database with the key in Android Keystore; no INTERNET permission.
 
-[Unreleased]: https://github.com/KrishGopi1/Sleep-Project/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/KrishGopi1/Sleep-Project/releases/tag/v0.1.0
+[Unreleased]: https://github.com/KrishGopi1/Drift/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/KrishGopi1/Drift/releases/tag/v0.1.0

@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use this for problems with **what Drift calculates**, not how it looks. See [docs/science.md](https://github.com/KrishGopi1/Sleep-Project/blob/HEAD/docs/science.md)
+        Use this for problems with **what Drift calculates**, not how it looks. See [docs/science.md](https://github.com/KrishGopi1/Drift/blob/HEAD/docs/science.md)
         for how each model works and which parameters and sources it uses.
   - type: dropdown
     id: model

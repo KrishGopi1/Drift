@@ -12,7 +12,7 @@ Only the latest release gets security fixes.
 **Please don't open a public issue for security problems.**
 
 Report it privately through GitHub:
-[**Report a vulnerability**](https://github.com/KrishGopi1/Sleep-Project/security/advisories/new)
+[**Report a vulnerability**](https://github.com/KrishGopi1/Drift/security/advisories/new)
 (Security tab → Report a vulnerability). Only the maintainer can see the report.
 
 Please include:

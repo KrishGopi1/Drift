@@ -5,9 +5,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        Before opening, please read the [contribution philosophy](https://github.com/KrishGopi1/Sleep-Project/blob/HEAD/.github/CONTRIBUTING.md#what-belongs-in-drift).
+        Before opening, please read the [contribution philosophy](https://github.com/KrishGopi1/Drift/blob/HEAD/.github/CONTRIBUTING.md#what-belongs-in-drift).
         Drift stays offline, private and focused, so features that need a network, an account or tracking won't be accepted.
-        Open-ended ideas are better as a [Discussion](https://github.com/KrishGopi1/Sleep-Project/discussions/categories/ideas).
+        Open-ended ideas are better as a [Discussion](https://github.com/KrishGopi1/Drift/discussions/categories/ideas).
   - type: textarea
     id: problem
     attributes:

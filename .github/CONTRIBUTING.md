@@ -4,18 +4,18 @@ Drift is open source. Contributions are welcome, from a typo fix to a better sle
 
 ## Before you start
 
-- **Bugs:** open a [bug report](https://github.com/KrishGopi1/Sleep-Project/issues/new?template=bug_report.yml).
-- **Feature ideas:** open a [feature request](https://github.com/KrishGopi1/Sleep-Project/issues/new?template=feature_request.yml).
+- **Bugs:** open a [bug report](https://github.com/KrishGopi1/Drift/issues/new?template=bug_report.yml).
+- **Feature ideas:** open a [feature request](https://github.com/KrishGopi1/Drift/issues/new?template=feature_request.yml).
 - **Changes to sleep calculations or scientific models:** open a
-  [scientific issue](https://github.com/KrishGopi1/Sleep-Project/issues/new?template=scientific_issue.yml) first,
+  [scientific issue](https://github.com/KrishGopi1/Drift/issues/new?template=scientific_issue.yml) first,
   so the approach is agreed before you write code.
-- **Questions and open-ended ideas:** use [Discussions](https://github.com/KrishGopi1/Sleep-Project/discussions).
+- **Questions and open-ended ideas:** use [Discussions](https://github.com/KrishGopi1/Drift/discussions).
   Issues are for things that need to be fixed or built; Discussions are for things that need conversation.
 - **Security problems:** never in a public issue. See [SECURITY.md](SECURITY.md).
 
 Looking for something to work on? Try issues labelled
-[`good first issue`](https://github.com/KrishGopi1/Sleep-Project/labels/good%20first%20issue) or
-[`help wanted`](https://github.com/KrishGopi1/Sleep-Project/labels/help%20wanted). Comment on the issue so
+[`good first issue`](https://github.com/KrishGopi1/Drift/labels/good%20first%20issue) or
+[`help wanted`](https://github.com/KrishGopi1/Drift/labels/help%20wanted). Comment on the issue so
 nobody else picks it up at the same time.
 
 ## What belongs in Drift
