@@ -16,7 +16,7 @@ class PotentialTest {
     @Test fun `potential is full with no debt and falls with debt`() {
         assertThat(model.score(0.0)).isEqualTo(100.0)
         assertThat(model.score(-30.0)).isEqualTo(100.0)
-        // RISE's published example: 6.3 h of debt alongside 77% potential.
+        // A commercial app's published example: 6.3 h of debt alongside 77% potential.
         assertThat(model.score(6.3 * 60)).isWithin(1.5).of(77.0)
         assertThat(model.score(600.0)).isLessThan(model.score(300.0))
     }

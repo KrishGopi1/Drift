@@ -32,4 +32,4 @@ Stagger cards 45 ms; curve draws in over 1.1 s starting after card 3 enters; now
 Headline card is one merged node: "Right now: morning peak. Next, afternoon dip around 14:15, in 2 hours 10 minutes. Estimated, medium confidence." The chart reads its full description (`energyCurveDescription`). Day switcher is a radio group. Pulse is decorative.
 
 ## Measure on device
-Headline type size, banner order, how RISE presents the day switcher and habit card density: see measurement-todo.md.
+Headline type size, banner order, how the reference app presents the day switcher and habit card density: see measurement-todo.md.

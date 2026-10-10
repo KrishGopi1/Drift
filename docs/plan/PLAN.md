@@ -5,7 +5,7 @@ Section numbers are referenced from code and AGENTS.md.
 
 ## 1. Goal, scope and ground rules
 
-Ship a signed, offline-only Android APK (working name **Drift**) that matches RISE's feature set and
+Ship a signed, offline-only Android APK (working name **Drift**) that matches the reference app's feature set and
 analytical depth, built by 7 agents working in parallel against contracts frozen in Phase 0.
 
 **In scope for v1.0:** daily energy schedule, sleep debt, personalized sleep need, sleep history,
@@ -16,28 +16,28 @@ cards, notifications, home-screen widget, onboarding, data editing, export/backu
 import), and on-device phone detection (screen, usage, motion, charging, optional ambient light). A boAt
 ring plugs in later through the same adapter interface with zero engine changes.
 
-### How we use RISE as the reference (amended 9 Oct 2026, owner decision)
-The owner asked for Drift to look and behave like a close clone of RISE, with more focus on the core
-features and better output. So RISE is now a direct reference for layout, navigation, screen structure,
-interaction patterns and chart forms, and anyone may build straight from RISE screenshots, store listings,
+### How we use the reference app (amended 9 Oct 2026, owner decision)
+The owner asked for Drift to look and behave like a close clone of the reference app (a commercial sleep app), with more focus on the core
+features and better output. So the reference app is now a direct reference for layout, navigation, screen structure,
+interaction patterns and chart forms, and anyone may build straight from its screenshots, store listings,
 help centre, blog and marketing pages (the earlier two-room process is retired).
 
 Still not allowed, because they would make the app legally unshippable rather than better:
-1. Decompiling or disassembling the RISE APK, sniffing its private APIs, or extracting any file from it.
-2. Using RISE's name, logo, app icon, trademarks or brand phrases in the product, or copying its
+1. Decompiling or disassembling its APK, sniffing its private APIs, or extracting any file from it.
+2. Using its name, logo, app icon, trademarks or brand phrases in the product, or copying its
    illustrations, icon files, fonts, animation files or long-form text. Short generic UI words
    ("Sleep debt", "Peak", "Dip", "Progress") are fine; we write our own wording for everything else.
 
-RISE says its energy schedule builds on the SAFTE fatigue model (Hursh et al. 2004, patent US 6,579,233,
+The reference app says its energy schedule builds on the SAFTE fatigue model (Hursh et al. 2004, patent US 6,579,233,
 expired) and that its debt weights last night ~15% within a 14-night window. We implement from the
-published papers ourselves (no GPL code is copied) and aim to match or beat RISE on usefulness and
+published papers ourselves (no GPL code is copied) and aim to match or beat it on usefulness and
 stability on real data.
 
 ### Non-negotiables
 - No network permission in the manifest. No account, no analytics SDK, no crash reporter that phones home.
 - Every number carries a provenance in the data: **Measured**, **Derived** (deterministic from measured
   data), **Estimated** (model output with a confidence band) or **User-entered**. Amended 9 Oct 2026 (owner
-  decision): screens no longer show provenance tags or confidence bands, as RISE does not; the provenance stays in
+  decision): screens no longer show provenance tags or confidence bands, as the reference app does not; the provenance stays in
   TalkBack descriptions and in the "how this is calculated" explanations, which open only from a "?" icon.
 - No placeholders, TODOs, mock data or dead buttons in the release build; enforced by CI (section 9).
 - The analysis engine is a pure, deterministic Kotlin library: same inputs + engine version = same
@@ -246,10 +246,10 @@ Every denial lands on a working screen with a "fix" action. No INTERNET permissi
 ## 6. UX recreation plan
 
 ### 6.1 Observation to spec
-Record RISE screens/flows on a reference phone (light/dark, default and largest font), measure margins,
+Record the reference app's screens/flows on a reference phone (light/dark, default and largest font), measure margins,
 radii, gaps, type, icon sizes, stroke widths (dp/sp), time motion at 60 fps, write a token file + one spec
 page per screen (docs/ux/). Colours are re-picked to an original palette with similar contrast/mood.
-Without hands-on RISE access, A4 writes the spec from public material (store listing, help centre,
+Without hands-on access to it, A4 writes the spec from public material (store listing, help centre,
 marketing pages) and the plan, and records which items still need on-device measurement.
 
 ### 6.2 Screens

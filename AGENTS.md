@@ -53,7 +53,7 @@ Code against these, not against another agent's implementation classes.
 - `:core:engine` is pure and deterministic: no I/O, no `Instant.now()`, no `Random` without a fixed seed,
   no Android imports.
 - `java.time` everywhere; store UTC instants plus zone.
-- RISE is the direct visual and interaction reference (plan section 1, amended). Never decompile it or use its
+- A commercial sleep app is the direct visual and interaction reference (plan section 1, amended). Never decompile it or use its
   name, logo, icon files, fonts, illustrations or long-form text.
 
 ## Definition of done (per change)

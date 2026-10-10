@@ -1,7 +1,7 @@
 # Drift UX specs
 
-Specs written from public RISE material (store text, help centre, marketing) plus the plan. Implementers build from these pages and from
-`core/designsystem` and `core/charts`; they must not look at RISE itself. Start with [tokens.md](tokens.md).
+Specs written from public material about the reference app (store text, help centre, marketing) plus the plan. Implementers build from these pages and from
+`core/designsystem` and `core/charts`; they must not look at the reference app itself. Start with [tokens.md](tokens.md).
 
 | Page | Screen |
 |---|---|
@@ -14,7 +14,7 @@ Specs written from public RISE material (store text, help centre, marketing) plu
 | [why-sheet.md](why-sheet.md) | "Why this changed" sheet |
 | [settings.md](settings.md) | Settings |
 | [widget.md](widget.md) | Widget |
-| [measurement-todo.md](measurement-todo.md) | Items needing on-device RISE measurement |
+| [measurement-todo.md](measurement-todo.md) | Items needing on-device measurement against the reference app |
 
 ## Rules shared by every screen
 - Wrap the content in `ScreenStateHost(state, onRetry, onFix, onStartSetup) { model -> ... }`. All six C5 states are rendered by it identically:

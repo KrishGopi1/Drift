@@ -1,7 +1,7 @@
 # Drift design tokens
 
 Source of truth in code: `core/designsystem` (`DriftTheme.colors / typography / spacing / radii / elevation / strokes / motion`).
-Palette and copy are original. Studied for behaviour and mood only (calm, near-black, dark-first); no RISE assets used.
+Palette and copy are original. Studied for behaviour and mood only (calm, near-black, dark-first); no assets from other apps used.
 The October 2026 visual refresh is described in visual-refresh.md.
 
 ## Colour roles

@@ -131,7 +131,7 @@ internal fun rangeLabel(a: LocalDate, b: LocalDate): String {
     return if (a.month == b.month) "${month.format(a)} – ${day.format(b)}" else "${month.format(a)} – ${month.format(b)}"
 }
 
-/** Night named by the evening it started (the night ending on Friday morning is THU), as RISE-style columns read. */
+/** Night named by the evening it started (the night ending on Friday morning is THU). */
 private fun LocalDate.nightShort(): String = minusDays(1).dayShort()
 
 private fun LocalDate.dayShort(): String = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).uppercase(Locale.getDefault())
@@ -349,7 +349,7 @@ private fun ListTitle(text: String) {
     Text(text, style = DriftTheme.typography.title, color = DriftTheme.colors.onSurface, modifier = Modifier.padding(top = DriftTheme.spacing.sm))
 }
 
-/** RISE-style list row: title over a muted subtitle, value on the right, chevron when tappable. */
+/** List row: title over a muted subtitle, value on the right, chevron when tappable. */
 @Composable
 private fun ListRow(title: String, subtitle: String, value: String, onClick: (() -> Unit)?, tag: String) {
     Column {

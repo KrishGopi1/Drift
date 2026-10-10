@@ -1,7 +1,7 @@
 # Visual refresh: near-black, one big thing per screen
 
-Owner: A4. Studied from RISE's public store-listing screenshots (allowed by plan section 1, rule 1) for layout and
-mood only. Colours, type (Manrope), icons, copy and every drawing below are our own; no RISE asset, string or
+Owner: A4. Studied from the reference app's public store-listing screenshots (allowed by plan section 1, rule 1) for layout and
+mood only. Colours, type (Manrope), icons, copy and every drawing below are our own; no asset, string or
 icon is reused. Implementers build from this file, not from the screenshots.
 
 ## What we took (behaviour and layout)
@@ -67,7 +67,7 @@ Cards: radius lg (24 dp), no border in dark. Selected segment and nav item use p
    Tapping it opens the night, or adds one when there is no data.
 4. Contribution, need, regularity, tonight cards stay below.
 
-## October 2026 structure (RISE as direct reference, plan section 1 amended)
+## October 2026 structure (reference app as direct reference, plan section 1 amended)
 Tabs: **Sleep** (home) · **Energy** · **Progress** · **Learn**. Settings opens from the profile button on every tab
 header; Body clock and the methodology open from Learn and the Sleep tab.
 
