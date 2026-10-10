@@ -1,0 +1,50 @@
+name: Feature request
+description: Suggest a new feature or an improvement to an existing one.
+labels: ["feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before opening, please read the [contribution philosophy](https://github.com/KrishGopi1/Sleep-Project/blob/HEAD/.github/CONTRIBUTING.md#what-belongs-in-drift).
+        Drift stays offline, private and focused, so features that need a network, an account or tracking won't be accepted.
+        Open-ended ideas are better as a [Discussion](https://github.com/KrishGopi1/Sleep-Project/discussions/categories/ideas).
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the situation you're in, not just the feature.
+      placeholder: When I work night shifts, the energy curve ...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like Drift to do?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you've considered
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      multiple: true
+      options:
+        - Sleep tab
+        - Energy tab
+        - Progress tab
+        - Learn tab
+        - Widget
+        - Reminders / notifications
+        - Data sources
+        - Settings / data management
+        - Other
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Project constraints
+      options:
+        - label: This works fully offline and needs no account, analytics or cloud service.
+          required: true

@@ -1,0 +1,62 @@
+name: Bug report
+description: Something in the app is broken, crashes, or looks wrong.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. If the problem is that a **number is calculated wrong** (sleep debt, need,
+        energy curve, circadian timing), use the **Scientific / algorithm issue** form instead.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you see? Screenshots or a screen recording help a lot.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the Energy tab
+        2. Drag last night's sleep end to 08:00
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Drift version
+      description: Settings → About, or the release you downloaded (e.g. v0.1.0).
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Phone and Android version
+      placeholder: Pixel 7, Android 15
+    validations:
+      required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: Sleep data source
+      multiple: true
+      options:
+        - Health Connect
+        - Sleep as Android
+        - Phone detection
+        - Manual entry
+        - Not sure
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Logs, how often it happens, whether it started after an update. Please don't paste personal health data you don't want public.

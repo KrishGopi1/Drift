@@ -1,0 +1,63 @@
+name: Scientific / algorithm issue
+description: A calculation (sleep debt, sleep need, energy curve, circadian timing, regularity) looks wrong or could be better supported by research.
+labels: ["science", "algorithm"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for problems with **what Drift calculates**, not how it looks. See [docs/science.md](https://github.com/KrishGopi1/Sleep-Project/blob/HEAD/docs/science.md)
+        for how each model works and which parameters and sources it uses.
+  - type: dropdown
+    id: model
+    attributes:
+      label: Which model?
+      options:
+        - Energy curve (homeostatic / circadian / sleep inertia)
+        - Energy potential
+        - Sleep need
+        - Sleep debt
+        - Circadian phase / melatonin window
+        - Sleep Regularity Index / chronotype
+        - Recommendations (bedtime, habits, naps)
+        - Preprocessing (merging, main sleep vs nap, missing nights)
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: incorrect
+    attributes:
+      label: What calculation is incorrect?
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: What does Drift currently calculate?
+      description: The value or behaviour you see, ideally with the screen it appears on.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should it calculate?
+      description: The value or behaviour you expect, and how you arrived at it.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence / research
+      description: Papers (with DOI if possible), guidelines, or reasoning. "It feels wrong" is a fine start, but changes to the engine need sources.
+    validations:
+      required: true
+  - type: textarea
+    id: data
+    attributes:
+      label: Reproduction data
+      description: |
+        Sleep times for the nights involved (e.g. "Oct 1: 23:40-06:50, Oct 2: 01:10-07:00"), or an engine replay file
+        (see docs/development.md). Only share what you're comfortable making public.
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context

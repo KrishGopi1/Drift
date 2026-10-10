@@ -1,0 +1,99 @@
+name: Release APK
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to (re)build, e.g. v0.1.0"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: true
+
+      - name: Project rules
+        run: ./gradlew driftChecks
+
+      - name: Set up signing
+        id: signing
+        env:
+          KEYSTORE_BASE64: ${{ secrets.DRIFT_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.DRIFT_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.DRIFT_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.DRIFT_KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/drift-release.jks"
+            {
+              echo "storeFile=$RUNNER_TEMP/drift-release.jks"
+              echo "storePassword=$KEYSTORE_PASSWORD"
+              echo "keyAlias=$KEY_ALIAS"
+              echo "keyPassword=$KEY_PASSWORD"
+            } > keystore.properties
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No signing secrets set; publishing the debug-signed APK."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build APK
+        run: |
+          mkdir -p dist
+          if [ "${{ steps.signing.outputs.signed }}" = "true" ]; then
+            ./gradlew :app:assembleRelease
+            cp app/build/outputs/apk/release/app-release.apk "dist/drift-$TAG.apk"
+          else
+            ./gradlew :app:assembleDebug
+            cp app/build/outputs/apk/debug/app-debug.apk "dist/drift-$TAG.apk"
+          fi
+          (cd dist && sha256sum "drift-$TAG.apk" > "drift-$TAG.apk.sha256")
+          rm -f keystore.properties
+
+      - name: Release notes
+        run: |
+          VERSION="${TAG#v}"
+          awk -v v="$VERSION" '
+            $0 ~ "^## \\[" v "\\]" { found=1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md > dist/notes.md
+          {
+            echo
+            echo "### Install"
+            echo "1. Download \`drift-$TAG.apk\` below on your Android phone (Android 9 or newer)."
+            echo "2. Open it and allow installing from your browser or file manager when asked."
+            echo
+            echo "Drift has no INTERNET permission: your data never leaves your phone."
+          } >> dist/notes.md
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "dist/drift-$TAG.apk" "dist/drift-$TAG.apk.sha256" --clobber
+          else
+            gh release create "$TAG" "dist/drift-$TAG.apk" "dist/drift-$TAG.apk.sha256" \
+              --title "Drift $TAG" --notes-file dist/notes.md --latest
+          fi

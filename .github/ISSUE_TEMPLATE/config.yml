@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask a question or get help
+    url: https://github.com/KrishGopi1/Sleep-Project/discussions/categories/q-a
+    about: Questions about using or building Drift go in Discussions, not Issues.
+  - name: Discuss an idea
+    url: https://github.com/KrishGopi1/Sleep-Project/discussions/categories/ideas
+    about: Not sure it belongs in Drift yet? Start a discussion first.
+  - name: Report a security vulnerability
+    url: https://github.com/KrishGopi1/Sleep-Project/security/advisories/new
+    about: Please report vulnerabilities privately, never in a public issue.
