@@ -13,7 +13,7 @@
 
 ## Why Drift?
 
-other apps providing the same essentials costs freakin 4k rupees. This app is open source, no internet required, absolutely no ads (coz i dont have google developer account to publish this and monetize thats it XD). Any one can work and raise a pr and ill try my best to resolve them.
+To all my fellow nocturnals, you do know you need sleep. Other apps providing the same essentials costs freakin 4k rupees. This app is open source, no internet required, absolutely no ads (coz i dont have google developer account to publish this and monetize thats it XD). Any one can work and raise a pr and ill try my best to resolve them.
 
 Scroll down and read the science if you reallyy want to know that this app does, otw **Good night; sleep well**.
 
