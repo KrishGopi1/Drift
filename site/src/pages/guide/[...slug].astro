@@ -1,0 +1,188 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import { blob, cfg } from "../../lib/source";
+
+export async function getStaticPaths() {
+  const docs = await getCollection("guide");
+  const paths = docs.map((entry) => ({
+    params: { slug: entry.id === "index" ? undefined : entry.id },
+    props: { entry },
+  }));
+  // No docs/README.md: /guide/ falls back to the root README so the nav never dead-ends.
+  const fallback = docs.find((e) => e.id === "readme") ?? docs[0];
+  if (fallback && !docs.some((e) => e.id === "index")) paths.push({ params: { slug: undefined }, props: { entry: fallback } });
+  return paths;
+}
+
+interface Props { entry: CollectionEntry<"guide"> }
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+const all = await getCollection("guide");
+const titleOf = (e: CollectionEntry<"guide">) =>
+  (e.body?.match(/^#\s+(.+)$/m)?.[1] ?? e.id).replace(/[`*]/g, "").trim();
+const title = titleOf(entry);
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+
+// Sidebar: "Start here" for top-level docs, then one group per folder
+// (adr/foo -> "Adr"). Reading order inside a group is by file name; prefix
+// files with numbers (0001-...) to control it.
+const groupOf = (id: string) => (id === "index" || id === "readme" || !id.includes("/") ? "Start here" : id.split("/")[0]);
+const label = (g: string) => g === "Start here" ? g : g.replace(/[-_]/g, " ").replace(/^./, (c) => c.toUpperCase());
+const names = [...new Set(all.map((e) => groupOf(e.id)))].sort((x, y) => (x === "Start here" ? -1 : y === "Start here" ? 1 : x.localeCompare(y)));
+const groups = names.map((g) => ({
+  name: label(g),
+  ids: all.filter((e) => groupOf(e.id) === g).sort((x, y) => (x.id === "index" ? -1 : y.id === "index" ? 1 : x.id.localeCompare(y.id))).map((e) => e.id),
+}));
+const byId = new Map(all.map((e) => [e.id, e]));
+const href = (id: string) => `${base}/guide/${id === "index" ? "" : id}`;
+
+const sourcePath = entry.filePath?.replace(/^\.\.\//, "") ?? "";
+---
+
+<Base title={`${title}, ${cfg.name} guide`} description={`${cfg.name} documentation: ${title}.`} active="guide">
+  <link rel="stylesheet" href={`${base}/pagefind/pagefind-ui.css`} />
+  <div class="guide">
+    <aside class="guide__nav" aria-label="Guide sections">
+      <div id="search" class="guide__search"></div>
+      <noscript><p>Search needs JavaScript. All documents are available below.</p></noscript>
+      <details class="guide__menu" open>
+        <summary>All documents</summary>
+        {groups.map((g) => (
+          <div class="group">
+            <p class="group__name">{g.name}</p>
+            <ul>
+              {g.ids.map((id) => (
+                <li><a href={href(id)} aria-current={id === entry.id ? "page" : undefined}>{titleOf(byId.get(id)!)}</a></li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </details>
+    </aside>
+
+    <article class="prose" data-pagefind-body>
+      <Content />
+      <p class="prose__source">
+        This page is <a href={blob(sourcePath)}>{sourcePath}</a> in the repository, rendered as written.
+      </p>
+    </article>
+
+    {toc.length > 2 && (
+      <nav class="guide__toc" aria-label="On this page">
+        <p class="group__name">On this page</p>
+        <ul>
+          {toc.map((h) => (
+            <li class={`d${h.depth}`}><a href={`#${h.slug}`}>{h.text}</a></li>
+          ))}
+        </ul>
+      </nav>
+    )}
+  </div>
+
+  <script is:inline define:vars={{ base }}>
+    // Pagefind's index only exists in a production build (npm run build).
+    const s = document.createElement("script");
+    s.src = `${base}/pagefind/pagefind-ui.js`;
+    s.onload = () => new PagefindUI({ element: "#search", showSubResults: true, showImages: false });
+    s.onerror = () => {
+      document.querySelector("#search").textContent = "Search is unavailable. Browse the documents below.";
+    };
+    document.head.append(s);
+    const menu = document.querySelector(".guide__menu");
+    if (matchMedia("(max-width: 959px)").matches) menu.open = false;
+  </script>
+</Base>
+
+<style>
+  .guide {
+    display: grid;
+    gap: 2rem;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 2rem var(--gutter) 0;
+  }
+  @media (min-width: 960px) {
+    .guide { grid-template-columns: 260px minmax(0, 1fr); gap: 3rem; }
+  }
+  @media (min-width: 1240px) {
+    .guide { grid-template-columns: 260px minmax(0, 1fr) 220px; }
+  }
+  .guide__nav, .guide__toc { font-size: 0.9rem; }
+  @media (min-width: 960px) {
+    .guide__nav, .guide__toc {
+      position: sticky;
+      top: 76px;
+      align-self: start;
+      max-height: calc(100svh - 96px);
+      overflow-y: auto;
+      padding-bottom: 2rem;
+    }
+  }
+  .guide__toc { display: none; }
+  @media (min-width: 1240px) { .guide__toc { display: block; } }
+  .guide__search { margin-bottom: 1rem; }
+  .guide__menu summary { cursor: pointer; font-weight: 500; padding: 0.4rem 0; min-height: 44px; }
+  @media (min-width: 960px) { .guide__menu summary { display: none; } }
+  .group { margin-top: 1.1rem; }
+  .group__name { font-weight: 700; font-size: 0.82rem; color: var(--foreground); margin-bottom: 0.35rem; }
+  .group ul, .guide__toc ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.1rem; }
+  .group a, .guide__toc a {
+    display: block;
+    padding: 0.28rem 0.6rem;
+    border-radius: 8px;
+    color: var(--muted-foreground);
+    text-decoration: none;
+    line-height: 1.35;
+  }
+  .group a:hover, .guide__toc a:hover { color: var(--foreground); background: var(--muted); }
+  .group a[aria-current="page"] { color: var(--primary); background: var(--primary-soft); font-weight: 500; }
+  .guide__toc .d3 a { padding-left: 1.3rem; font-size: 0.85rem; }
+
+  .prose { min-width: 0; max-width: 76ch; }
+  .prose :global(h1) { font-size: var(--step-4); margin-bottom: 1.5rem; }
+  .prose :global(h2) { font-size: var(--step-2); margin: 2.8rem 0 1rem; scroll-margin-top: 80px; }
+  .prose :global(h3) { font-size: var(--step-1); margin: 2rem 0 0.75rem; scroll-margin-top: 80px; }
+  .prose :global(h4) { font-size: 1.05rem; margin: 1.5rem 0 0.5rem; }
+  .prose :global(p), .prose :global(ul), .prose :global(ol), .prose :global(blockquote), .prose :global(pre), .prose :global(table) { margin: 0 0 1.1rem; }
+  .prose :global(li + li) { margin-top: 0.3rem; }
+  .prose :global(blockquote) {
+    border-left: 1px solid var(--primary);
+    padding: 0.2rem 0 0.2rem 1.1rem;
+    color: var(--muted-foreground);
+  }
+  .prose :global(table) {
+    display: block;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+  .prose :global(th), .prose :global(td) {
+    border-bottom: 1px solid var(--border);
+    padding: 0.55rem 0.8rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .prose :global(th) { font-weight: 700; background: var(--muted); }
+  .prose :global(hr) { border: 0; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+  .prose :global(img) { border-radius: var(--radius); border: 1px solid var(--border); }
+  .prose__source {
+    margin-top: 3.5rem !important;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.88rem;
+    color: var(--muted-foreground);
+  }
+  :global(.pagefind-ui) {
+    --pagefind-ui-primary: var(--primary);
+    --pagefind-ui-text: var(--foreground);
+    --pagefind-ui-background: var(--card);
+    --pagefind-ui-border: var(--border);
+    --pagefind-ui-tag: var(--muted);
+    --pagefind-ui-border-radius: 10px;
+    --pagefind-ui-font: var(--font-sans);
+    --pagefind-ui-scale: 0.8;
+  }
+</style>

@@ -1,0 +1,64 @@
+name: Site
+
+# Deploys from the default branch (ui/visual-refresh). Builds site/ (landing page + guide rendered from the repo's own docs) and
+# publishes it to GitHub Pages. Docs changes redeploy because the guide
+# renders them directly.
+on:
+  push:
+    branches: [ui/visual-refresh]
+    paths: ["site/**", "docs/**", "*.md", ".github/CONTRIBUTING.md", ".github/workflows/pages.yml"]
+  pull_request:
+    paths: ["site/**", "docs/**", "*.md", ".github/CONTRIBUTING.md", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+      - run: npx astro check
+      - run: npm run build
+      - run: npm run verify
+      - run: npx playwright install --with-deps chromium
+      - name: Exercise the built site
+        run: |
+          npm run preview -- --background --host 127.0.0.1 --port 4321
+          node --input-type=module -e 'import c from "./site.config.mjs";for(let i=0;i<30;i++){try{if((await fetch("http://127.0.0.1:4321"+c.base+"/")).ok)process.exit(0)}catch{}await new Promise(r=>setTimeout(r,500))}process.exit(1)'
+          npm test
+      - name: Stop the preview
+        if: always()
+        run: npx astro preview stop
+      - name: No placeholder screenshots ship
+        run: "! grep -rl 'Screenshot pending' dist"
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site/dist
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/ui/visual-refresh'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

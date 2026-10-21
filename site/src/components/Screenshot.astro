@@ -1,0 +1,88 @@
+---
+// A real screenshot of the running app, framed as a phone or a browser.
+// Images live in src/assets/screens/<name>.png and are produced by
+// scripts/capture.mjs against the seeded demo stack (synthetic data only).
+import type { ImageMetadata } from "astro";
+import { Picture } from "astro:assets";
+
+interface Props {
+  name: string; // file name without extension, e.g. "timeline-mobile"
+  alt: string;
+  frame?: "phone" | "browser";
+  url?: string; // shown in the browser bar, e.g. "/en/timeline"
+  eager?: boolean;
+}
+const { name, alt, frame = "browser", url, eager = false } = Astro.props;
+
+const shots = import.meta.glob<{ default: ImageMetadata }>("../assets/screens/*.png", { eager: true });
+const src = shots[`../assets/screens/${name}.png`]?.default;
+// A missing image renders a visible placeholder; the release check greps dist for it.
+---
+
+<figure class:list={["shot", `shot--${frame}`]}>
+  {frame === "browser" && (
+    <div class="shot__bar" aria-hidden="true">
+      <span></span><span></span><span></span>
+      {url && <code>localhost{url}</code>}
+    </div>
+  )}
+  {src ? (
+    <Picture
+      src={src}
+      alt={alt}
+      formats={["avif", "webp"]}
+      widths={frame === "phone" ? [390, 780] : [720, 1440, 2160]}
+      sizes={frame === "phone" ? "(min-width: 768px) 320px, 80vw" : "(min-width: 1120px) 720px, 92vw"}
+      loading={eager ? "eager" : "lazy"}
+    />
+  ) : (
+    <div class="shot__missing" role="img" aria-label={alt}>Screenshot pending: {name}</div>
+  )}
+</figure>
+
+<style>
+  .shot {
+    margin: 0;
+    overflow: hidden;
+    background: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+  }
+  .shot :global(img) { width: 100%; height: auto; display: block; }
+  .shot--browser { border-radius: calc(var(--radius) * 1.1); }
+  .shot--phone {
+    border-radius: 34px;
+    border: 8px solid var(--bezel);
+    max-width: 320px;
+    width: 100%;
+  }
+  .shot__bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.55rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--muted);
+  }
+  .shot__bar span { width: 9px; height: 9px; border-radius: 50%; background: var(--input); }
+  .shot__bar code {
+    margin-left: 0.6rem;
+    font-size: 0.72rem;
+    color: var(--muted-foreground);
+    background: none;
+    border: 0;
+    padding: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .shot__missing {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 10;
+    color: var(--muted-foreground);
+    font-size: 0.9rem;
+    background: repeating-linear-gradient(45deg, var(--muted), var(--muted) 10px, var(--background) 10px, var(--background) 20px);
+  }
+  .shot--phone .shot__missing { aspect-ratio: 9 / 19; }
+</style>

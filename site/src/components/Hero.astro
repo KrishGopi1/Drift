@@ -1,0 +1,32 @@
+---
+// First screen: the claim, the proof (a real screenshot), the way in.
+// Keep the headline to the one thing a stranger should remember.
+import { cfg, withBase } from "../lib/source";
+interface Props { headline: string; sub: string; primary?: { label: string; href: string }; }
+const { headline, sub, primary = { label: "Read the guide", href: withBase("guide/") } } = Astro.props;
+---
+
+<header class="hero">
+  <div class="hero__text">
+    <h1>{headline}</h1>
+    <p class="hero__sub">{sub}</p>
+    <p class="hero__cta">
+      <a class="btn btn-primary" href={primary.href}>{primary.label}</a>
+      <a class="btn" href={cfg.repoUrl} rel="noopener">View source</a>
+    </p>
+  </div>
+  <div class="hero__media"><slot /></div>
+</header>
+
+<style>
+  .hero {
+    display: grid; gap: 2.5rem; align-items: center;
+    max-width: calc(var(--wide) + 2 * var(--gutter)); margin: 0 auto;
+    padding: clamp(3rem, 8vw, 6rem) var(--gutter) 0;
+  }
+  @media (min-width: 960px) { .hero { grid-template-columns: 1fr 1.15fr; } }
+  h1 { font-size: var(--step-5); }
+  .hero__sub { margin-top: 1.25rem; font-size: var(--step-1); line-height: 1.4; color: var(--muted-foreground); max-width: 34ch; }
+  .hero__cta { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .hero__media { min-width: 0; display: grid; justify-items: center; }
+</style>

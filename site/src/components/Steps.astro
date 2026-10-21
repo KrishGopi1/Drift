@@ -1,0 +1,49 @@
+---
+// Sticky visual + scrolling steps: the main "how it works" device. Put one
+// <Fragment slot="frame-N"> per step (Screenshot, diagram or Clip); the frame
+// for the step nearest mid-viewport shows. Wired by initSteps() in motion.ts.
+// Without JS every frame is stacked under its step, so nothing is hidden.
+interface Props { steps: { title: string; body: string }[] }
+const { steps } = Astro.props;
+---
+
+<div class="steps" data-steps>
+  <ol class="steps__list">
+    {steps.map((s, i) => (
+      <li class="steps__item" data-step>
+        <h3>{s.title}</h3>
+        <p>{s.body}</p>
+        <div class="steps__inline"><slot name={`frame-${i}`} /></div>
+      </li>
+    ))}
+  </ol>
+  <div class="steps__stage" aria-hidden="true">
+    {steps.map((_, i) => <div class="steps__frame" data-frame={i}><slot name={`frame-${i}`} /></div>)}
+  </div>
+</div>
+
+<style>
+  .steps { display: grid; gap: 2rem; }
+  .steps__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2rem; counter-reset: step; }
+  .steps__item { counter-increment: step; }
+  .steps__item h3 { font-size: var(--step-1); }
+  .steps__item h3::before { content: counter(step) ". "; color: var(--primary); }
+  .steps__item p { margin-top: 0.5rem; color: var(--muted-foreground); }
+  .steps__stage { display: none; }
+  .steps__inline { margin-top: 1rem; }
+  @media (min-width: 960px) {
+    :global(html.js) .steps { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 4rem; max-width: var(--wide); }
+    :global(html.js) .steps__list { gap: 38vh; padding: 12vh 0; }
+    :global(html.js) .steps__inline { display: none; }
+    :global(html.js) .steps__item { opacity: 0.45; transition: opacity 200ms; }
+    :global(html.js) .steps__item[data-current] { opacity: 1; }
+    :global(html.js) .steps__stage { display: block; position: sticky; top: 96px; align-self: start; height: calc(100svh - 140px); }
+    :global(html.js) .steps__frame { position: absolute; inset: 0; opacity: 0; transition: opacity 250ms; display: grid; align-content: start; }
+    :global(html.js) .steps[data-active="0"] [data-frame="0"],
+    :global(html.js) .steps[data-active="1"] [data-frame="1"],
+    :global(html.js) .steps[data-active="2"] [data-frame="2"],
+    :global(html.js) .steps[data-active="3"] [data-frame="3"],
+    :global(html.js) .steps[data-active="4"] [data-frame="4"],
+    :global(html.js) .steps[data-active="5"] [data-frame="5"] { opacity: 1; }
+  }
+</style>
