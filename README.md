@@ -7,7 +7,18 @@
 
 **Offline-first Android sleep and energy tracker**
 
+[Download the APK](https://github.com/KrishGopi1/Drift/releases/latest) ·
+[Website](https://krishgopi1.github.io/Drift/) ·
+[Guide](https://krishgopi1.github.io/Drift/guide/)
 
+<br/>
+
+<img src="site/src/assets/screens/sleep-home.png" width="22%" alt="Sleep tab with sleep debt and tonight's ideal bedtime" />
+<img src="site/src/assets/screens/energy-timeline.png" width="22%" alt="Energy tab with today's peaks and dips" />
+<img src="site/src/assets/screens/body-clock.png" width="22%" alt="Body clock with melatonin window and chronotype" />
+<img src="site/src/assets/screens/debt-why.png" width="22%" alt="Explanation of why sleep debt changed" />
+
+<sub>Screenshots from Drift's UI tests on synthetic data.</sub>
 
 </div>
 

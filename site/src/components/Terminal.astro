@@ -1,0 +1,23 @@
+---
+// A command and its real output. Copy the output from an actual run; never
+// write it by hand. `prompt` lines start with $, everything else is output.
+interface Props { title?: string; lines: string[] }
+const { title = "terminal", lines } = Astro.props;
+---
+
+<figure class="term">
+  <div class="term__bar" aria-hidden="true"><span></span><span></span><span></span><code>{title}</code></div>
+  <pre class="term__body" tabindex="0"><code>{lines.map((l) => l.startsWith("$ ")
+    ? <span class="term__cmd"><span aria-hidden="true">$ </span>{l.slice(2)}{"\n"}</span>
+    : <span class="term__out">{l}{"\n"}</span>)}</code></pre>
+</figure>
+
+<style>
+  .term { margin: 0; min-width: 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--card); box-shadow: var(--shadow-card); }
+  .term__bar { display: flex; align-items: center; gap: 6px; padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--border); background: var(--muted); }
+  .term__bar span { width: 9px; height: 9px; border-radius: 50%; background: var(--input); }
+  .term__bar code { margin-left: 0.6rem; font-size: 0.72rem; color: var(--muted-foreground); background: none; border: 0; padding: 0; }
+  .term__body { margin: 0; padding: 1rem 1.25rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.6; }
+  .term__cmd { color: var(--foreground); font-weight: 500; }
+  .term__out { color: var(--muted-foreground); }
+</style>

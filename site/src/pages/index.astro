@@ -1,0 +1,129 @@
+---
+import Base from "../layouts/Base.astro";
+import Hero from "../components/Hero.astro";
+import Chapter from "../components/Chapter.astro";
+import Terminal from "../components/Terminal.astro";
+import Steps from "../components/Steps.astro";
+import Screenshot from "../components/Screenshot.astro";
+import CodeBlock from "../components/CodeBlock.astro";
+import { cfg, withBase, sourceExcerpt } from "../lib/source";
+
+// Version shown in the install section comes from the app's own build file.
+const version = sourceExcerpt("app/build.gradle.kts", 1, 60).match(/versionName = "([^"]+)"/)![1];
+const apk = `drift-v${version}.apk`;
+---
+
+<Base title={`${cfg.name}: offline sleep and energy tracker for Android`} description={cfg.description}>
+  <Hero headline={cfg.tagline} sub={cfg.description} primary={{ label: "Download the APK", href: cfg.releaseUrl }}>
+    <Screenshot name="sleep-home" alt="Drift's Sleep tab: 0.6 hours of sleep debt rated Low, energy potential 97 percent, and an ideal bedtime of 22:01 with a 07:00 wake." frame="phone" eager />
+  </Hero>
+
+  <Chapter id="how" title="Last night's sleep becomes today's plan" lede="Drift does not ask you to wear anything new. It reads what you already record and turns it into four answers." wide>
+    <Steps steps={[
+      { title: "It reads the sleep you already track", body: "Health Connect brings in nights from most watches, rings and bands. Sleep as Android works too. With no wearable at all, Drift reconstructs each night from phone signals and asks you to confirm it in the morning." },
+      { title: "It counts your debt, and says why it moved", body: "Debt builds over a rolling 14 nights and fades with a 7-day half-life, so last night matters more than a bad night two weeks ago. Tap the question mark and Drift lists the nights that added or repaid it." },
+      { title: "It lays out your energy for the day", body: "A model of sleep pressure, body clock and grogginess predicts your morning peak, afternoon dip and evening peak, plus when to stop caffeine and when to dim the lights." },
+      { title: "It finds your body clock", body: "Your melatonin window, chronotype and regularity are estimated from when you actually sleep, then used to suggest a bedtime that fits you rather than a population average." },
+    ]}>
+      <Screenshot slot="frame-0" name="history-week" alt="History tab, week view: average 7 h 48 min asleep, bedtime 23:22, wake 07:10, with bars for each night and two nights marked no data." frame="phone" />
+      <Screenshot slot="frame-1" name="debt-why" alt="Sleep debt explanation: debt rose 7 minutes because last night's 7 h 15 min added 27 minutes and 30 September dropped out of the 14-day window." frame="phone" />
+      <Screenshot slot="frame-2" name="energy-timeline" alt="Energy tab: a curve through afternoon dip and evening peak, with an exercise window, last caffeine at 14:01 and dim the lights at 18:31." frame="phone" />
+      <Screenshot slot="frame-3" name="body-clock" alt="Body clock screen: melatonin window 20:01 to 22:01 on a 24-hour dial, chronotype Intermediate, social jetlag 48 minutes." frame="phone" />
+    </Steps>
+  </Chapter>
+
+  <Chapter id="private" title="Nothing leaves your phone, and the build checks it" lede="Privacy here is not a setting. The app is built so it cannot reach the internet." wide>
+    <div class="split">
+      <ul class="facts">
+        <li><strong>No internet permission.</strong> The manifest strips it even if a library asks for it, and the project's own checks fail the build if it comes back.</li>
+        <li><strong>No account, analytics, ads or crash reporter.</strong> There is no server for them to talk to.</li>
+        <li><strong>Encrypted on the device.</strong> Your history sits in a SQLCipher database whose key is held in Android Keystore.</li>
+        <li><strong>Yours to take.</strong> Export everything to a file you choose, import it on a new phone, or reset it all.</li>
+      </ul>
+      <div class="stack">
+        <CodeBlock lang="xml" file="app/src/main/AndroidManifest.xml" lines="5-7" open code={sourceExcerpt("app/src/main/AndroidManifest.xml", 5, 7)} />
+        <CodeBlock lang="kotlin" file="build.gradle.kts" lines="56-71" code={sourceExcerpt("build.gradle.kts", 56, 71)} />
+      </div>
+    </div>
+  </Chapter>
+
+  <Chapter id="science" title="Every number traces back to a model and a paper" lede="The analysis engine is plain Kotlin with no Android or I/O code. The same nights always give the same answer." wide>
+    <div class="split split--media">
+      <div class="stack">
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Models behind each number">
+          <table>
+            <thead><tr><th scope="col">You see</th><th scope="col">How it is worked out</th><th scope="col">Grounded in</th></tr></thead>
+            <tbody>
+              <tr><td>Energy curve</td><td>Sleep pressure, a circadian rhythm and sleep inertia, simulated every 5 minutes over 14 days</td><td>Borbély 1982; Daan, Beersma &amp; Borbély 1984</td></tr>
+              <tr><td>Sleep need</td><td>A 1-D Kalman filter fed by nights without an alarm; alarm nights can only push it up</td><td>Klerman &amp; Dijk 2008; Kitamura et al. 2016</td></tr>
+              <tr><td>Sleep debt</td><td>A leaky 14-night accumulator; extra sleep repays debt slower than minute for minute</td><td>Van Dongen et al. 2003; Banks et al. 2010</td></tr>
+              <tr><td>Melatonin window</td><td>Melatonin onset estimated from your habitual sleep timing</td><td>Burgess &amp; Fogg 2008</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted">Constants without a direct source are labelled <em>design defaults</em> in the code and the docs, so you can see which numbers are evidence and which are engineering choices. The same material is in the app under Learn.</p>
+        <p><a class="btn" href={withBase("guide/science")}>Read the full methodology</a></p>
+      </div>
+      <Screenshot name="methodology" alt="In-app methodology page explaining the sleep need Kalman filter, its parameters and its reference." frame="phone" />
+    </div>
+  </Chapter>
+
+  <Chapter id="install" title="Installed in a minute, no account to make" lede="Drift is not on the Play Store. It ships as an APK on GitHub, for Android 9 and newer.">
+    <ol class="install">
+      <li>Download <code>{apk}</code> from the <a href={cfg.releaseUrl}>latest release</a>.</li>
+      <li>Optional: check it against the published checksum.</li>
+    </ol>
+    <Terminal title="verify the download" lines={[`$ sha256sum -c ${apk}.sha256`, `${apk}: OK`]} />
+    <ol class="install" start="3">
+      <li>Open the APK on your phone and allow installs from your browser or file manager when Android asks.</li>
+      <li>Pick where your sleep comes from. Every permission is optional, and each one you skip leaves a working screen.</li>
+    </ol>
+  </Chapter>
+
+  <Chapter id="limits" title="What Drift will not pretend to know">
+    <ul class="limits">
+      <li><strong>Your first nights are estimates.</strong> Until it has about 5 informative nights, sleep need is a population figure for your age, and the app says so.</li>
+      <li><strong>Phone detection is approximate.</strong> It is weakest if you use your phone in bed. Confirming a night fixes it and gives it more weight.</li>
+      <li><strong>Melatonin is inferred, not measured.</strong> Sleep timing is a good proxy for most people, not for everyone.</li>
+      <li><strong>Not medical advice.</strong> Drift is a wellness tool. It does not diagnose sleep disorders.</li>
+      <li><strong>Android only.</strong> There is no iPhone version.</li>
+    </ul>
+  </Chapter>
+
+  <Chapter id="docs" title="Read the guide, or change the model" lede="Setup, troubleshooting and the full science live in the guide. The code is MIT licensed and open to pull requests.">
+    <p class="cta">
+      <a class="btn btn-primary" href={withBase("guide/")}>Open the guide</a>
+      <a class="btn" href={withBase("guide/contributing")}>How to contribute</a>
+    </p>
+  </Chapter>
+
+  <script>
+    import { initReveals, initSteps, initCounts } from "../scripts/motion";
+    initReveals(); initSteps(); initCounts();
+  </script>
+</Base>
+
+<style>
+  .split { display: grid; gap: 2rem; align-items: start; }
+  @media (min-width: 960px) {
+    .split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3rem; }
+    .split--media { grid-template-columns: minmax(0, 1.6fr) auto; }
+  }
+  .split--media { justify-items: center; }
+  .split--media > .stack { justify-self: stretch; }
+  .stack { display: grid; gap: 1.25rem; min-width: 0; }
+  .facts, .limits, .install { margin: 0; padding-left: 1.25rem; display: grid; gap: 1rem; }
+  .facts li::marker { color: var(--primary); }
+  .limits { list-style: none; padding: 0; border-top: 1px solid var(--border); gap: 0; }
+  .limits li { padding: 1rem 0; border-bottom: 1px solid var(--border); }
+  .install li::marker { color: var(--primary); font-weight: 700; }
+  .muted { color: var(--muted-foreground); }
+  .cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
+  table { border-collapse: collapse; width: 100%; min-width: 34rem; font-size: 0.95rem; }
+  th, td { text-align: left; vertical-align: top; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
+  tbody tr:last-child td { border-bottom: 0; }
+  th { font-size: var(--step--1); color: var(--muted-foreground); font-weight: 500; }
+  td:first-child { font-weight: 700; white-space: nowrap; }
+  td:last-child { color: var(--muted-foreground); }
+</style>

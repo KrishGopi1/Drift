@@ -1,0 +1,38 @@
+---
+// One section of the page. The title is a claim, not a label ("Corrections
+// never erase", not "Corrections"). Numbers only for real sequences.
+interface Props {
+  id: string;
+  title: string;
+  lede?: string;
+  n?: number;
+  wide?: boolean; // let the body run to --wide instead of --measure
+}
+const { id, title, lede, n, wide = false } = Astro.props;
+---
+
+<section class="chapter" id={id} aria-labelledby={`${id}-title`}>
+  <div class="chapter__head">
+    {n !== undefined && <p class="chapter__n">Chapter {n}</p>}
+    <h2 id={`${id}-title`} class="chapter__title">{title}</h2>
+    {lede && <p class="chapter__lede">{lede}</p>}
+  </div>
+  <div class:list={["chapter__body", { "chapter__body--wide": wide }]}>
+    <slot />
+  </div>
+</section>
+
+<style>
+  .chapter {
+    padding: clamp(4rem, 9vw, 8rem) var(--gutter) 0;
+    max-width: calc(var(--wide) + 2 * var(--gutter));
+    margin: 0 auto;
+    scroll-margin-top: 64px;
+  }
+  .chapter__head { max-width: var(--measure); }
+  .chapter__n { color: var(--primary); font-weight: 500; font-size: var(--step--1); margin-bottom: 0.5rem; }
+  .chapter__title { font-size: var(--step-3); }
+  .chapter__lede { margin-top: 1rem; font-size: var(--step-1); line-height: 1.4; color: var(--muted-foreground); }
+  .chapter__body { margin-top: clamp(1.5rem, 4vw, 2.5rem); max-width: var(--measure); display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+  .chapter__body--wide { max-width: var(--wide); }
+</style>

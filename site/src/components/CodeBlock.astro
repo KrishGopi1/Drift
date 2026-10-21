@@ -1,0 +1,49 @@
+---
+// Real code from the repo, with the file it came from. Excerpts are trimmed,
+// never rewritten: if the source changes, the excerpt must change with it.
+import { blob } from "../lib/source";
+
+interface Props {
+  code: string;
+  lang: "python" | "sql" | "typescript" | "tsx" | "yaml" | "bash" | "json" | "ini" | "xml" | "kotlin";
+  file: string; // repo-relative path
+  lines?: string; // e.g. "98-134"
+  open?: boolean;
+}
+const { code, lang, file, lines, open = false } = Astro.props;
+const href = blob(file) + (lines ? `#L${lines.replace("-", "-L")}` : "");
+---
+
+<figure class="codeblock">
+  <figcaption>
+    <a href={href} rel="noopener">{file}{lines && <span>, lines {lines}</span>}</a>
+  </figcaption>
+  <details open={open}>
+    <summary>Inspect the source excerpt</summary>
+    <pre class="code" tabindex="0" data-language={lang}><code>{code.trim()}</code></pre>
+  </details>
+</figure>
+
+<style>
+  .codeblock { margin: 0; min-width: 0; }
+  figcaption {
+    font-size: 0.82rem;
+    margin-bottom: 0.5rem;
+    overflow-wrap: anywhere;
+  }
+  figcaption a { color: var(--muted-foreground); }
+  figcaption a:hover { color: var(--primary); }
+  summary {
+    min-height: 44px;
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    cursor: pointer;
+    font-size: 0.92rem;
+    font-weight: 500;
+  }
+  details[open] summary { margin-bottom: 0.6rem; }
+  summary:hover { color: var(--primary); }
+  pre code { font-size: inherit; }
+</style>

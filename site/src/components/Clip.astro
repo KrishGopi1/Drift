@@ -1,0 +1,35 @@
+---
+// Short looping demo (WebM + MP4 fallback, or a GIF). Silent, muted, lazy;
+// shows a still poster first and honours reduced motion by not autoplaying.
+// Files go in public/clips/. Record with the skill's media reference.
+import { withBase } from "../lib/source";
+interface Props { name: string; alt: string; poster?: string; frame?: "browser" | "phone" }
+const { name, alt, poster, frame = "browser" } = Astro.props;
+---
+
+<figure class:list={["clip", `clip--${frame}`]}>
+  <video muted loop playsinline preload="none" poster={poster ? withBase(poster) : undefined} aria-label={alt} data-clip>
+    <source src={withBase(`clips/${name}.webm`)} type="video/webm" />
+    <source src={withBase(`clips/${name}.mp4`)} type="video/mp4" />
+  </video>
+</figure>
+
+<script>
+  // Play only while visible, and never under reduced motion (poster stays).
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        const v = e.target as HTMLVideoElement;
+        e.isIntersecting ? v.play().catch(() => {}) : v.pause();
+      }
+    }, { threshold: 0.4 });
+    document.querySelectorAll<HTMLVideoElement>("video[data-clip]").forEach((v) => io.observe(v));
+  }
+</script>
+
+<style>
+  .clip { margin: 0; overflow: hidden; border: 1px solid var(--border); background: var(--card); box-shadow: var(--shadow-card); }
+  .clip--browser { border-radius: calc(var(--radius) * 1.1); }
+  .clip--phone { border-radius: 34px; border: 8px solid var(--foreground); max-width: 320px; }
+  video { width: 100%; height: auto; display: block; }
+</style>
